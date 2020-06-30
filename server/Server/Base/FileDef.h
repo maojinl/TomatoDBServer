@@ -9,7 +9,7 @@
 #define FILE_SHARE_MEM_INFO					"./Config/ShareMemInfo.ini"
 #define FILE_MACHINE_INFO					"./Config/MachineInfo.ini"
 #define FILE_SERVER_INFO					"./Config/ServerInfo.ini"
-#define FILE_SCENE_INFO						"./Config/SceneInfo.ini"
+#define FILE_WORKER_INFO						"./Config/WorkerInfo.ini"
 
 //
 #define FILE_STRING_INFO                    "./Config/StringTable.txt"
