@@ -21,7 +21,6 @@ set(Common
     "../../Common/Assertx.cpp"
     "../../Common/Assertx.h"
     "../../Common/BaseType.h"
-    "../../Common/CrashCatch.h"
     "../../Common/GameDefine.h"
     "../../Common/GameUtil.cpp"
     "../../Common/GameUtil.h"
@@ -147,19 +146,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 # Dependencies
 ################################################################################
 set(ADDITIONAL_LIBRARY_DEPENDENCIES
-	"$<$<CONFIG:Debug>:"
-		"CrashCatch"
-	">"
     "ws2_32"
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-target_link_directories(${PROJECT_NAME} PRIVATE
-    "$<$<CONFIG:Debug>:"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../../engine/build/debug/"
-    ">"
-    "$<$<CONFIG:Release>:"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../../engine/build/release/"
-    ">"
-)
-

@@ -1,6 +1,11 @@
 set(PROJECT_NAME Server)
 
 ################################################################################
+# Unit test
+################################################################################
+set(TOMATODB_BUILD_TESTS ON)
+
+################################################################################
 # Source groups
 ################################################################################
 set(Base
@@ -34,7 +39,6 @@ set(Common__Common
     "../../Common/Assertx.cpp"
     "../../Common/Assertx.h"
     "../../Common/BaseType.h"
-    "../../Common/CrashCatch.h"
     "../../Common/FileDataMgr.cpp"
     "../../Common/FileDataMgr.h"
     "../../Common/GameDefine.h"
@@ -196,6 +200,11 @@ set(tinyxml
 )
 source_group("tinyxml" FILES ${tinyxml})
 
+set(unittest
+    "unit_test/simple_test.cpp"
+)
+source_group("unittest" FILES ${unittest})
+
 if (WIN32)
 	set(util
 		"${CMAKE_CURRENT_SOURCE_DIR}/../engine/util/env.cc"
@@ -211,22 +220,53 @@ else (WIN32)
 endif (WIN32)
 source_group("util" FILES ${util})
 
-set(ALL_FILES
-    ${Base}
-    ${Character}
-    ${Common__Common}
-    ${Common__DataBase}
-    ${Common__Net}
-    ${Common__Packets}
-    ${Main}
-    ${Packets}
-    ${Player}
-    ${SMU}
-    ${Worker}
-	${DB}
-    ${StdAfx}
-    ${tinyxml}
-)
+if (TOMATODB_BUILD_TESTS)
+    set(ALL_FILES
+        ${Base}
+        ${Character}
+        ${Common__Common}
+        ${Common__DataBase}
+        ${Common__Net}
+        ${Common__Packets}
+        ${Main}
+        ${Packets}
+        ${Player}
+        ${SMU}
+        ${Worker}
+        ${DB}
+        ${StdAfx}
+        ${tinyxml}
+        ${unittest}
+    )
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "ws2_32;"
+        "leveldb"
+        "gmock"
+        "gtest"
+    )
+else (TOMATODB_BUILD_TESTS)
+    set(ALL_FILES
+        ${Base}
+        ${Character}
+        ${Common__Common}
+        ${Common__DataBase}
+        ${Common__Net}
+        ${Common__Packets}
+        ${Main}
+        ${Packets}
+        ${Player}
+        ${SMU}
+        ${Worker}
+        ${DB}
+        ${StdAfx}
+        ${tinyxml}
+    )
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "ws2_32;"
+        "leveldb"
+    )
+endif()
+
 
 ################################################################################
 # Target
@@ -257,9 +297,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/Player;"
 	"${CMAKE_CURRENT_SOURCE_DIR}/SMU;"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../../Common/DataBase;"
-	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/include"
-	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/third_party/json/single_include/nlohmann"
-	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/util"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/include;"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/third_party/json/single_include/nlohmann;"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/util;"
 )
 
 ################################################################################
@@ -282,21 +322,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 
 ################################################################################
-# Compile and link options
-################################################################################
-
-
-################################################################################
 # Dependencies
 ################################################################################
 
-set(ADDITIONAL_LIBRARY_DEPENDENCIES
-	"$<$<CONFIG:Debug>:"
-		"CrashCatch"
-	">"
-	"ws2_32;"
-	"leveldb"
-)
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 target_link_directories(${PROJECT_NAME} PRIVATE
     "$<$<CONFIG:Debug>:"

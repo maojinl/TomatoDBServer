@@ -23,9 +23,8 @@
 #include "Performance.h"
 #include "DaemonThread.h"
 #include "leveldb/db.h"
-//#include "db/db_impl.h"
 
-Server						g_Server;
+Server g_Server;
 
 INT main(INT argc, CHAR* argv[])
 {
@@ -74,14 +73,12 @@ INT main(INT argc, CHAR* argv[])
 	ret = g_pLog->Init( ) ;
 	Assert(ret) ;
 
-
 	Log::SaveLog( SERVER_LOGFILE, "\r\n(###) main..." ) ;
 
 	g_pTimeManager->SetTime( ) ;
 	Log::SaveLog( SERVER_LOGFILE, "Server Starting... (%.10d)(%d)",
 		g_pTimeManager->Time2DWORD(),
 		g_pTimeManager->StartTime() ) ;
-	
 
 	ret = g_Server.InitServer( ) ;
 	Assert( ret ) ;
