@@ -22,7 +22,6 @@
 #include "ShareMemManager.h"
 #include "Performance.h"
 #include "DaemonThread.h"
-#include "CrashCatch.h"
 #include "leveldb/db.h"
 //#include "db/db_impl.h"
 
