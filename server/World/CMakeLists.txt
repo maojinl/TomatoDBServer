@@ -183,3 +183,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 set(ADDITIONAL_LIBRARY_DEPENDENCIES
     "ws2_32"
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
