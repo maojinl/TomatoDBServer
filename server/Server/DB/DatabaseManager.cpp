@@ -90,6 +90,7 @@ namespace tomatodb
 		//std::filesystem::path p(g_Config.m_ConfigInfo.m_DataPath);
 		//p.append(database_name);
 		string fullDbName(g_Config.m_ConfigInfo.m_DataPath);
+		fullDbName = EnvFileAPI::FormatDir(fullDbName);
 		fullDbName.append(database_name);
 		//string fullDbName = p.string();
 		if (m_pAdmin->CreateDatabase(fullDbName))

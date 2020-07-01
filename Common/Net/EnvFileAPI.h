@@ -99,8 +99,9 @@ namespace EnvFileAPI
 
 	LONG tell_ex( INT fd ) ;
 
+	std::string FormatDir(string dir);
 
-};//end of namespace FileAPI
+};//end of namespace EnvFileAPI
 
 #endif
 

@@ -612,3 +612,17 @@ LONG EnvFileAPI::tell_ex( INT fd )
 	__LEAVE_FUNCTION_FOXNET
 }
 
+std::string EnvFileAPI::FormatDir(string dir) {
+#if __WINDOWS__
+	if (dir[dir.size() - 1] == '\\')
+		return dir;
+	else
+		return dir + "\\";
+#elif __LINUX
+	if (dir[dir.size() - 1] == '/')
+		return dir;
+	else
+		return dir + "/";
+#endif
+}
+
