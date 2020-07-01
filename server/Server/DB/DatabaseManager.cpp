@@ -13,7 +13,7 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 
-			CleanUp();
+		
 
 		__LEAVE_FUNCTION
 	}
@@ -21,13 +21,23 @@ namespace tomatodb
 	DatabaseManager::~DatabaseManager()
 	{
 		__ENTER_FUNCTION
-			//SAFE_DELETE( m_pServerSocket ) ;
+		CleanUp();
 		__LEAVE_FUNCTION
 	}
 
 	VOID DatabaseManager::CleanUp()
 	{
 		__ENTER_FUNCTION
+		m_DbIndexer.clear();
+		SAFE_DELETE(m_pAdmin);
+		for (int i = 0; i < m_DbCount; i++)
+		{
+			SAFE_DELETE(m_pDbList[i]);
+		}
+		while (!m_pDbRecycleList.empty())
+		{
+			UpdateRecycleDBList();
+		}
 
 		__LEAVE_FUNCTION
 	}
@@ -35,7 +45,7 @@ namespace tomatodb
 	BOOL DatabaseManager::Init()
 	{
 		__ENTER_FUNCTION
-			m_pAdmin = AdminDB::GetInstance();
+		m_pAdmin = AdminDB::GetInstance();
 		m_pAdmin->Init();
 		vector<string> dblist;
 		if (!m_pAdmin->GetDatabasesList(dblist))
@@ -121,6 +131,7 @@ namespace tomatodb
 
 	VOID DatabaseManager::UpdateRecycleDBList()
 	{
+		AutoLock_T l(m_Lock);
 		auto ite = m_pDbRecycleList.begin();
 		while (ite != m_pDbRecycleList.end())
 		{

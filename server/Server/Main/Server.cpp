@@ -23,12 +23,14 @@
 #include "Performance.h"
 #include "DaemonThread.h"
 #include "leveldb/db.h"
+#include <gtest\gtest.h>
 
 Server g_Server;
 
+#define RUN_UNIT_TESTS
+
 INT main(INT argc, CHAR* argv[])
 {
-
 #if defined(__WINDOWS__)
 	_CrtSetDbgFlag(_CrtSetDbgFlag(0) | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -82,6 +84,11 @@ INT main(INT argc, CHAR* argv[])
 
 	ret = g_Server.InitServer( ) ;
 	Assert( ret ) ;
+
+#if defined(RUN_UNIT_TESTS)
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+#endif
 
 	ret = g_Server.Loop( ) ;
 	Assert( ret ) ;

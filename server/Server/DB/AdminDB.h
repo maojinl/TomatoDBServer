@@ -26,7 +26,6 @@ namespace tomatodb
 		~AdminDB();
 		VOID CleanUp();
 		BOOL Init();
-		BOOL Tick();
 		BOOL CreateDatabase(string database_name);
 		BOOL DeleteDatabase(string database_name);
 		BOOL GetDatabasesList(vector<string>& databases_list);

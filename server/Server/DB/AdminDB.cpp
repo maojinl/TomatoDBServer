@@ -97,18 +97,6 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL AdminDB::Tick()
-	{
-		__ENTER_FUNCTION
-
-			return TRUE;
-
-		__LEAVE_FUNCTION
-
-			return FALSE;
-	}
-
-
 	BOOL AdminDB::CreateDatabase(string database_name)
 	{
 		__ENTER_FUNCTION
