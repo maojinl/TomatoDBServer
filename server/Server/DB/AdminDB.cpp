@@ -113,7 +113,7 @@ namespace tomatodb
 		j_array.push_back(database_name);
 
 		std::stringstream ss;
-		ss << j;
+		ss << j_array;
 		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, ss.str());
 
 		return TRUE;
