@@ -176,7 +176,7 @@ BOOL World::NewStaticManager( )
 {
 __ENTER_FUNCTION
 	
-//ShareMemory вНох
+//ShareMemory should be inited firstly
 
 	_WORLD_INFO& WorldInfo = g_Config.m_WorldInfo;
 

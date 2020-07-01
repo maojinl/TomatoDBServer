@@ -336,7 +336,7 @@ VOID Config::LoadWorkersInfo_Only( )
 {
 __ENTER_FUNCTION
 
-	Ini ini( FILE_SCENE_INFO ) ;
+	Ini ini(FILE_WORKER_INFO) ;
 
 	//workers thread info
 	m_WorkerInfo.m_WorkerCount = (UINT)(ini.ReadInt( "system", "workersnumber" )) ;

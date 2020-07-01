@@ -8,7 +8,6 @@
 #include "ShareDBManager.h"
 #include "CommandThread.h"
 #include "GameDefine.h"
-#include "CrashCatch.h"
 
 #if __LINUX__
 #include <sys/types.h> 

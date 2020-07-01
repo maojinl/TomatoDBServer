@@ -328,9 +328,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 target_link_directories(${PROJECT_NAME} PRIVATE
     "$<$<CONFIG:Debug>:"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../engine/build/debug/"
+        "${CMAKE_CURRENT_SOURCE_DIR}/build/engine/debug/"
     ">"
     "$<$<CONFIG:Release>:"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../engine/build/release/"
+        "${CMAKE_CURRENT_SOURCE_DIR}/build/engine/release/"
     ">"
 )
