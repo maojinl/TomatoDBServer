@@ -47,10 +47,10 @@ namespace tomatodb
 			dbname.append(ADMIN_DATABASE_NAME);
 			Options opts;
 			Env* env = opts.env;
-			bool needsInited = false;
-			if (env->FileExists(dbname))
+			bool needInit = false;
+			if (!env->FileExists(dbname))
 			{
-				needsInited = true;
+				needInit = true;
 			}
 			opts.create_if_missing = true;
 			Status s = DB::Open(opts, dbname, &m_pDb);
@@ -58,7 +58,7 @@ namespace tomatodb
 				Log::SaveLog(SERVER_LOGFILE, "ERROR: Open admin db. Message: %s", s.ToString().c_str());
 			}
 			assert(s.ok());
-			if (needsInited) {
+			if (needInit) {
 				InitializeAdminDB();
 			}
 		}
@@ -71,10 +71,9 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		nlohmann::json j_array = nlohmann::json::array();
-		nlohmann::json j = {
-			DATABASE_NAME_KEY, j_array };
+		//nlohmann::json j = { j_array };
 		std::stringstream ss;
-		ss << j;
+		ss << j_array;
 		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, ss.str());
 		return TRUE;
 		__LEAVE_FUNCTION
@@ -87,10 +86,10 @@ namespace tomatodb
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
 		nlohmann::json j(databases_string);
-		nlohmann::json j_array = j[DATABASE_NAME_KEY];
-		for (std::string dbpathname : j_array)
+
+		for (int i = 0; i < j.array().count(); i++)
 		{
-			database_list.push_back(dbpathname);
+			database_list.push_back(j_array{});
 		}
 		return TRUE;
 		__LEAVE_FUNCTION
