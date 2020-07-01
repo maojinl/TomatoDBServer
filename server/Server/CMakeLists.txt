@@ -314,9 +314,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 	">"
 	"_CONSOLE;"
 	${COMPILE_PLATFORM_NAME}
-	"_JSF_SERVER;"
-	"_JSF_CLIENT;"
-	"_JSF_WORLD;"
+	"_TMT_SERVER;"
+	"_TMT_CLIENT;"
+	"_TMT_WORLD;"
 	"TIXML_USE_STL;"
 	"_MBCS"
 )

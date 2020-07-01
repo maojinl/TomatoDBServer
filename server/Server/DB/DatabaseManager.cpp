@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <filesystem>
 #include "DatabaseManager.h"
 #include "Log.h"
 
@@ -29,7 +30,6 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		m_DbIndexer.clear();
-		SAFE_DELETE(m_pAdmin);
 		for (int i = 0; i < m_DbCount; i++)
 		{
 			SAFE_DELETE(m_pDbList[i]);
@@ -38,7 +38,7 @@ namespace tomatodb
 		{
 			UpdateRecycleDBList();
 		}
-
+		AdminDB::ReleaseInstance();
 		__LEAVE_FUNCTION
 	}
 
@@ -86,9 +86,12 @@ namespace tomatodb
 	BOOL DatabaseManager::CreateDatabase(string database_name)
 	{
 		__ENTER_FUNCTION
-			AutoLock_T l(m_Lock);
+		AutoLock_T l(m_Lock);
+		//std::filesystem::path p(g_Config.m_ConfigInfo.m_DataPath);
+		//p.append(database_name);
 		string fullDbName(g_Config.m_ConfigInfo.m_DataPath);
 		fullDbName.append(database_name);
+		//string fullDbName = p.string();
 		if (m_pAdmin->CreateDatabase(fullDbName))
 		{
 			m_pDbList[m_DbCount] = new DatabaseObject(database_name, fullDbName);

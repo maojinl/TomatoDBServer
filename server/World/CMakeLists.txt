@@ -170,8 +170,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     "$<$<CONFIG:Release>:"
         "NDEBUG;"
     ">"
-    "_JSF_WORLD;"
-    "_JSF_SERVER"
+    "_TMT_WORLD;"
+    "_TMT_SERVER"
     ${COMPILE_PLATFORM_NAME}
     "_CONSOLE;"
     "_MBCS"

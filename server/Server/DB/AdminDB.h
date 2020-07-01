@@ -37,6 +37,11 @@ namespace tomatodb
 			}
 			return m_pObj;
 		}
+
+		static void ReleaseInstance() {
+			//must be called firstly in main thread
+			SAFE_DELETE(m_pObj);
+		}
 	};
 } 
 #endif

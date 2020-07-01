@@ -26,16 +26,16 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 
-			//SAFE_DELETE( m_pServerSocket ) ;
+		SAFE_DELETE(m_pDb) ;
 
-			__LEAVE_FUNCTION
+		__LEAVE_FUNCTION
 	}
 
 	VOID AdminDB::CleanUp()
 	{
 		__ENTER_FUNCTION
 
-			__LEAVE_FUNCTION
+		__LEAVE_FUNCTION
 	}
 
 	BOOL AdminDB::Init()
@@ -68,7 +68,7 @@ namespace tomatodb
 	}
 
 	BOOL AdminDB::InitializeAdminDB()
-	{
+	{ 
 		__ENTER_FUNCTION
 		nlohmann::json j_array = nlohmann::json::array();
 		//nlohmann::json j = { j_array };
@@ -86,10 +86,10 @@ namespace tomatodb
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
 		nlohmann::json j(databases_string);
-
-		for (int i = 0; i < j.array().count(); i++)
+		nlohmann::json j_array = j.array();
+		for (const std::string dbname : j_array)
 		{
-			database_list.push_back(j_array{});
+			database_list.push_back(dbname);
 		}
 		return TRUE;
 		__LEAVE_FUNCTION
@@ -102,10 +102,10 @@ namespace tomatodb
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
 		nlohmann::json j(databases_string);
-		nlohmann::json j_array = j[DATABASE_NAME_KEY];
-		for (std::string dbpathname : j_array)
+		nlohmann::json j_array = j.array();
+		for (std::string dbname : j_array)
 		{
-			if (dbpathname == database_name)
+			if (dbname == database_name)
 			{
 				return FALSE;
 			}

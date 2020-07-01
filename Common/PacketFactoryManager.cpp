@@ -2,14 +2,14 @@
 
 #include "PacketFactoryManager.h"
 
-#if defined(_JSF_WORLD) && defined(_JSF_SERVER)
+#if defined(_TMT_WORLD) && defined(_TMT_SERVER)
 #include "WGMail.h"
 #include "WGSystemMsg.h"
 #include "GWSystemMsg.h"
 #include "GWAskMail.h"
 #endif
 
-#if defined(_JSF_CLIENT) && defined(_JSF_SERVER)
+#if defined(_TMT_CLIENT) && defined(_TMT_SERVER)
 #include "SSConnect.h"
 #include "CGEnterScene.h"
 #include "GCEnterScene.h"
@@ -63,13 +63,13 @@ BOOL PacketFactoryManager::Init( )
 {
 __ENTER_FUNCTION
 
-#if defined(_JSF_CLIENT) && defined(_JSF_SERVER)
+#if defined(_TMT_CLIENT) && defined(_TMT_SERVER)
 //CG && GC
 	AddFactory( new CGEnterSceneFactory()) ;
 	AddFactory( new GCEnterSceneFactory()) ;
 #endif
 
-#if defined(_JSF_WORLD) && defined(_JSF_SERVER)
+#if defined(_TMT_WORLD) && defined(_TMT_SERVER)
 //GW && WG
     AddFactory(new WGSystemMsgFactory());
 	AddFactory( new GWSystemMsgFactory());
