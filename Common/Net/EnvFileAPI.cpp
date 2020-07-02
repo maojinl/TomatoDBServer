@@ -626,3 +626,10 @@ std::string EnvFileAPI::FormatDir(string dir) {
 #endif
 }
 
+std::string EnvFileAPI::GetPathName(string path, string dbname)
+{
+	std::string fullDbName = EnvFileAPI::FormatDir(path);
+	fullDbName.append(dbname);
+	return fullDbName;
+}
+

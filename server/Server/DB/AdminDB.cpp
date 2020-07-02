@@ -9,8 +9,7 @@
 namespace tomatodb
 {
 	const string AdminDB::DATABASE_NAME_KEY = "DATABASE_NAME_KEY";
-	const string AdminDB::ADMIN_DATABASE_NAME = "AdminDB";
-	AdminDB* AdminDB::m_pObj;
+	AdminDB* AdminDB::m_pAdminDBObj;
 
 	AdminDB::AdminDB()
 		:m_pDb(nullptr)
@@ -124,8 +123,7 @@ namespace tomatodb
 		nlohmann::json jDb(database_name);
 		for (int i = 0; i < j.size(); i++)
 		{
-			string s = j[i];
-			if (s == database_name)
+			if (j[i] == database_name)
 			{
 				j.erase(i);
 				string jstr = j.dump();

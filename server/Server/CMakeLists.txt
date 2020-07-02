@@ -185,6 +185,7 @@ set(DB
     "DB/DataBaseManager.cpp"
     "DB/DataBaseManager.h"
     "DB/DataBaseObject.h"
+    "DB/DataBaseOptions.h"
 )
 source_group("DB" FILES ${DB})
 

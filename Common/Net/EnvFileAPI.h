@@ -101,6 +101,8 @@ namespace EnvFileAPI
 
 	std::string FormatDir(string dir);
 
+	std::string GetPathName(string path, string dbname);
+
 };//end of namespace EnvFileAPI
 
 #endif

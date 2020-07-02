@@ -10,18 +10,19 @@ public:
 };
 
 TEST_F(DatabaseManagerTest, InitFunction) {
-	pDBManager = new DatabaseManager();
+	pDBManager = new DatabaseManager(g_Config);
 	pDBManager->Init();
 	AdminDB* pAdmin = AdminDB::GetInstance();
 	vector<string> dblist;
 	pAdmin->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
 	SAFE_DELETE(pDBManager);
-	DestroyDB(DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_AdminDBPath, AdminDB::ADMIN_DATABASE_NAME), Options());
+	//DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
+		//, Options());
 }
 
 TEST_F(DatabaseManagerTest, CreateAndDeleteDB) {
-	pDBManager = new DatabaseManager();
+	pDBManager = new DatabaseManager(g_Config);
 	pDBManager->Init();
 	pDBManager->CreateDatabase("TestDB");
 	AdminDB* pAdmin = AdminDB::GetInstance();
@@ -34,5 +35,6 @@ TEST_F(DatabaseManagerTest, CreateAndDeleteDB) {
 	pAdmin->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
 	SAFE_DELETE(pDBManager);
-	DestroyDB(DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_AdminDBPath, AdminDB::ADMIN_DATABASE_NAME), Options());
+	//DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
+		//, Options());
 }

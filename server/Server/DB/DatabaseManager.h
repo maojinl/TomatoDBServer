@@ -9,12 +9,13 @@
 #include "leveldb\db.h"
 #include "AdminDB.h"
 #include "DatabaseObject.h"
+#include "DatabaseOptions.h"
 namespace tomatodb
 {
 	class DatabaseManager
 	{
 	public:
-		DatabaseManager();
+		DatabaseManager(Config config);
 		~DatabaseManager();
 
 		VOID CleanUp();
@@ -22,13 +23,7 @@ namespace tomatodb
 		BOOL Tick();
 		BOOL CreateDatabase(string database_name);
 		BOOL DeleteDatabase(string database_name);
-		static string GetDBPathName(string path, string dbname)
-		{
-			string fullDbName(path);
-			fullDbName = EnvFileAPI::FormatDir(fullDbName);
-			fullDbName.append(dbname);
-			return fullDbName;
-		}
+
 	private:
 		MyLock m_Lock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];
@@ -37,6 +32,7 @@ namespace tomatodb
 		UINT m_DbCount;
 		std::unordered_map<string, UINT> m_DbIndexer;
 		VOID UpdateRecycleDBList();
+		const DatabaseOptions dbOptions;
 	};
 
 	extern DatabaseManager* g_pDatabaseManager;

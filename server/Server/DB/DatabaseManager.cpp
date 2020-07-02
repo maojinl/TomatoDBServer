@@ -8,10 +8,11 @@ namespace tomatodb
 {
 	DatabaseManager* g_pDatabaseManager = NULL;
 
-	DatabaseManager::DatabaseManager() :
+	DatabaseManager::DatabaseManager(Config config) :
 		m_DbCount(0),
 		m_pAdmin(nullptr),
-		m_pDbList()
+		m_pDbList(),
+		dbOptions(config)
 	{
 		__ENTER_FUNCTION		
 
@@ -44,7 +45,7 @@ namespace tomatodb
 	BOOL DatabaseManager::Init()
 	{
 		__ENTER_FUNCTION
-		string fullDbName = DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_AdminDBPath, AdminDB::ADMIN_DATABASE_NAME);
+		string fullDbName = dbOptions.adminDBPathName;
 		m_pAdmin = AdminDB::GetInstance();
 		m_pAdmin->Init(fullDbName);
 		vector<string> dblist;
@@ -54,15 +55,12 @@ namespace tomatodb
 			return FALSE;
 		}
 
-		Options opts;
-		Env* env = opts.env;
-		opts.create_if_missing = true;
 		for (int i = 0; i < dblist.size(); i++)
 		{
-			std::string dbPathName = DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_DataPath, dblist[i]);
+			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dblist[i]);
 			m_pDbList[i] = new DatabaseObject(dblist[i], dbPathName);
 			m_pDbList[i]->pDb = nullptr;
-			Status s = DB::Open(opts, fullDbName, &(m_pDbList[i]->pDb));
+			Status s = DB::Open(dbOptions.options, fullDbName, &(m_pDbList[i]->pDb));
 			m_DbIndexer[dblist[i]] = i;
 			m_DbCount++;
 		}
@@ -88,14 +86,11 @@ namespace tomatodb
 		AutoLock_T l(m_Lock);
 		if (m_DbCount < MAX_DATABASE_SIZE)
 		{
-			string fullDbName = DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_DataPath, database_name);
+			string fullDbName = EnvFileAPI::GetPathName(dbOptions.userDBPath, database_name);
 			if (m_pAdmin->CreateDatabase(database_name))
 			{
 				m_pDbList[m_DbCount] = new DatabaseObject(database_name, fullDbName);
-				Options opts;
-				Env* env = opts.env;
-				opts.create_if_missing = true;
-				Status s = DB::Open(opts, fullDbName, &(m_pDbList[m_DbCount]->pDb));
+				Status s = DB::Open(dbOptions.options, fullDbName, &(m_pDbList[m_DbCount]->pDb));
 				if (!s.ok()) {
 					Log::SaveLog(SERVER_LOGFILE, "ERROR: Open admin db. Message: %s", s.ToString().c_str());
 					return FALSE;
@@ -140,7 +135,7 @@ namespace tomatodb
 			if ((*ite)->ReadyToDestroy())
 			{
 				delete (*ite)->pDb;
-				DestroyDB((*ite)->database_path_name, Options());
+				DestroyDB((*ite)->database_path_name, dbOptions.options);
 				ite = m_pDbRecycleList.erase(ite);
 			}
 			else
