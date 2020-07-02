@@ -10,6 +10,11 @@ namespace tomatodb
 	class AdminDB
 	{
 	private:
+		AdminDB();
+		static AdminDB* m_pObj;
+		DB* m_pDb;
+		BOOL InitializeAdminDB();
+	public:
 		//const defines
 		//Keys in admin db
 		static const string DATABASE_NAME_KEY;
@@ -18,14 +23,9 @@ namespace tomatodb
 		static const string ADMIN_DATABASE_NAME;
 		//end const defines
 
-		AdminDB();
-		static AdminDB* m_pObj;
-		DB* m_pDb;
-		BOOL InitializeAdminDB();
-	public:
 		~AdminDB();
 		VOID CleanUp();
-		BOOL Init();
+		BOOL Init(string dbname);
 		BOOL CreateDatabase(string database_name);
 		BOOL DeleteDatabase(string database_name);
 		BOOL GetDatabasesList(vector<string>& databases_list);
@@ -39,7 +39,7 @@ namespace tomatodb
 		}
 
 		static void ReleaseInstance() {
-			//must be called firstly in main thread
+			//must be called before ends in main thread
 			SAFE_DELETE(m_pObj);
 		}
 	};

@@ -38,13 +38,11 @@ namespace tomatodb
 		__LEAVE_FUNCTION
 	}
 
-	BOOL AdminDB::Init()
+	BOOL AdminDB::Init(string dbname)
 	{
 		__ENTER_FUNCTION
 		if (m_pDb == nullptr)
 		{
-			std::string dbname(g_Config.m_ConfigInfo.m_AdminDBPath);
-			dbname.append(ADMIN_DATABASE_NAME);
 			Options opts;
 			Env* env = opts.env;
 			bool needInit = false;
@@ -57,7 +55,6 @@ namespace tomatodb
 			if (!s.ok()) {
 				Log::SaveLog(SERVER_LOGFILE, "ERROR: Open admin db. Message: %s", s.ToString().c_str());
 			}
-			assert(s.ok());
 			if (needInit) {
 				InitializeAdminDB();
 			}
@@ -71,10 +68,8 @@ namespace tomatodb
 	{ 
 		__ENTER_FUNCTION
 		nlohmann::json j_array = nlohmann::json::array();
-		//nlohmann::json j = { j_array };
-		std::stringstream ss;
-		ss << j_array;
-		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, ss.str());
+		string jstr = j_array.dump();
+		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
@@ -85,9 +80,8 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		nlohmann::json j(databases_string);
-		nlohmann::json j_array = j.array();
-		for (const std::string dbname : j_array)
+		nlohmann::json j = nlohmann::json::parse(databases_string);
+		for (const std::string dbname : j)
 		{
 			database_list.push_back(dbname);
 		}
@@ -101,20 +95,19 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		nlohmann::json j(databases_string);
-		nlohmann::json j_array = j.array();
-		for (std::string dbname : j_array)
+		nlohmann::json j = nlohmann::json::parse(databases_string);
+		for (std::string dbname : j)
 		{
 			if (dbname == database_name)
 			{
 				return FALSE;
 			}
 		}
-		j_array.push_back(database_name);
+		nlohmann::json jDb(database_name);
+		j.push_back(jDb);
 
-		std::stringstream ss;
-		ss << j_array;
-		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, ss.str());
+		string jstr = j.dump();
+		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
 
 		return TRUE;
 		__LEAVE_FUNCTION
@@ -127,13 +120,20 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		nlohmann::json j(databases_string);
-		nlohmann::json j_array = j[DATABASE_NAME_KEY];
-		j_array.erase(database_name);
-		std::stringstream ss;
-		ss << j;
-		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, ss.str());
-		return TRUE;
+		nlohmann::json j = nlohmann::json::parse(databases_string);
+		nlohmann::json jDb(database_name);
+		for (int i = 0; i < j.size(); i++)
+		{
+			string s = j[i];
+			if (s == database_name)
+			{
+				j.erase(i);
+				string jstr = j.dump();
+				m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
+				return TRUE;
+			}
+		}
+		return FALSE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}

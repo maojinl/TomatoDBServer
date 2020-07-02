@@ -10,23 +10,15 @@ namespace tomatodb
 
 	DatabaseManager::DatabaseManager() :
 		m_DbCount(0),
-		m_pAdmin(nullptr)
+		m_pAdmin(nullptr),
+		m_pDbList()
 	{
-		__ENTER_FUNCTION
-
-		
+		__ENTER_FUNCTION		
 
 		__LEAVE_FUNCTION
 	}
 
 	DatabaseManager::~DatabaseManager()
-	{
-		__ENTER_FUNCTION
-		CleanUp();
-		__LEAVE_FUNCTION
-	}
-
-	VOID DatabaseManager::CleanUp()
 	{
 		__ENTER_FUNCTION
 		m_DbIndexer.clear();
@@ -42,11 +34,19 @@ namespace tomatodb
 		__LEAVE_FUNCTION
 	}
 
+	VOID DatabaseManager::CleanUp()
+	{
+		__ENTER_FUNCTION
+
+		__LEAVE_FUNCTION
+	}
+
 	BOOL DatabaseManager::Init()
 	{
 		__ENTER_FUNCTION
+		string fullDbName = DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_AdminDBPath, AdminDB::ADMIN_DATABASE_NAME);
 		m_pAdmin = AdminDB::GetInstance();
-		m_pAdmin->Init();
+		m_pAdmin->Init(fullDbName);
 		vector<string> dblist;
 		if (!m_pAdmin->GetDatabasesList(dblist))
 		{
@@ -59,9 +59,8 @@ namespace tomatodb
 		opts.create_if_missing = true;
 		for (int i = 0; i < dblist.size(); i++)
 		{
-			std::string fullDbName(g_Config.m_ConfigInfo.m_DataPath);
-			fullDbName.append(dblist[i]);
-			m_pDbList[i] = new DatabaseObject(dblist[i], fullDbName);
+			std::string dbPathName = DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_DataPath, dblist[i]);
+			m_pDbList[i] = new DatabaseObject(dblist[i], dbPathName);
 			m_pDbList[i]->pDb = nullptr;
 			Status s = DB::Open(opts, fullDbName, &(m_pDbList[i]->pDb));
 			m_DbIndexer[dblist[i]] = i;
@@ -87,27 +86,25 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		AutoLock_T l(m_Lock);
-		//std::filesystem::path p(g_Config.m_ConfigInfo.m_DataPath);
-		//p.append(database_name);
-		string fullDbName(g_Config.m_ConfigInfo.m_DataPath);
-		fullDbName = EnvFileAPI::FormatDir(fullDbName);
-		fullDbName.append(database_name);
-		//string fullDbName = p.string();
-		if (m_pAdmin->CreateDatabase(fullDbName))
+		if (m_DbCount < MAX_DATABASE_SIZE)
 		{
-			m_pDbList[m_DbCount] = new DatabaseObject(database_name, fullDbName);
-			Options opts;
-			Env* env = opts.env;
-			opts.create_if_missing = true;
-			Status s = DB::Open(opts, fullDbName, &(m_pDbList[m_DbCount]->pDb));
-			if (!s.ok()) {
-				Log::SaveLog(SERVER_LOGFILE, "ERROR: Open admin db. Message: %s", s.ToString().c_str());
-				return FALSE;
+			string fullDbName = DatabaseManager::GetDBPathName(g_Config.m_ConfigInfo.m_DataPath, database_name);
+			if (m_pAdmin->CreateDatabase(database_name))
+			{
+				m_pDbList[m_DbCount] = new DatabaseObject(database_name, fullDbName);
+				Options opts;
+				Env* env = opts.env;
+				opts.create_if_missing = true;
+				Status s = DB::Open(opts, fullDbName, &(m_pDbList[m_DbCount]->pDb));
+				if (!s.ok()) {
+					Log::SaveLog(SERVER_LOGFILE, "ERROR: Open admin db. Message: %s", s.ToString().c_str());
+					return FALSE;
+				}
+				m_DbIndexer[database_name] = m_DbCount;
+				m_DbCount++;
+				return TRUE;
 			}
-			m_DbIndexer[database_name] = m_DbCount;
-			m_DbCount++;
 		}
-		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
@@ -122,13 +119,14 @@ namespace tomatodb
 			if (m_pAdmin->DeleteDatabase(database_name))
 			{
 				m_pDbRecycleList.push_back(m_pDbList[ite->second]);
-				m_pDbList[ite->second] = m_pDbList[m_DbCount];
-				m_DbIndexer[m_pDbList[m_DbCount]->database_name] = ite->second;
+				m_pDbList[ite->second] = m_pDbList[m_DbCount - 1];
+				m_DbIndexer[m_pDbList[m_DbCount - 1]->database_name] = ite->second;
 				m_DbIndexer.erase(ite);
 				m_DbCount--;
+				return TRUE;
 			}
 		}
-		return TRUE;
+		return FALSE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
@@ -142,7 +140,7 @@ namespace tomatodb
 			if ((*ite)->ReadyToDestroy())
 			{
 				delete (*ite)->pDb;
-				DestroyDB((*ite)->database_name, Options());
+				DestroyDB((*ite)->database_path_name, Options());
 				ite = m_pDbRecycleList.erase(ite);
 			}
 			else

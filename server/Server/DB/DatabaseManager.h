@@ -22,6 +22,13 @@ namespace tomatodb
 		BOOL Tick();
 		BOOL CreateDatabase(string database_name);
 		BOOL DeleteDatabase(string database_name);
+		static string GetDBPathName(string path, string dbname)
+		{
+			string fullDbName(path);
+			fullDbName = EnvFileAPI::FormatDir(fullDbName);
+			fullDbName.append(dbname);
+			return fullDbName;
+		}
 	private:
 		MyLock m_Lock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];
