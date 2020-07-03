@@ -36,8 +36,6 @@ namespace tomatodb
 		~DatabaseOptions() {};
 
 	};
-
-	const string DatabaseOptions::ADMIN_DATABASE_NAME = "AdminDB";
 }
 
 

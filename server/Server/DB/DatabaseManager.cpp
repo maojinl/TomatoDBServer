@@ -76,8 +76,29 @@ namespace tomatodb
 		UpdateRecycleDBList();
 		return TRUE;
 		__LEAVE_FUNCTION
-
 		return FALSE;
+	}
+
+	DatabaseObject* DatabaseManager::RefDatabaseHandler(string database_name)
+	{
+		__ENTER_FUNCTION
+		DatabaseObject* pDbObj = nullptr;
+		AutoLock_T l(m_Lock);
+		auto ite = m_DbIndexer.find(database_name);
+		if (ite != m_DbIndexer.end())
+		{
+			pDbObj = m_pDbList[ite->second];
+			pDbObj->Ref();
+		}
+		return pDbObj;
+		__LEAVE_FUNCTION
+		return nullptr;
+	}
+
+	DatabaseObject* DatabaseManager::UnrefDatabaseHandler(DatabaseObject* pDbObj)
+	{
+		AutoLock_T l(pDbObj->dblock);
+		pDbObj->Unref();
 	}
 
 	BOOL DatabaseManager::CreateDatabase(string database_name)
@@ -121,6 +142,20 @@ namespace tomatodb
 				return TRUE;
 			}
 		}
+		return FALSE;
+		__LEAVE_FUNCTION
+		return FALSE;
+	}
+
+	BOOL DatabaseManager::InsertIntoDB(string database_name, string key, string val)
+	{
+		__ENTER_FUNCTION
+		DatabaseObject* dbObj = RefDatabaseHandler(database_name);
+		if (dbObj != nullptr)
+		{
+			return dbObj->InsertIntoDB(key, val, dbOptions.writeOptions, WriteBatch());
+		}
+		UnrefDatabaseHandler(dbObj);
 		return FALSE;
 		__LEAVE_FUNCTION
 		return FALSE;

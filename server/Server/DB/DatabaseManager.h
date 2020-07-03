@@ -23,7 +23,7 @@ namespace tomatodb
 		BOOL Tick();
 		BOOL CreateDatabase(string database_name);
 		BOOL DeleteDatabase(string database_name);
-
+		BOOL InsertIntoDB(string database_name, string key, string val);
 	private:
 		MyLock m_Lock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];
@@ -31,8 +31,11 @@ namespace tomatodb
 		AdminDB* m_pAdmin;
 		UINT m_DbCount;
 		std::unordered_map<string, UINT> m_DbIndexer;
-		VOID UpdateRecycleDBList();
 		const DatabaseOptions dbOptions;
+
+		VOID UpdateRecycleDBList();
+		DatabaseObject* RefDatabaseHandler(string database_name);
+		DatabaseObject* UnrefDatabaseHandler(DatabaseObject* pDbObj);
 	};
 
 	extern DatabaseManager* g_pDatabaseManager;

@@ -17,8 +17,8 @@ TEST_F(DatabaseManagerTest, InitFunction) {
 	pAdmin->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
 	SAFE_DELETE(pDBManager);
-	//DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
-		//, Options());
+	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
+		, Options());
 }
 
 TEST_F(DatabaseManagerTest, CreateAndDeleteDB) {
@@ -35,6 +35,6 @@ TEST_F(DatabaseManagerTest, CreateAndDeleteDB) {
 	pAdmin->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
 	SAFE_DELETE(pDBManager);
-	//DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
-		//, Options());
+	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
+		, Options());
 }

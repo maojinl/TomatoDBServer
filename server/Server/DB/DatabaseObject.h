@@ -1,10 +1,9 @@
 #ifndef __DATABASEOBJECT_H__
 #define __DATABASEOBJECT_H__
 
-#include <unordered_map>
-
 #include "Type.h"
 #include "leveldb/db.h"
+#include "leveldb/write_batch.h"
 
 namespace tomatodb
 {
@@ -31,6 +30,21 @@ namespace tomatodb
 		{
 			return refs == 0;
 		};
+
+		void Ref() { ++refs; };
+
+		void Unref() {
+			//assert(refs_ >= 1);
+			--refs;
+		};
+
+		BOOL InsertIntoDB(const string& key, const string& val, const WriteOptions& wOpts, WriteBatch& wBatch)
+		{
+			wBatch.Clear();
+			wBatch.Put(key, val);
+			pDb->Write(wOpts, &wBatch);
+			return TRUE;
+		}
 	};
 }
 #endif
