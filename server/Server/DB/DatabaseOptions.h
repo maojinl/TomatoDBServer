@@ -17,21 +17,23 @@ namespace tomatodb
 	public:
 		ReadOptions readOptions;
 		WriteOptions writeOptions;
-		Options options;
+		Options openOptions;
+		Options createOptions;
 		string adminDBPathName;
 		string userDBPath;
 		//admin db name
 		static const string ADMIN_DATABASE_NAME;
 		//end const defines
 
-		DatabaseOptions(Config config) :
+		DatabaseOptions(const Config& config) :
 			readOptions(),
 			writeOptions(),
-			options(),
+			openOptions(),
+			createOptions(),
 			userDBPath(config.m_ConfigInfo.m_DataPath)
 		{
 			adminDBPathName = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME);
-			
+			createOptions.create_if_missing = true;
 		};
 		~DatabaseOptions() {};
 

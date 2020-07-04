@@ -89,7 +89,7 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL AdminDB::CreateDatabase(string database_name)
+	BOOL AdminDB::CreateDatabase(const string& database_name)
 	{
 		__ENTER_FUNCTION
 		std::string databases_string;
@@ -114,7 +114,7 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL AdminDB::DeleteDatabase(string database_name)
+	BOOL AdminDB::DeleteDatabase(const string& database_name)
 	{
 		__ENTER_FUNCTION
 		std::string databases_string;

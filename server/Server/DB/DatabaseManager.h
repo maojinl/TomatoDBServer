@@ -6,24 +6,27 @@
 #include "Type.h"
 #include "leveldb/db.h"
 #include "GameUtil.h"
-#include "leveldb\db.h"
 #include "AdminDB.h"
 #include "DatabaseObject.h"
 #include "DatabaseOptions.h"
+#include "DBThreadObjectsPool.h"
+
 namespace tomatodb
 {
 	class DatabaseManager
 	{
 	public:
-		DatabaseManager(Config config);
+		DatabaseManager(const Config& config);
 		~DatabaseManager();
 
 		VOID CleanUp();
 		BOOL Init();
 		BOOL Tick();
-		BOOL CreateDatabase(string database_name);
-		BOOL DeleteDatabase(string database_name);
-		BOOL InsertIntoDB(string database_name, string key, string val);
+		BOOL CreateDatabase(const string& database_name);
+		BOOL DeleteDatabase(const string& database_name);
+		BOOL InsertIntoDB(const string& database_name, const string& key, const string& val, UINT threadIdx);
+		BOOL DeleteFromDB(const string& database_name, const string& key, UINT threadIdx);
+		BOOL GetFromDB(const string& database_name, const string& key, string* val);
 	private:
 		MyLock m_Lock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];
@@ -32,10 +35,11 @@ namespace tomatodb
 		UINT m_DbCount;
 		std::unordered_map<string, UINT> m_DbIndexer;
 		const DatabaseOptions dbOptions;
+		DBThreadObjectsPool* threadObjectsPool;
 
 		VOID UpdateRecycleDBList();
 		DatabaseObject* RefDatabaseHandler(string database_name);
-		DatabaseObject* UnrefDatabaseHandler(DatabaseObject* pDbObj);
+		VOID UnrefDatabaseHandler(DatabaseObject* pDbObj);
 	};
 
 	extern DatabaseManager* g_pDatabaseManager;

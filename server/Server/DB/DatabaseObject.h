@@ -38,11 +38,29 @@ namespace tomatodb
 			--refs;
 		};
 
-		BOOL InsertIntoDB(const string& key, const string& val, const WriteOptions& wOpts, WriteBatch& wBatch)
+		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch)
 		{
 			wBatch.Clear();
 			wBatch.Put(key, val);
 			pDb->Write(wOpts, &wBatch);
+			return TRUE;
+		}
+
+		BOOL DeleteFromDB(const WriteOptions& wOpts, const string& key, WriteBatch& wBatch)
+		{
+			wBatch.Clear();
+			wBatch.Delete(key);
+			pDb->Write(wOpts, &wBatch);
+			return TRUE;
+		}
+
+		BOOL GetFromDB(const ReadOptions& rOpts, const string& key, string* val)
+		{
+			Status s = pDb->Get(rOpts, key, val);
+			if (s.IsNotFound())
+			{
+				return FALSE;
+			}
 			return TRUE;
 		}
 	};

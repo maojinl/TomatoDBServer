@@ -22,8 +22,8 @@ namespace tomatodb
 		~AdminDB();
 		VOID CleanUp();
 		BOOL Init(string dbname);
-		BOOL CreateDatabase(string database_name);
-		BOOL DeleteDatabase(string database_name);
+		BOOL CreateDatabase(const string& database_name);
+		BOOL DeleteDatabase(const string& database_name);
 		BOOL GetDatabasesList(vector<string>& databases_list);
 
 		static AdminDB* GetInstance() {

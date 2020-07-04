@@ -8,14 +8,16 @@ namespace tomatodb
 {
 	DatabaseManager* g_pDatabaseManager = NULL;
 
-	DatabaseManager::DatabaseManager(Config config) :
+	DatabaseManager::DatabaseManager(const Config& config) :
 		m_DbCount(0),
 		m_pAdmin(nullptr),
 		m_pDbList(),
-		dbOptions(config)
+		dbOptions(config),
+		threadObjectsPool(nullptr)
 	{
-		__ENTER_FUNCTION		
-
+		__ENTER_FUNCTION
+		threadObjectsPool = DBThreadObjectsPool::GetInstance();
+		threadObjectsPool->Init(config.m_WorkerInfo.m_WorkerCount);
 		__LEAVE_FUNCTION
 	}
 
@@ -32,6 +34,7 @@ namespace tomatodb
 			UpdateRecycleDBList();
 		}
 		AdminDB::ReleaseInstance();
+		DBThreadObjectsPool::ReleaseInstance();
 		__LEAVE_FUNCTION
 	}
 
@@ -60,7 +63,7 @@ namespace tomatodb
 			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dblist[i]);
 			m_pDbList[i] = new DatabaseObject(dblist[i], dbPathName);
 			m_pDbList[i]->pDb = nullptr;
-			Status s = DB::Open(dbOptions.options, fullDbName, &(m_pDbList[i]->pDb));
+			Status s = DB::Open(dbOptions.openOptions, fullDbName, &(m_pDbList[i]->pDb));
 			m_DbIndexer[dblist[i]] = i;
 			m_DbCount++;
 		}
@@ -95,13 +98,13 @@ namespace tomatodb
 		return nullptr;
 	}
 
-	DatabaseObject* DatabaseManager::UnrefDatabaseHandler(DatabaseObject* pDbObj)
+	VOID DatabaseManager::UnrefDatabaseHandler(DatabaseObject* pDbObj)
 	{
 		AutoLock_T l(pDbObj->dblock);
 		pDbObj->Unref();
 	}
 
-	BOOL DatabaseManager::CreateDatabase(string database_name)
+	BOOL DatabaseManager::CreateDatabase(const string& database_name)
 	{
 		__ENTER_FUNCTION
 		AutoLock_T l(m_Lock);
@@ -111,7 +114,7 @@ namespace tomatodb
 			if (m_pAdmin->CreateDatabase(database_name))
 			{
 				m_pDbList[m_DbCount] = new DatabaseObject(database_name, fullDbName);
-				Status s = DB::Open(dbOptions.options, fullDbName, &(m_pDbList[m_DbCount]->pDb));
+				Status s = DB::Open(dbOptions.createOptions, fullDbName, &(m_pDbList[m_DbCount]->pDb));
 				if (!s.ok()) {
 					Log::SaveLog(SERVER_LOGFILE, "ERROR: Open admin db. Message: %s", s.ToString().c_str());
 					return FALSE;
@@ -125,7 +128,7 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL DatabaseManager::DeleteDatabase(string database_name)
+	BOOL DatabaseManager::DeleteDatabase(const string& database_name)
 	{
 		__ENTER_FUNCTION
 		AutoLock_T l(m_Lock);
@@ -147,16 +150,45 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL DatabaseManager::InsertIntoDB(string database_name, string key, string val)
+	BOOL DatabaseManager::InsertIntoDB(const string& database_name, const string& key, const string& val, UINT threadIdx)
 	{
 		__ENTER_FUNCTION
 		DatabaseObject* dbObj = RefDatabaseHandler(database_name);
 		if (dbObj != nullptr)
 		{
-			return dbObj->InsertIntoDB(key, val, dbOptions.writeOptions, WriteBatch());
+			dbObj->InsertIntoDB(dbOptions.writeOptions, key, val, threadObjectsPool->Get(threadIdx));
+			UnrefDatabaseHandler(dbObj);
 		}
-		UnrefDatabaseHandler(dbObj);
+		return TRUE;
+		__LEAVE_FUNCTION
 		return FALSE;
+	}
+
+	BOOL DatabaseManager::DeleteFromDB(const string& database_name, const string& key, UINT threadIdx)
+	{
+		__ENTER_FUNCTION
+		DatabaseObject* dbObj = RefDatabaseHandler(database_name);
+		if (dbObj != nullptr)
+		{
+			dbObj->DeleteFromDB(dbOptions.writeOptions, key, threadObjectsPool->Get(threadIdx));
+			UnrefDatabaseHandler(dbObj);
+		}
+		return TRUE;
+		__LEAVE_FUNCTION
+		return FALSE;
+	}
+
+	BOOL DatabaseManager::GetFromDB(const string& database_name, const string& key, string* val)
+	{
+		__ENTER_FUNCTION
+		BOOL ret = FALSE;
+		DatabaseObject* dbObj = RefDatabaseHandler(database_name);
+		if (dbObj != nullptr)
+		{
+			ret = dbObj->GetFromDB(dbOptions.readOptions, key, val);
+			UnrefDatabaseHandler(dbObj);
+		}
+		return ret;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
@@ -170,7 +202,7 @@ namespace tomatodb
 			if ((*ite)->ReadyToDestroy())
 			{
 				delete (*ite)->pDb;
-				DestroyDB((*ite)->database_path_name, dbOptions.options);
+				DestroyDB((*ite)->database_path_name, dbOptions.openOptions);
 				ite = m_pDbRecycleList.erase(ite);
 			}
 			else

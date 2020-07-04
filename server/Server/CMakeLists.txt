@@ -187,6 +187,8 @@ set(DB
     "DB/DataBaseObject.h"
     "DB/DataBaseOptions.h"
     "DB/DataBaseOptions.cpp"
+    "DB/DBThreadObjectsPool.h"
+    "DB/DBThreadObjectsPool.cpp"
 )
 source_group("DB" FILES ${DB})
 
@@ -203,7 +205,7 @@ set(tinyxml
 source_group("tinyxml" FILES ${tinyxml})
 
 set(unittest
-    "unit_test/simple_test.cpp"
+    "unit_test/DatabaseManagerTest.cpp"
 )
 source_group("unittest" FILES ${unittest})
 
