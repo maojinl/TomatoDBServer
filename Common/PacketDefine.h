@@ -12,7 +12,7 @@ namespace Packets
 	enum PACKET_DEFINE
 	{
 		PACKET_NONE = 0 ,						//0，空
-/*------------------------GC-------------------------------------------------------------------------------------------*/
+
 	/* ID:1 */PACKET_GC_TEST ,
 
 		PACKET_GC_LEAVESCENE ,										//服务器发给其他客户端某玩家离开的消息
@@ -504,105 +504,17 @@ namespace Packets
 		PACKET_BW_CONNECT,											//Web服务器与Billing服务器第一次验证KEY的消息
 		PACKET_BW_VALIDATEUSER,										//Billing服务器请求Web验证用户名与密码
 		PACKET_WB_RET_VALIDATEUSER,									//Billing服务器请求Web验证用户名与密码
-	/* ID:751 */PACKET_WG_SYSTEMMSG,								//World向Server发送系统消息
+		PACKET_WG_SYSTEMMSG,								//World向Server发送系统消息
 		PACKET_GW_SYSTEMMSG,										//Server向World发送系统消息
-
-		//Server与Billing之间的的消费包
-		PACKET_SB_ASKRMB,
-		PACKET_BS_RETASKRMB,
-		PACKET_SB_RMBBUY,				//Server向Billing发送,使用点卷消费
-		PACKET_BS_RETRMBBUY,			//Billing向Server发送消费成功的结果,点卷的变更
-		PACKET_SB_RMBCOMMIT,			//Server向Billing发送,消费后操作成功,提交整个消费事务
-		PACKET_SB_RMBROLLBACK,			//Server向Billing发送,点卷扣除后,玩家消费失败,回滚点卷
-		PACKET_BS_RMBERROR,				//点卷消费失败
-/*------------------------CG、GW、WG、SS、LB、BL、LW、WL---------------------------------------------------------------*/
-
-
-//----------------LC------------------------------
-		PACKET_zLoginPacketBegin    = 0x1000,
-
-		PACKET_zLC_RETLOGIN			= PACKET_zLoginPacketBegin + 1   ,
-		PACKET_zLC_RETSERVERINFO	= PACKET_zLoginPacketBegin + 10  , //列出服务器列表
-		PACKET_zLC_SELECT_SERVER	= PACKET_zLoginPacketBegin + 20  , 
-
-
-//--------------CL--------------------*-------------
-		
-		PACKET_zCL_ASKLOGIN				= PACKET_zLoginPacketBegin + 121 ,         
-		PACKET_zCL_ASKSERVERINFO		= PACKET_zLoginPacketBegin + 130 ,//请求服务器列表		
-		PACKET_zCL_SELECT_SERVER		= PACKET_zLoginPacketBegin + 140 ,
 
 
 
 		PACKET_LoginCharPacketBegin		= 0x1100,
-		PACKET_LC_RETCREATECHAR			= PACKET_LoginCharPacketBegin + 1,					//返回创建角色结果
-		PACKET_zLC_RETCHARLIST			= PACKET_LoginCharPacketBegin + 2,					//返回角色列表
-		PACKET_GC_ENTERSCENE  			= PACKET_LoginCharPacketBegin + 3,					//客户端试图进入某个场景时发给服务器的请求消息
-		PACKET_LC_RETDELETECHAR			= PACKET_LoginCharPacketBegin + 4,					//返回删除角色结果
-		PACKET_GC_CHARBASEATTRIB		= PACKET_LoginCharPacketBegin + 10,					//刷新角色基本属性
-		PACKET_GC_SETCURTITLE			= PACKET_LoginCharPacketBegin + 12,					//设置角色称号
-		PACKET_GC_GETTITLES				= PACKET_LoginCharPacketBegin + 13,					//获取角色称号信息
-		PACKET_GC_SETDYTITLE			= PACKET_LoginCharPacketBegin + 14,					//激活/屏蔽一个称号
-		PACKET_GC_ATTRREFRESH			= PACKET_LoginCharPacketBegin + 15,					//刷新各类属性
-		PACKET_GC_CHARPUBLICATTRIB		= PACKET_LoginCharPacketBegin + 16,					//刷新通用属性，大地图上，各个玩家互相能看到的属性，随时刷新
-		PACKET_GC_SETSKILLSHORTCUT		= PACKET_LoginCharPacketBegin + 18,					//刷新快捷栏对应的skill
-		PACKET_LC_RETCHARLOGIN			= PACKET_LoginCharPacketBegin + 30,					//请求登陆指定角色
-		PACKET_LC_RETLOGIN				= PACKET_LoginCharPacketBegin + 31,					//Login 返回客户端的请求结果
-		PACKET_GC_CONNECT				= PACKET_LoginCharPacketBegin + 32,				    //服务器收到PACKET_CG_CONNECT后发送给客户端
-		PACKET_GC_RETSETTING			= PACKET_LoginCharPacketBegin + 33,				//向客户端返回用户设置数据
-		PACKET_GC_RETLOGBOOK			= PACKET_LoginCharPacketBegin + 40,					//向客户端返回用户的航海日志列表
-		PACKET_GC_RETADDLOGBOOK			= PACKET_LoginCharPacketBegin + 41,					//向客户端返回用户新增航海日志
 
-
-		PACKET_CL_ASKCREATECHAR			= PACKET_LoginCharPacketBegin + 121,				//请求创建角色
-		PACKET_zCL_ASKCHARLIST			= PACKET_LoginCharPacketBegin + 122,				//请求角色列表
-		PACKET_CG_ENTERSCENE			= PACKET_LoginCharPacketBegin + 123,				//服务器发给客户端进入场景的确认消息
-		PACKET_CL_ASKDELETECHAR			= PACKET_LoginCharPacketBegin + 124,				//请求删除角色
-		PACKET_CG_CHARASKBASEATTRIB		= PACKET_LoginCharPacketBegin + 130,				//获取角色简单属性
-		PACKET_CG_SETCURTITLE			= PACKET_LoginCharPacketBegin + 132,				//设置角色称号
-		PACKET_CG_GETTITLES				= PACKET_LoginCharPacketBegin + 133,				//获取角色称号信息
-		PACKET_CG_SETDYTITLE			= PACKET_LoginCharPacketBegin + 134,				//激活/屏蔽一个称号
-		PACKET_CG_ATTRREFRESH			= PACKET_LoginCharPacketBegin + 135,				//刷新各类属性
-		PACKET_CG_LISTSKILLSHORTCUT		= PACKET_LoginCharPacketBegin + 137,				//请求快捷栏对应的skill
-		PACKET_CG_SETSKILLSHORTCUT		= PACKET_LoginCharPacketBegin + 138,				//设置快捷栏对应的skill
-		PACKET_CL_ASKCHARLOGIN			= PACKET_LoginCharPacketBegin + 150,				//请求登陆指定角色
-		PACKET_CL_ASKLOGIN				= PACKET_LoginCharPacketBegin + 151,				//客户端请求Login登录
-		PACKET_CG_CONNECT				= PACKET_LoginCharPacketBegin + 152,				//客户端连接到游戏服务器端后发送的第一个验证消息
-
-		PACKET_CG_ASKSETTING			= PACKET_LoginCharPacketBegin + 153,					//请求得到用户设置数据
-		PACKET_CG_MODIFYSETTING			= PACKET_LoginCharPacketBegin + 154,					//修改用户设置数据
-		PACKET_CG_ASKLOGBOOK			= PACKET_LoginCharPacketBegin + 160,					//客户端请求航海日志
-
-		//聊天 12/3
-		PACKET_ChatPacketBegin			= 0x1200,
-		PACKET_LC_CHAT					= PACKET_ChatPacketBegin + 1,						//服务端返回聊天信息
-		PACKET_CL_CHAT					= PACKET_ChatPacketBegin + 121,						//客户端发送聊天信息
-
-		PACKET_GameCharPacketBegin		= 0x1300,
-		PACKET_GC_CHARMOVERESULT		= PACKET_GameCharPacketBegin + 4,					//移动指令的执行返回
-		PACKET_GC_CHARMOVE				= PACKET_GameCharPacketBegin + 5,					//通知CLIENT移动
-		PACKET_GC_NEWPLAYER				= PACKET_GameCharPacketBegin + 11,					//有新的其他玩家进入自己的视野范围
-		PACKET_GC_DELOBJECT				= PACKET_GameCharPacketBegin + 12,					//删除OBJ
-		PACKET_GC_RET_TEAMCHANGESCENE		= PACKET_GameCharPacketBegin + 13,					//队长询问出城
-
-
-		PACKET_GC_NOTIFYCHANGESCENE		= PACKET_GameCharPacketBegin + 40,					//服务器通知客户端可以改变场景了
-		PACKET_GC_RETCHANGESCENE		= PACKET_GameCharPacketBegin + 41,					//服务器回应客户端的场景变换请求
-		PACKET_zGC_NEWAREAMONSTER		= PACKET_GameCharPacketBegin + 50,					//通知Client添加明雷怪
-		PACKET_zGC_DELAREAMONSTER		= PACKET_GameCharPacketBegin + 51,					//通知Client去除明雷怪
-		PACKET_zGC_RESULTAREAMONSTER	= PACKET_GameCharPacketBegin + 52,					//返回请求对战(明雷)失败原因
-
-
-
-
-		PACKET_CG_CHARMOVE				= PACKET_GameCharPacketBegin + 124,					//通知SERVER移动
-		//PACKET_zCG_BATTLEAREAMONSTER	= PACKET_GameCharPacketBegin + 152,				//请求对战(明雷)
-		PACKET_CG_ASK_TEAMCHANGESCENE		= PACKET_GameCharPacketBegin + 133,					//返回队长询问出城
-
-		PACKET_CG_ASKNOTIFYCHANGESCENE	= PACKET_GameCharPacketBegin + 160,					//客户端请求改变场景，用于进入城市
-		PACKET_CG_ASKCHANGESCENE		= PACKET_GameCharPacketBegin + 161,					//客户端请求改变场景
-		PACKET_zCG_BATTLEAREAMONSTER	= PACKET_GameCharPacketBegin + 172,				//请求对战(明雷)
-
+		PACKET_CS_ASKLOGIN				= PACKET_LoginCharPacketBegin + 151,				//Ask Login
+	
+																							//请求得到用户设置数据
+	
 
 //------Controller = 5  NPC 交易系统   ---------------------------------------
 		//NPC和交易系统

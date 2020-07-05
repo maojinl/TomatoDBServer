@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "CGEnterScene.h"
-#include "GCEnterScene.h"
+#include "CSAskLogin.h"
+#include "SCRetLogin.h"
 #include "GamePlayer.h"
 #include "IncomingPlayerManager.h"
 #include "PacketFactoryManager.h"
@@ -10,7 +10,7 @@
 #include "ServerManager.h"
 
 
-UINT CGEnterSceneHandler::Execute( CGEnterScene* pPacket, Player* pPlayer )
+UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 {
 	__ENTER_FUNCTION
 
@@ -18,21 +18,20 @@ UINT CGEnterSceneHandler::Execute( CGEnterScene* pPacket, Player* pPlayer )
     Obj_Human* pHuman = pGamePlayer->GetHuman();
 	Assert( pGamePlayer ) ;
 
-
 	if( pGamePlayer->GetPlayerStatus()==PS_SERVER_WAITING_FOR_ENTER )
-	{//当前玩家是刚接入的
-		//当前代码由 IncomingPlayerManager来执行
+	{
+		//Current session is just connected
+		//the code should be executed by IncomingPlayerManager
 
-		//检查线程执行资源是否正确
+		//check thread
 		Assert( MyGetCurrentThreadID()==g_pIncomingPlayerManager->m_ThreadID ) ;
 
 		WorkerID_t SceneID = 1;
-                //pHuman->GetDB()->GetDBStartScene();
 		Scene* pScene = g_pWorkerManager->GetScene( SceneID ) ;
 
 		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
 
-		//非法的场景ID
+		//Illegal worker
 		if( SceneID==INVALID_ID || pScene==NULL )
 		{
 			pScene = g_pWorkerManager->GetScene( SceneID ) ;

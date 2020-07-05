@@ -7,8 +7,6 @@
 
 namespace Packets
 {
-
-
 	class CSAskLogin : public Packet
 	{
 	public:
@@ -23,7 +21,7 @@ namespace Packets
 		virtual BOOL			Write(SocketOutputStream& oStream) const;
 		virtual UINT			Execute(Player* pPlayer);
 
-		virtual PacketID_t		GetPacketID() const { return PACKET_CL_ASKLOGIN; }
+		virtual PacketID_t		GetPacketID() const { return PACKET_CS_ASKLOGIN; }
 		virtual UINT			GetPacketSize() const
 		{
 			return	sizeof(CHAR) * (MAX_ACCOUNT + 1) * 2;
@@ -49,7 +47,7 @@ namespace Packets
 	{
 	public:
 		Packet* CreatePacket() { return new CSAskLogin(); }
-		PacketID_t	GetPacketID()const { return PACKET_CL_ASKLOGIN; }
+		PacketID_t	GetPacketID()const { return PACKET_CS_ASKLOGIN; }
 		UINT		GetPacketMaxSize() const
 		{
 			return	sizeof(CHAR) * (MAX_ACCOUNT + 1) * 2;
@@ -57,10 +55,10 @@ namespace Packets
 	};
 
 
-	class CLAskLoginHandler
+	class CSAskLoginHandler
 	{
 	public:
-		static UINT Execute(CLAskLogin* pPacket, Player* pPlayer);
+		static UINT Execute(CSAskLogin* pPacket, Player* pPlayer);
 	};
 
 };

@@ -85,10 +85,10 @@ set(Common__Net
 source_group("Common\\Net" FILES ${Common__Net})
 
 set(Common__Packets
-    "../../Common/Packets/CGEnterScene.cpp"
-    "../../Common/Packets/CGEnterScene.h"
-    "../../Common/Packets/GCEnterScene.cpp"
-    "../../Common/Packets/GCEnterScene.h"
+    "../../Common/Packets/CSAskLogin.cpp"
+    "../../Common/Packets/CSAskLogin.h"
+    "../../Common/Packets/SCRetLogin.cpp"
+    "../../Common/Packets/SCRetLogin.h"
     "../../Common/Packets/GCSystemMsg.cpp"
     "../../Common/Packets/GCSystemMsg.h"
     "../../Common/Packets/GWAskMail.cpp"
@@ -133,7 +133,7 @@ set(Main
 source_group("Main" FILES ${Main})
 
 set(Packets
-    "Packets/CGEnterSceneHandler.cpp"
+    "Packets/CSAskLoginHandler.cpp"
     "Packets/NullHandler.cpp"
     "Packets/SSConnectHandler.cpp"
     "Packets/WGMailHandler.cpp"
