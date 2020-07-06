@@ -47,17 +47,6 @@ UINT SCRetLogin::Execute( Player* pPlayer )
 	return FALSE ;
 }
 
-//const CHAR* SCRetLogin::GetAccount()	const
-//{
-//	return szAccount;
-//}
-//VOID SCRetLogin::SetAccount(const CHAR*	pAccount)
-//{
-//	Assert(pAccount);
-//	strncpy(szAccount,pAccount,MAX_ACCOUNT*sizeof(CHAR));
-//	szAccount[MAX_ACCOUNT] = '\0' ;
-//}
-
 LOGIN_RESULT SCRetLogin::GetResult() const
 {
 	return Result;

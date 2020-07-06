@@ -34,29 +34,7 @@
 
 #define MAX_SYSTEM_MSG_SIZE 10
 
-
-#define DB_BAG_POS_START			(BASE_CONTAINER_OFFSET)					// 0
-#define	DB_BAG_POS_END				(MAX_BAG_SIZE-1)		// 69
-
-#define DB_EQUIP_POS_START			(MAX_BAG_SIZE+MAX_EXTBAG_SIZE)			// 200
-#define DB_EQUIP_POS_END			(DB_EQUIP_POS_START+HEQUIP_NUMBER-1)	// 208
-
-#define DB_CARGO_POS_START			(CARGO_CONTAINER_OFFSET)				// 300
-#define DB_CARGO_POS_END			(MAX_CARGO_SIZE+CARGO_CONTAINER_OFFSET-1)	// 334
-
-#define DB_TRADE_POS_START			(TRADE_CONTAINER_OFFSET)				// 350
-#define DB_TRADE_POS_END			(MAX_TRADE_SIZE+TRADE_CONTAINER_OFFSET-1)	// 334
-
-#define DB_BANK_POS_START			(BANK_CONTAINER_OFFSET)					// 400
-#define DB_BANK_POS_END				(MAX_BANK_SIZE+DB_BANK_POS_START-1)		// 
-
-#define DB_MAX_ITEMINFO				(DB_BANK_POS_END+1)
-
-#define DB_RECEIVE_ITEMCOUNT	(10)
-
-
 #define MAX_WORKER 128
-#define MAX_DATABASE_SIZE 1024
 
 //数据库名称长度
 #define		DATABASE_STR_LEN			128
@@ -66,20 +44,6 @@
 #define		DB_PASSWORD_STR_LEN			32
 //DB 操作时间间隔
 #define		DB_OPERATION_TIME			500
-//账号保存角色个数
-#define		DB_CHAR_NUMBER				5
-//角色中非即时刷新属性同步到ShareMemory的时间间隔
-#define		DB_2_SM_TIME				60000 //60秒
-
-//数据库连接池默认连接个数
-#define		DB_CONNECTION_COUNT			40
-
-// 服务器能接受的客气端调整位置与服务器位的差距
-#define		DEF_SERVER_ADJUST_POS_WARP_DIST	(5.f)
-
-// 玩家为一个物品（宠物）加锁需要消耗的精力
-//#define		LOCK_A_OBJ_NEED_ENERGY		10
-
 
 //服务器名字的最大长度
 #define    MAX_SERVER_NAME    16
@@ -87,10 +51,10 @@
 //服务器IP地址的长度
 #define    MAX_SERVER_IP      16
 
-
-//排行榜数据相关的长度定义
-#define  MAX_RANGE_DATA_ROWCOUNT   10
-#define  MAX_RANGE_DATA_TOTALROW   40
+//tomatodb settings
+#define MAX_DATABASE_SIZE 1024
+#define MAX_DATABASE_NAME 64
+//end tomatodb settings
 
 //==========================================
 //              邮件相关长度定义

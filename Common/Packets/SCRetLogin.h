@@ -1,5 +1,5 @@
-#ifndef _LCRET_LOGIN_H_
-#define _LCRET_LOGIN_H_
+#ifndef _SCRETLOGIN_H_
+#define _SCRETLOGIN_H_
 #include "Type.h"
 #include "Packet.h"
 #include "PacketFactory.h"
@@ -7,8 +7,6 @@
 
 namespace Packets
 {
-
-
 	class SCRetLogin : public Packet 
 	{
 	public:
@@ -30,7 +28,6 @@ namespace Packets
 		}
 
 	public:
-		//使用数据接口
 		//const	CHAR*			GetAccount()	const;
 		//VOID					SetAccount(const CHAR*	pAccount);
 		LOGIN_RESULT			GetResult() const;
@@ -51,7 +48,6 @@ namespace Packets
 		UINT				GetLevel() { return m_iLevel; }
 	private:
 		//数据
-		//没有开BillingSystem 前使用客户端自己算GUID
 		LOGIN_RESULT			Result;
 		//CHAR					szAccount[MAX_ACCOUNT+1];	//用户名称
 		CHAR				m_CharName[MAX_CHARACTER_NAME];
@@ -72,7 +68,6 @@ namespace Packets
 				sizeof(UINT);
 		}
 	};
-
 
 	class SCRetLoginHandler 
 	{

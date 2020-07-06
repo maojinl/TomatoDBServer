@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "CSAskLogin.h"
-#include "SCRetLogin.h"
+#include "CSAskCreateDB.h"
+#include "SCRetCreateDB.h"
 #include "GamePlayer.h"
 #include "IncomingPlayerManager.h"
 #include "PacketFactoryManager.h"
@@ -9,7 +9,7 @@
 #include "Log.h"
 #include "ServerManager.h"'
 
-UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
+UINT CSAskCreateDBHandler::Execute(CSAskCreateDB* pPacket, Player* pPlayer )
 {
 	__ENTER_FUNCTION
 
