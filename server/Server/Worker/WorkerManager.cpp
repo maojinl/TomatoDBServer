@@ -2,7 +2,7 @@
 
 #include "WorkerManager.h"
 #include "Ini.h"
-#include "ScenePlayerManager.h"
+#include "WorkerPlayerManager.h"
 #include "ServerManager.h"
 #include "MachineManager.h"
 
@@ -21,7 +21,7 @@ __ENTER_FUNCTION
 	for( INT i=0; i < MAX_WORKER; i++ )
 	{
 		m_pWorker[i]=NULL ;
-		m_aScenePlayerCount[i]=0 ;
+		m_aWorkerPlayerCount[i]=0 ;
 	}
 	m_Count = 0 ;
 
@@ -41,7 +41,7 @@ __ENTER_FUNCTION
 __LEAVE_FUNCTION
 }
 
-Scene* WorkerManager::GetScene(WorkerID_t WorkerID)
+Worker* WorkerManager::GetWorker(WorkerID_t WorkerID)
 {
 __ENTER_FUNCTION
 
@@ -73,13 +73,13 @@ __LEAVE_FUNCTION
 }
 
 
-BOOL WorkerManager::Init( UINT MaxSceneCount )
+BOOL WorkerManager::Init( UINT MaxWorkerCount )
 {
 __ENTER_FUNCTION
 
 	BOOL ret ;
 
-	UINT count = MaxSceneCount ;
+	UINT count = MaxWorkerCount ;
 
 	Assert( count<=MAX_WORKER ) ;
 
@@ -95,22 +95,22 @@ __ENTER_FUNCTION
 			continue ;
 		}
 
-		Scene* pScene = new Scene(WorkerID) ;
-		Assert( pScene ) ;
+		Worker* pWorker = new Worker(WorkerID) ;
+		Assert( pWorker ) ;
 
-		pScene->SetSceneType( g_Config.m_WorkerInfo.m_pWorker[i].m_Type ) ;
+		pWorker->SetWorkerType( g_Config.m_WorkerInfo.m_pWorker[i].m_Type ) ;
 
-		switch( pScene->GetSceneType() )
+		switch( pWorker->GetWorkerType() )
 		{
 		case WORKER_TYPE_DB_LOGIC://游戏逻辑场景
 			{
 				//read scn data
-				//pScene->SetLoadData( g_Config.m_WorkerInfo.m_pWorker[i].m_szFileName, load ) ;
-				//ret = pScene->Load( &load ) ;
+				//pWorker->SetLoadData( g_Config.m_WorkerInfo.m_pWorker[i].m_szFileName, load ) ;
+				//ret = pWorker->Load( &load ) ;
 				//Assert( ret ) ;
 				//启动时候创建的场景直接进入运行模式
-				//普通游戏场景没有OnSceneInit事件
-				pScene->SetSceneStatus( WORKER_STATUS_RUNNING ) ;
+				//普通游戏场景没有OnWorkerInit事件
+				pWorker->SetWorkerStatus( WORKER_STATUS_RUNNING ) ;
 			}
 			break ;
 		default:
@@ -121,7 +121,7 @@ __ENTER_FUNCTION
 		};
 
 
-		ret = this->AddScene( pScene ) ;
+		ret = this->AddWorker( pWorker ) ;
 		Assert( ret ) ;
 	}
 	return TRUE ;
@@ -131,19 +131,19 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL WorkerManager::AddScene( Scene* pScene )
+BOOL WorkerManager::AddWorker( Worker* pWorker)
 {
 __ENTER_FUNCTION
 
-	Assert( pScene ) ;
-	if( pScene==NULL )
+	Assert( pWorker ) ;
+	if( pWorker==NULL )
 		return FALSE ;
 
-	WorkerID_t SceneID = pScene->SceneID() ;
-	Assert( SceneID < MAX_WORKER ) ;
+	WorkerID_t WorkerID = pWorker->WorkerID() ;
+	Assert( WorkerID < MAX_WORKER ) ;
 	
-	Assert( m_pWorker[SceneID]==NULL ) ;
-	m_pWorker[SceneID] = pScene ;
+	Assert( m_pWorker[WorkerID]==NULL ) ;
+	m_pWorker[WorkerID] = pWorker ;
 
 	m_Count ++ ;
 	Assert( m_Count<MAX_WORKER ) ;
@@ -155,16 +155,16 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL WorkerManager::DelScene( WorkerID_t SceneID )
+BOOL WorkerManager::DelWorker( WorkerID_t WorkerID )
 {
 __ENTER_FUNCTION
 
-	Assert( SceneID < MAX_WORKER ) ;
-	Assert( m_pWorker[SceneID] ) ;
-	if( m_pWorker[SceneID] ) 
+	Assert( WorkerID < MAX_WORKER ) ;
+	Assert( m_pWorker[WorkerID] ) ;
+	if( m_pWorker[WorkerID] ) 
 		return FALSE ;
 
-	m_pWorker[SceneID] = NULL ;
+	m_pWorker[WorkerID] = NULL ;
 	m_Count -- ;
 
 	return TRUE ;
@@ -191,11 +191,11 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL WorkerManager::IsInCurMachine( WorkerID_t SceneID )
+BOOL WorkerManager::IsInCurMachine( WorkerID_t WorkerID )
 {
 __ENTER_FUNCTION
 
-    _WORKER_DATA* pData = GetWorkerInfo( SceneID ) ;
+    _WORKER_DATA* pData = GetWorkerInfo( WorkerID ) ;
 	Assert( pData ) ;
 
 	_SERVER_DATA* pServerData = g_pServerManager->FindServerInfo(pData->m_ServerID) ;
@@ -211,27 +211,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-WorkerID_t WorkerManager::GetSpecialSceneIDFromCurServer( )//取到一个在当前Server上的游戏逻辑场景
-{
-__ENTER_FUNCTION
-
-	ID_t CurServerID = g_Config.m_ConfigInfo.m_ServerID ;
-	for( INT i=0; i<MAX_WORKER; i++ )
-	{
-		_WORKER_DATA* pData = GetWorkerInfo( (WorkerID_t)i ) ;
-		if( pData==NULL )
-			continue ;
-
-		if( CurServerID==pData->m_ServerID )
-			return (WorkerID_t)i ;
-	}
-
-__LEAVE_FUNCTION
-
-	return INVALID_ID ;
-}
-
-BOOL WorkerManager::BroadCast_Scene(Packet* pMsg) {
+BOOL WorkerManager::BroadCast_Worker(Packet* pMsg) {
   BOOL ret = FALSE;
   for (UINT i = 0, num = 0; num < m_Count && i < MAX_WORKER; i++) {
     if (g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID !=
@@ -240,7 +220,7 @@ BOOL WorkerManager::BroadCast_Scene(Packet* pMsg) {
     }
     if (m_pWorker[i]) {
       ++num;
-      ret = m_pWorker[i]->BroadCast_Scene(pMsg);
+      ret = m_pWorker[i]->BroadCast_Worker(pMsg);
       if (!ret) {
         return FALSE;
       }

@@ -29,21 +29,26 @@ namespace Packets
 
 	public:
 		//使用数据接口
-		const	CHAR* GetAccount()	const;
+		const					CHAR* GetAccount()	const;
 		VOID					SetAccount(CHAR* pAccount);
 		UINT					GetVersion() const;
 		VOID					SetVersion(UINT version);
-
+		WorkerID_t				GetWorkerID() const;
+		VOID					SetWorkerID(WorkerID_t workerID);
+		
 		CHAR* GetPassKey() { return szPassKey; }
 
 	private:
 		//数据
 		CHAR					szAccount[MAX_ACCOUNT + 1];	//用户名称
 		CHAR					szPassKey[MAX_ACCOUNT + 1];	//通行证
-		UINT					uVersion;					//客户端版本
+
+		//fields for internal communication
+		UINT					uVersion;
+		WorkerID_t				m_nWorkerID;
 	};
 
-	class CLAskLoginFactory : public PacketFactory
+	class CSAskLoginFactory : public PacketFactory
 	{
 	public:
 		Packet* CreatePacket() { return new CSAskLogin(); }

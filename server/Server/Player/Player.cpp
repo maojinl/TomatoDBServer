@@ -259,12 +259,7 @@ __ENTER_FUNCTION
 
 				_MY_TRY
 				{
-					//修正m_KickTime信息，m_KickTime信息中的值为判断是否需要踢掉
-					//客户端的依据
-					if (packetID != PACKET_GC_CONNECT)//在玩家发送连接请求消息包时不重设心跳时间
-					{
-						ResetKick( ) ;
-					}
+					ResetKick( ) ;
 
 					UINT uret ;
 					_MY_TRY

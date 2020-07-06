@@ -1,20 +1,16 @@
-
-#ifndef __SCENEPLAYERMANAGER_H__
-#define __SCENEPLAYERMANAGER_H__
-
+#ifndef __WORKERPLAYERMANAGER_H__
+#define __WORKERPLAYERMANAGER_H__
 
 #include "Type.h"
 #include "PlayerManager.h"
 
-
-
 //场景中的玩家群管理模块
 //
-class ScenePlayerManager : public PlayerManager
+class WorkerPlayerManager : public PlayerManager
 {
 public :
-	ScenePlayerManager( ) ;
-	~ScenePlayerManager( ) ;
+	WorkerPlayerManager( ) ;
+	~WorkerPlayerManager( ) ;
 
 	//网络侦测接口
 	BOOL				Select( ) ;
@@ -34,9 +30,9 @@ public :
 	//通用接口
 
 	//设置当前场景ID
-	VOID				SetSceneID(WorkerID_t SceneID ){ m_SceneID = SceneID ; } ;
+	VOID				SetWorkerID(WorkerID_t WorkerID ){ m_WorkerID = WorkerID ; } ;
 	//读取场景ID
-	WorkerID_t			GetSceneID( ){ return m_SceneID ; } ;
+	WorkerID_t			GetWorkerID( ){ return m_WorkerID ; } ;
 
 	//增加一个玩家
 	BOOL				AddPlayer( Player* pPlayer ) ;
@@ -77,16 +73,9 @@ private :
 	//网络数据
 	//
 
-	WorkerID_t	m_SceneID ;
+	WorkerID_t	m_WorkerID ;
 
 	MyLock		m_Lock ;
-
-//
-/////////////////////////////////////////////////////////////////////////////////
-public :
-
-
-
 };
 
 

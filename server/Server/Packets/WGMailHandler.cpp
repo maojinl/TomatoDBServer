@@ -16,7 +16,7 @@
 #include "ServerManager.h"
 #include "GamePlayer.h"
 #include "PlayerPool.h"
-#include "Scene.h"
+#include "Worker.h"
 #include "Obj_Human.h"
 #include "WorkerManager.h"
 

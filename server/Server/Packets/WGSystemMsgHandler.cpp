@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "WGSystemMsg.h"
 #include "WorkerManager.h"
-#include "Scene.h"
+#include "Worker.h"
 #include "GCSystemMsg.h"
 #include "GWSystemMsg.h"
 
@@ -28,7 +28,7 @@ __ENTER_FUNCTION
 			pMsg->SetContexSize(nContexSize);
 			pMsg->SetContex(pPacket->GetContex());
 
-			g_pWorkerManager->BroadCast_Scene(pMsg);
+			g_pWorkerManager->BroadCast_Worker(pMsg);
 		}
 		break;
 	}

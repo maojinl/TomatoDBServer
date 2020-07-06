@@ -18,7 +18,7 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
     Obj_Human* pHuman = pGamePlayer->GetHuman();
 	Assert( pGamePlayer ) ;
 
-	if( pGamePlayer->GetPlayerStatus()==PS_SERVER_WAITING_FOR_ENTER )
+	if( pGamePlayer->GetPlayerStatus() == PS_SERVER_WAITING_FOR_ENTER )
 	{
 		//Current session is just connected
 		//the code should be executed by IncomingPlayerManager
@@ -26,57 +26,51 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		//check thread
 		Assert( MyGetCurrentThreadID()==g_pIncomingPlayerManager->m_ThreadID ) ;
 
-		WorkerID_t SceneID = 1;
-		Scene* pScene = g_pWorkerManager->GetScene( SceneID ) ;
+		WorkerID_t WorkerID = 1;
+		Worker* pWorker = g_pWorkerManager->GetWorker(WorkerID) ;
 
 		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
 
-		//Illegal worker
-		if( SceneID==INVALID_ID || pScene==NULL )
+		CHAR	Account[MAX_ACCOUNT + 1];
+		strncpy(Account, pPacket->GetAccount(), MAX_ACCOUNT + 1);
+		Account[MAX_ACCOUNT] = '\0';
+
+		CHAR    PassKey[MAX_ACCOUNT + 1];
+		INT     iAccountLen = strlen(Account);
+		memset(PassKey, 0, sizeof(CHAR) * (MAX_ACCOUNT + 1));
+		strncpy(PassKey, pPacket->GetPassKey(), MAX_ACCOUNT + 1);
+		ENCRYPT(PassKey, iAccountLen, USER_ACCOUNT_KEY, 0);
+
+		/* compare password and account
+		if (strcmp(Account, PassKey) != 0)
 		{
-			pScene = g_pWorkerManager->GetScene( SceneID ) ;
-			if( pScene==NULL )
+			return PACKET_EXE_ERROR;
+		}
+		*/
+
+		//Illegal worker
+		if( WorkerID==INVALID_ID || pWorker==NULL )
+		{
+			pWorker = g_pWorkerManager->GetWorker(0) ;
+			if(pWorker ==NULL )
 			{
-				SceneID = g_pWorkerManager->GetSpecialSceneIDFromCurServer( ) ;
-				pScene = g_pWorkerManager->GetScene( SceneID ) ;
-				if( pScene==NULL )
-				{
-					GCEnterScene Msg ;
-					Msg.setReturn( 2 ) ;
-					Msg.setSceneID( SceneID ) ; 
-
-					pGamePlayer->SendPacket( &Msg ) ;
-
-					return PACKET_EXE_CONTINUE ;
-				}
+				SCRetLogin Msg ;
+				Msg.SetResult(LOGINR_STOP_SERVICE);
+				pGamePlayer->SendPacket(&Msg);
+				return PACKET_EXE_CONTINUE;
 			}
 		}
 
 		//当前玩家没有权限进入此场景（等级不够，场景没开放，等）
-		INT nRet = pScene->CheckEnter( PlayerID ) ;
+		INT nRet = pWorker->CheckEnter( PlayerID ) ;
 		if( nRet==0 )
 		{
-			GCEnterScene Msg ;
-			Msg.setReturn( 1 ) ;
-			Msg.setSceneID( SceneID ) ;
-			pGamePlayer->SendPacket( &Msg ) ;
-
-			return PACKET_EXE_CONTINUE ;
+			SCRetLogin Msg;
+			Msg.SetResult(LOGINR_STOP_SERVICE);
+			pGamePlayer->SendPacket(&Msg);
+			return PACKET_EXE_CONTINUE;
 		}
 
-		//如果需要加入的场景已经处于饱和状态，则返回加入场景失败消息
-		if( !pScene->IsCanEnter() )
-		{
-			GCEnterScene Msg ;
-			Msg.setReturn( 3 ) ;
-			Msg.setSceneID( SceneID ) ;
-			pGamePlayer->SendPacket( &Msg ) ;
-
-			g_pLog->FastSaveLog( LOG_FILE_1, "ERROR I: CGEnterScene::pScene->IsCanEnter GUID=%x SceneID=%d PID=%d",
-				pGamePlayer->PlayerID(), SceneID, pGamePlayer->PlayerID() ) ;
-
-			return PACKET_EXE_CONTINUE ;
-		}
 
 		//删除接入模块中数据
 		PlayerID_t pid = pGamePlayer->PlayerID() ;
@@ -88,30 +82,22 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		}
 
 		//向目的场景发送转移消息
-		CGEnterScene* pEnter = (CGEnterScene*)(g_pPacketFactoryManager->CreatePacket(PACKET_CG_ENTERSCENE)) ;
-		pEnter->setEnterType( pPacket->getEnterType() ) ;
-		pEnter->setSceneID( SceneID ) ;
-
+		CSAskLogin* pAskLogin = (CSAskLogin*)(g_pPacketFactoryManager->CreatePacket(PACKET_CS_ASKLOGIN));
+		pAskLogin->SetWorkerID(WorkerID);
 		//将玩家状态设置为PS_SERVER_READY_TO_ENTER
-		pGamePlayer->SetPlayerStatus( PS_SERVER_READY_TO_ENTER ) ;
+		pGamePlayer->SetPlayerStatus(PS_SERVER_READY_TO_ENTER);
 
-		pScene->SendPacket( pEnter, PlayerID ) ;
+		pWorker->SendPacket(pAskLogin, PlayerID);
 
 		//**注意**
 		//必须返回PACKET_EXE_BREAK ；
 		return PACKET_EXE_BREAK ;
 	}
 	else if( pGamePlayer->GetPlayerStatus()==PS_SERVER_READY_TO_ENTER )
-	{//场景收到消息，处理添加
-		//当前代码由 pScene线程来执行
-		//收到原场景发送过来的消息，由目的场景执行
-		//功能:
-		//1.添加此玩家到本场景中
-		//2.玩家发送一个消息
-
-		WorkerID_t SceneID = pPacket->getSceneID() ;
-		Scene* pScene = g_pWorkerManager->GetScene( SceneID ) ;
-		if( pScene==NULL )
+	{
+		WorkerID_t workerID = pPacket->GetWorkerID() ;
+		Worker* pWorker = g_pWorkerManager->GetWorker(workerID) ;
+		if(pWorker ==NULL )
 		{
 			Assert(FALSE) ;
 			return PACKET_EXE_ERROR ;
@@ -120,59 +106,43 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
 
 		//检查线程执行资源是否正确
-		Assert( MyGetCurrentThreadID()==pScene->m_ThreadID ) ;
+		Assert(MyGetCurrentThreadID()== pWorker->m_ThreadID);
 
 		//将客户端连接加入目的场景玩家管理器
-		BOOL ret = pScene->GetScenePlayerManager()->AddPlayer( pPlayer ) ;
+		BOOL ret = pWorker->GetWorkerPlayerManager()->AddPlayer(pPlayer);
 		if( !ret )
 		{//如果加入场景失败，由于当前玩家已经从原先的场景里脱离，
 			//所以只能断开此玩家的网络连接
 			SOCKET fd = pGamePlayer->GetSocket()->getSOCKET() ;
-			BOOL boo = pScene->GetScenePlayerManager()->DelPlayerSocket( fd ) ;
-			boo = pGamePlayer->FreeOwn() ;
+			BOOL boo = pWorker->GetWorkerPlayerManager()->DelPlayerSocket(fd);
+			boo = pGamePlayer->FreeOwn();
 
-			g_pLog->FastSaveLog( LOG_FILE_1, "ERROR D: CGEnterScene::AddPlayer GUID=%X SceneID=%d Socket=%d PID:%d",
-                            pGamePlayer->PlayerID(), SceneID, fd,
+			g_pLog->FastSaveLog( LOG_FILE_1, "ERROR D: CSAskLogin::AddPlayer GUID=%X SceneID=%d Socket=%d PID:%d",
+                            pGamePlayer->PlayerID(), workerID, fd,
                             pGamePlayer->PlayerID());
-
 			return PACKET_EXE_ERROR ;
 		}
 
 		// 下一版要改
 		//向客户端发送进入场景成功的消息
-		GCEnterScene Msg0 ;
+		SCRetLogin Msg0 ;
 		
-		Msg0.setReturn( 2 ) ;
-		Msg0.SetPacketRetFlag( 2 );
-		Msg0.setSceneID( SceneID ) ;
+		Msg0.SetResult(LOGIN_RESULT::LOGINR_SUCCESS);
+		Msg0.SetCharName(pGamePlayer->GetHuman()->GetName());
+		Msg0.SetTitleName(pHuman->GetTitle());
+		Msg0.SetLevel(pHuman->GetLevel());
+		pGamePlayer->SendPacket( &Msg0 );
 
-		Msg0.setCharName(pGamePlayer->GetHuman()->GetName());
-		Msg0.setSceneID(SceneID);
-		Msg0.setTitleName(pHuman->GetTitle());
-		Msg0.setLevel(pHuman->GetLevel());
-		pGamePlayer->SendPacket( &Msg0 ) ;
-
-		//成功进入场景，将玩家状态设置为：PS_SERVER_NORMAL
+		//set user session to PS_SERVER_NORMAL
 		pGamePlayer->SetPlayerStatus( PS_SERVER_NORMAL ) ;
 
 		g_pLog->FastSaveLog( LOG_FILE_1, "CGEnterScene D GUID=%X To:%d ...OK PID=%d",
-			pGamePlayer->m_HumanGUID, SceneID,  pGamePlayer->PlayerID() ) ;
-	}
-	else
-	{
-		WorkerID_t SceneID = pPacket->getSceneID() ;
-		Scene* pScene = g_pWorkerManager->GetScene( SceneID ) ;
-		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
-		WorkerID_t DestSceneID = pPacket->getSceneID() ;
-		g_pLog->FastSaveLog( LOG_FILE_1, "CGEnterScene S PID:%d GUID=%X From:%d To:%d ...StatusError:%d ",
-			pGamePlayer->PlayerID(), pGamePlayer->m_HumanGUID, pScene->SceneID(), DestSceneID, pGamePlayer->GetPlayerStatus() ) ;
-		Assert(FALSE) ;
+			pGamePlayer->m_HumanGUID, workerID,  pGamePlayer->PlayerID() ) ;
 	}
 
-
-	return PACKET_EXE_CONTINUE ;
+	return PACKET_EXE_CONTINUE;
 
 	__LEAVE_FUNCTION
 
-		return PACKET_EXE_ERROR ;
+	return PACKET_EXE_ERROR;
 }

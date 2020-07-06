@@ -12,12 +12,12 @@ public:
 public:
 	virtual	BOOL	 HeartBeat(UINT uTime=0 );
 
-	VOID			 SetSceneID(WorkerID_t SceneID);
+	VOID			 SetWorkerID(WorkerID_t SceneID);
 	//场景值也可能为invalid_id,这个时候RecyclePlayerManager是在 IncommingPlayerManager 中
-	WorkerID_t		 GetSceneID();
+	WorkerID_t		 GetWorkerID();
 
 private:
-	WorkerID_t		 mSceneID;
+	WorkerID_t		 m_WorkerID;
 };
 
 

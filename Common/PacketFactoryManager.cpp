@@ -11,8 +11,8 @@
 
 #if defined(_TMT_CLIENT) && defined(_TMT_SERVER)
 #include "SSConnect.h"
-#include "CGEnterScene.h"
-#include "GCEnterScene.h"
+#include "CSAskLogin.h"
+#include "SCRetLogin.h"
 #endif
 
 using namespace Packets;
@@ -65,8 +65,8 @@ __ENTER_FUNCTION
 
 #if defined(_TMT_CLIENT) && defined(_TMT_SERVER)
 //CG && GC
-	AddFactory( new CGEnterSceneFactory()) ;
-	AddFactory( new GCEnterSceneFactory()) ;
+	AddFactory( new CSAskLoginFactory()) ;
+	AddFactory( new SCRetLoginFactory()) ;
 #endif
 
 #if defined(_TMT_WORLD) && defined(_TMT_SERVER)

@@ -10,7 +10,7 @@ RecyclePlayerManager::RecyclePlayerManager()
 {
 	__ENTER_FUNCTION
 	
-		mSceneID = INVALID_ID;
+		m_WorkerID = INVALID_ID;
 
 	__LEAVE_FUNCTION
 }
@@ -53,12 +53,12 @@ BOOL	RecyclePlayerManager::HeartBeat(UINT uTime)
 	return FALSE;
 }
 
-VOID	RecyclePlayerManager::SetSceneID(WorkerID_t SceneID)
+VOID	RecyclePlayerManager::SetWorkerID(WorkerID_t workerID)
 {
-	mSceneID  = SceneID;
+	m_WorkerID  = workerID;
 }
 
-WorkerID_t	RecyclePlayerManager::GetSceneID()
+WorkerID_t	RecyclePlayerManager::GetWorkerID()
 {
-	return mSceneID;
+	return m_WorkerID;
 }

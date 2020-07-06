@@ -24,7 +24,7 @@ enum SCENE_PERFOR_TYPE
 
 	SPT_HEARTBEAT_CLOSELOGIC ,
 	SPT_HEARTBEAT_SCENETIMER ,
-	SPT_HEARTBEAT_SCENEPLAYERMANAGER ,
+	SPT_HEARTBEAT_WORKERPLAYERMANAGER ,
 	SPT_HEARTBEAT_HUMANMANAGER ,
 	SPT_HEARTBEAT_MONSTERMANAGER ,
 	SPT_HEARTBEAT_PETMANAGER ,
@@ -40,12 +40,12 @@ enum SCENE_PERFOR_TYPE
 	SPT_NUMBER ,
 };
 
-struct SCENE_PERFOR
+struct WORKER_PERFOR
 {
-	UINT			m_aPerfor[SPT_NUMBER] ;	//各个位置的响应值
-	WorkerID_t		m_WorkerID ;				//监控的场景号
+	UINT			m_aPerfor[SPT_NUMBER];
+	WorkerID_t		m_WorkerID;
 
-	SCENE_PERFOR( )
+	WORKER_PERFOR( )
 	{
 		m_WorkerID = INVALID_ID ;
 		for( INT i=0; i<SPT_NUMBER; i++ )
@@ -75,7 +75,7 @@ public :
 
 public :
 	INT				m_PerforCount ;
-	SCENE_PERFOR	m_aPerforData[MAX_PERFOR_SIZE] ;
+	WORKER_PERFOR	m_aPerforData[MAX_PERFOR_SIZE] ;
 	INT				m_aHash[MAX_WORKER] ;
 
 	CMyTimer		m_OperateTime ;

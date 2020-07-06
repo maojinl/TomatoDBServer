@@ -1,8 +1,8 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
+#ifndef __WORKER_H__
+#define __WORKER_H__
 
 #include "Type.h"
-#include "ScenePlayerManager.h"
+#include "WorkerPlayerManager.h"
 #include "Performance.h"
 #include "Rand.h"
 
@@ -26,14 +26,14 @@ enum WORKER_TYPE {
 	WORKER_TYPE_NUMBERS
 };
 
-class Scene
+class Worker
 {
 public :
 /////////////////////////////////////////////////////////////////////////////////
 //最底层资源及操作处理
 /////////////////////////////////////////////////////////////////////////////////
-	Scene( WorkerID_t SceneID ) ;
-	~Scene( ) ;
+	Worker( WorkerID_t SceneID ) ;
+	~Worker( ) ;
 
 	//初始化
 	BOOL					Init( ) ;
@@ -69,8 +69,8 @@ public :
     BOOL SendPacket(Packet* pPacket, PlayerID_t PlayerID,
                     UINT Flag = PF_NONE);
 
-	ScenePlayerManager*		GetScenePlayerManager(){ return m_pWorkerPlayerManager ; } ;
-	ScenePlayerManager*		GetPlayerManager(){ return m_pWorkerPlayerManager ; } ;
+	WorkerPlayerManager*		GetWorkerPlayerManager(){ return m_pWorkerPlayerManager ; } ;
+	WorkerPlayerManager*		GetPlayerManager(){ return m_pWorkerPlayerManager ; } ;
 	
 	RecyclePlayerManager*	GetRecyclePlayerManager(){ return m_pRecyclePlayerManager; };
 
@@ -79,33 +79,33 @@ public :
 	INT				CheckEnter( PlayerID_t PlayerID ) ;
 
 	//读取当前场景状态
-    INT GetSceneStatus() { return m_nSceneStatus; }
+    INT GetWorkerStatus() { return m_nWorkerStatus; }
     //设置当前场景状态
-    VOID SetSceneStatus(INT status) { m_nSceneStatus = status; }
+    VOID SetWorkerStatus(INT status) { m_nWorkerStatus = status; }
 
     //读取当前场景的场景ID
-    WorkerID_t SceneID() { return m_SceneID; };
+    WorkerID_t WorkerID() { return m_WorkerID; };
 
     //关闭当前场景
-    BOOL CloseScene();
+    BOOL CloseWorker();
 
 		//判断当前场景是否为副本场景 普通游戏场景 城市场景, enum SCENE_TYPE
-    VOID SetSceneType(INT type) { m_SceneType = type; };
-    INT GetSceneType() const { return m_SceneType; };
+    VOID SetWorkerType(INT type) { m_WorkerType = type; };
+    INT GetWorkerType() const { return m_WorkerType; };
 
-	BOOL BroadCast_Scene(Packet* pPacket);
+	BOOL BroadCast_Worker(Packet* pPacket);
 
 protected :
     //当前场景的状态，见SCENE_STATUS
-    INT m_nSceneStatus;
+    INT m_nWorkerStatus;
 
 	//当前场景的用户群管理模块指针
-	ScenePlayerManager*		m_pWorkerPlayerManager ;
+	WorkerPlayerManager*		m_pWorkerPlayerManager ;
 	//当前场景等待回收的用户指针
 	RecyclePlayerManager*	m_pRecyclePlayerManager;
 
         //当前场景的场景ID
-    WorkerID_t				m_SceneID;
+    WorkerID_t				m_WorkerID;
 
 
 private :
@@ -119,8 +119,8 @@ public:
 	// 本场景的共用变量
 	Packet					*m_pPacket_SysMsg; //系统广播;
 	TID						m_ThreadID ;//场景的线程号
-    INT m_SceneType;
-    SCENE_PERFOR m_Perfor;  //死锁检测
+    INT m_WorkerType;
+    WORKER_PERFOR m_Perfor;  //死锁检测
 };
 
 #endif

@@ -168,14 +168,14 @@ set(SMU
 source_group("SMU" FILES ${SMU})
 
 set(Worker
-    "Worker/Scene.cpp"
-    "Worker/Scene.h"
+    "Worker/Worker.cpp"
+    "Worker/Worker.h"
     "Worker/WorkerManager.cpp"
     "Worker/WorkerManager.h"
-    "Worker/ScenePlayerManager.cpp"
-    "Worker/ScenePlayerManager.h"
-    "Worker/SceneThread.cpp"
-    "Worker/SceneThread.h"
+    "Worker/WorkerPlayerManager.cpp"
+    "Worker/WorkerPlayerManager.h"
+    "Worker/WorkerThread.cpp"
+    "Worker/WorkerThread.h"
 )
 source_group("Worker" FILES ${Worker})
 

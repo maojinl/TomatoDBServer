@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "ScenePlayerManager.h"
+#include "WorkerPlayerManager.h"
 #include "Log.h"
 #include "GamePlayer.h"
 #include "PlayerPool.h"
@@ -8,7 +8,7 @@
 #include "ServerManager.h"
 #include "PacketFactoryManager.h"
 
-ScenePlayerManager::ScenePlayerManager( )
+WorkerPlayerManager::WorkerPlayerManager( )
 {
 __ENTER_FUNCTION
 
@@ -26,19 +26,19 @@ __ENTER_FUNCTION
 
 	m_nFDSize = 0 ;
 
-	m_SceneID = INVALID_ID ;
+	m_WorkerID = INVALID_ID ;
 
 __LEAVE_FUNCTION
 }
 
-ScenePlayerManager::~ScenePlayerManager( )
+WorkerPlayerManager::~WorkerPlayerManager( )
 {
 __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 }
 
-BOOL ScenePlayerManager::Select( )
+BOOL WorkerPlayerManager::Select( )
 {
 __ENTER_FUNCTION
 
@@ -82,7 +82,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::ProcessInputs( )
+BOOL WorkerPlayerManager::ProcessInputs( )
 {
 __ENTER_FUNCTION
 
@@ -158,7 +158,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::ProcessOutputs( )
+BOOL WorkerPlayerManager::ProcessOutputs( )
 {
 __ENTER_FUNCTION
 
@@ -227,7 +227,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::ProcessExceptions( )
+BOOL WorkerPlayerManager::ProcessExceptions( )
 {
 __ENTER_FUNCTION
 
@@ -269,7 +269,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::ProcessCommands( )
+BOOL WorkerPlayerManager::ProcessCommands( )
 {
 __ENTER_FUNCTION
 
@@ -336,7 +336,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::RemovePlayer( Player* pPlayer, char* szReason, BOOL bReal )
+BOOL WorkerPlayerManager::RemovePlayer( Player* pPlayer, char* szReason, BOOL bReal )
 {
 __ENTER_FUNCTION
 
@@ -351,16 +351,16 @@ __ENTER_FUNCTION
 		DelPlayerSocket( fd ) ;
 		pPlayer->Disconnect( ) ;
 
-		g_pLog->FastSaveLog( LOG_FILE_1, "ScenePlayerManager::RemovePlayer Disconnect(SOCKET=%d)...OK", 
+		g_pLog->FastSaveLog( LOG_FILE_1, "WorkerPlayerManager::RemovePlayer Disconnect(SOCKET=%d)...OK", 
 			fd ) ;
 	}
 
 	//第二步：清除场景中的相关数据
-	Scene* pScene;
+	Worker* pWorker;
 	_MY_TRY
 	{
-		pScene = g_pWorkerManager->GetScene( GetSceneID() ) ;
-		if( pScene )
+		pWorker = g_pWorkerManager->GetWorker( GetWorkerID() ) ;
+		if( pWorker )
 		{
 			GamePlayer* pGamePlayer = (GamePlayer*)pPlayer ;
 			Obj_Human *pHuman = pGamePlayer->GetHuman() ;
@@ -390,7 +390,7 @@ __ENTER_FUNCTION
 		((GamePlayer*)pPlayer)->FreeOwn() ;
 	}
 
-	g_pLog->FastSaveLog( LOG_FILE_1, "ScenePlayerManager::Real RemovePlayer(GUID=%X)...OK", 
+	g_pLog->FastSaveLog( LOG_FILE_1, "WorkerPlayerManager::Real RemovePlayer(GUID=%X)...OK", 
 		guid ) ;
 
 	return TRUE ;
@@ -400,7 +400,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::AddPlayer( Player* pPlayer )
+BOOL WorkerPlayerManager::AddPlayer( Player* pPlayer )
 {
 __ENTER_FUNCTION
 
@@ -427,7 +427,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::AddPlayerSocket( SOCKET fd )
+BOOL WorkerPlayerManager::AddPlayerSocket( SOCKET fd )
 {
 __ENTER_FUNCTION
 
@@ -454,7 +454,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::DelPlayer( PlayerID_t pid )
+BOOL WorkerPlayerManager::DelPlayer( PlayerID_t pid )
 {
 __ENTER_FUNCTION
 
@@ -473,31 +473,31 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::DelPlayerSocket( SOCKET fd )
+BOOL WorkerPlayerManager::DelPlayerSocket( SOCKET fd )
 {
 __ENTER_FUNCTION
 
 	if( m_MinFD==INVALID_SOCKET )
 	{
-		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR ScenePlayerManager::DelPlayerSocket m_MinFD (SOCKET=%d)", 
+		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR WorkerPlayerManager::DelPlayerSocket m_MinFD (SOCKET=%d)", 
 			fd ) ;
 		return FALSE ;
 	}
 	if( m_MaxFD==INVALID_SOCKET )
 	{
-		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR ScenePlayerManager::DelPlayerSocket m_MaxFD (SOCKET=%d)", 
+		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR WorkerPlayerManager::DelPlayerSocket m_MaxFD (SOCKET=%d)", 
 			fd ) ;
 		return FALSE ;
 	}
 	if( fd == INVALID_SOCKET )
 	{
-		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR ScenePlayerManager::DelPlayerSocket fd (SOCKET=%d)", 
+		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR WorkerPlayerManager::DelPlayerSocket fd (SOCKET=%d)", 
 			fd ) ;
 		return FALSE ;
 	}
 	if( !FD_ISSET(fd,&m_ReadFDs[SELECT_BAK]) )
 	{
-		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR ScenePlayerManager::DelPlayerSocket(SOCKET=%d)", 
+		g_pLog->FastSaveLog( LOG_FILE_1, "ERROR WorkerPlayerManager::DelPlayerSocket(SOCKET=%d)", 
 			fd ) ;
 		return FALSE ;
 	}
@@ -595,7 +595,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL ScenePlayerManager::HeartBeat( UINT uTime )
+BOOL WorkerPlayerManager::HeartBeat( UINT uTime )
 {
 __ENTER_FUNCTION
 
@@ -632,7 +632,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-VOID ScenePlayerManager::RemoveAllPlayer( )
+VOID WorkerPlayerManager::RemoveAllPlayer( )
 {
 __ENTER_FUNCTION
 

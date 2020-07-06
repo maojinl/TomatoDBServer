@@ -2,7 +2,7 @@
 
 #include "ThreadManager.h"
 #include "Ini.h"
-#include "SceneThread.h"
+#include "WorkerThread.h"
 #include "WorkerManager.h"
 #include "Config.h"
 
@@ -35,7 +35,7 @@ __ENTER_FUNCTION
 __LEAVE_FUNCTION
 }
 
-BOOL ThreadManager::Init( UINT MaxSceneCount )
+BOOL ThreadManager::Init( UINT MaxWorkerCount )
 {
 __ENTER_FUNCTION
 
@@ -43,7 +43,7 @@ __ENTER_FUNCTION
 
 	//根据配置文件读取需要使用的场景，为每个场景分配一个线程；
 	//读取场景数量
-	UINT count = MaxSceneCount ;
+	UINT count = MaxWorkerCount ;
 
 	Assert( count<=MAX_WORKER ) ;
 
@@ -52,8 +52,8 @@ __ENTER_FUNCTION
 	for( i=0; i<count; i++ )
 	{
 		//读取场景“i”
-		WorkerID_t SceneID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
-		Assert( SceneID<MAX_WORKER ) ;
+		WorkerID_t WorkerID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
+		Assert( WorkerID<MAX_WORKER ) ;
 
 		UINT ServerID = g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID ;
 		if( ServerID != g_Config.m_ConfigInfo.m_ServerID )
@@ -67,13 +67,13 @@ __ENTER_FUNCTION
 		}
 	}
 
-	SceneThread* pSceneThread=NULL ;
+	WorkerThread* pWorkerThread=NULL ;
 	for( i=0; i<=uMaxThreadCount; i++ )
 	{
-		pSceneThread = new SceneThread ;
-		Assert( pSceneThread ) ;
+		pWorkerThread = new WorkerThread ;
+		Assert( pWorkerThread ) ;
 
-		ret = m_pThreadPool->AddThread( pSceneThread ) ;
+		ret = m_pThreadPool->AddThread( pWorkerThread ) ;
 		Assert( ret ) ;
 
 		m_nThreads ++ ;
@@ -83,8 +83,8 @@ __ENTER_FUNCTION
 	for( i=0; i<count; i++ )
 	{
 		//读取场景“i”
-		WorkerID_t SceneID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
-		Assert( SceneID<MAX_WORKER ) ;
+		WorkerID_t WorkerID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
+		Assert( WorkerID<MAX_WORKER ) ;
 
 		UINT ServerID = g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID ;
 		if( ServerID != g_Config.m_ConfigInfo.m_ServerID )
@@ -92,16 +92,16 @@ __ENTER_FUNCTION
 			continue ;
 		}
 
-		SceneThread* pSceneThread = (SceneThread*)(m_pThreadPool->GetThreadByIndex(g_Config.m_WorkerInfo.m_pWorker[i].m_ThreadIndex)) ;
-		if( pSceneThread==NULL )
+		WorkerThread* pWorkerThread = (WorkerThread*)(m_pThreadPool->GetThreadByIndex(g_Config.m_WorkerInfo.m_pWorker[i].m_ThreadIndex)) ;
+		if( pWorkerThread==NULL )
 		{
 			AssertEx(FALSE,"没有创建所需的线程") ;
 		}
 		else
 		{
-			Scene* pScene = g_pWorkerManager->GetScene(SceneID) ;
+			Worker* pWorker = g_pWorkerManager->GetWorker(WorkerID) ;
 
-			pSceneThread->AddScene( pScene ) ;
+			pWorkerThread->AddWorker( pWorker ) ;
 		}
 	}
 

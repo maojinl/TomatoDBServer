@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "Performance.h"
-#include "Scene.h"
+#include "Worker.h"
 #include "WorkerManager.h"
 #include "Log.h"
 #include "TimeManager.h"
@@ -49,8 +49,8 @@ __ENTER_FUNCTION
 
 	for( INT i=0; i<MAX_WORKER; i++ )
 	{
-		Scene* pScene = g_pWorkerManager->GetScene( (WorkerID_t)i ) ;
-		if( pScene==NULL )
+		Worker* pWorker = g_pWorkerManager->GetWorker( (WorkerID_t)i ) ;
+		if(pWorker == NULL)
 			continue ;
 
 		m_aHash[i] = m_PerforCount ;
@@ -103,22 +103,22 @@ __ENTER_FUNCTION
 		return ;
 	}
 
-	SCENE_PERFOR* pPerfor = &m_aPerforData[index] ;
+	WORKER_PERFOR* pPerfor = &m_aPerforData[index] ;
 	
 
-	Scene* pScene = g_pWorkerManager->GetScene( pPerfor->m_WorkerID ) ;
-	if( pScene==NULL )
+	Worker* pWorker = g_pWorkerManager->GetWorker( pPerfor->m_WorkerID ) ;
+	if( pWorker ==NULL )
 	{
 		Assert(FALSE) ;
 		return ;
 	}
 
-	if( pScene->GetSceneStatus()!=WORKER_STATUS_RUNNING )
+	if( pWorker->GetWorkerStatus()!=WORKER_STATUS_RUNNING )
 	{//未激活的场景不需要监控
 		return ;
 	}
 
-	if( memcmp(&pScene->m_Perfor, pPerfor, sizeof(SCENE_PERFOR) )==0 )
+	if( memcmp(&pWorker->m_Perfor, pPerfor, sizeof(WORKER_PERFOR) )==0 )
 	{//场景锁死，异常
 
 		Log::SaveLog( SERVER_ERRORFILE, "SceneID=%d Dead Lock!", pPerfor->m_WorkerID) ;
@@ -131,7 +131,7 @@ __ENTER_FUNCTION
 		return ;
 	}
 
-	memcpy( pPerfor, &pScene->m_Perfor, sizeof(SCENE_PERFOR) ) ;
+	memcpy( pPerfor, &pWorker->m_Perfor, sizeof(WORKER_PERFOR) ) ;
 
 
 __LEAVE_FUNCTION

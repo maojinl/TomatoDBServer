@@ -1,21 +1,19 @@
-
-
-#ifndef __SCENETHREAD_H__
-#define __SCENETHREAD_H__
+#ifndef __WORKERTHREAD_H__
+#define __WORKERTHREAD_H__
 
 #include "Type.h"
 #include "Thread.h"
-#include "Scene.h"
+#include "Worker.h"
 
 #define MAX_WORKER_PER_THREAD 128
 
 //场景线程
 //每个场景由一个独立的线程来驱动执行
-class SceneThread : public Thread
+class WorkerThread : public Thread
 {
 public :
-	SceneThread( ) ;
-	~SceneThread( ) ;
+	WorkerThread( ) ;
+	~WorkerThread( ) ;
 
 	//线程执行主循环
 	virtual VOID	run( ) ;
@@ -29,11 +27,11 @@ public :
 
 	VOID			Quit( ) ;
 
-	BOOL			AddScene( Scene* pScene ) ;
+	BOOL			AddWorker( Worker* pScene ) ;
 
 private :
-	Scene*		m_apScene[MAX_WORKER_PER_THREAD] ;
-	INT			m_nSceneCount ;
+	Worker*		m_apWorker[MAX_WORKER_PER_THREAD] ;
+	INT			m_nWorkerCount ;
 	BOOL		m_Active ;
 
 

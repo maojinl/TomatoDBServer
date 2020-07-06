@@ -44,7 +44,7 @@
 #include "WorldManager.h"
 #include "MachineManager.h"
 #include "GUIDManager.h"
-#include "Scene.h"
+#include "Worker.h"
 #include "GamePlayer.h"
 #include "tinyxml.h"
 #include "Obj_Human.h"

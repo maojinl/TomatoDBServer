@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Scene.h"
+#include "Worker.h"
 #include "Log.h"
 #include "Config.h"
 #include "RecyclePlayerManager.h"
@@ -13,17 +13,17 @@
 #include "Performance.h"
 
 
-Scene::Scene(WorkerID_t SceneID) {
+Worker::Worker(WorkerID_t WorkerID) {
   __ENTER_FUNCTION
-  m_nSceneStatus = WORKER_STATUS_SLEEP;
-  m_SceneID = SceneID;
-  m_pWorkerPlayerManager = new ScenePlayerManager;
+  m_nWorkerStatus = WORKER_STATUS_SLEEP;
+  m_WorkerID = WorkerID;
+  m_pWorkerPlayerManager = new WorkerPlayerManager;
   Assert(m_pWorkerPlayerManager);
-  m_pWorkerPlayerManager->SetSceneID(SceneID);
+  m_pWorkerPlayerManager->SetWorkerID(WorkerID);
 
   m_pRecyclePlayerManager = new RecyclePlayerManager();
   Assert(m_pRecyclePlayerManager);
-  m_pRecyclePlayerManager->SetSceneID(SceneID);
+  m_pRecyclePlayerManager->SetWorkerID(WorkerID);
 
   m_PacketQue = new ASYNC_PACKET[MAX_CACHE_SIZE];
   Assert(m_PacketQue);
@@ -31,15 +31,15 @@ Scene::Scene(WorkerID_t SceneID) {
   m_Head = 0;
   m_Tail = 0;
 
-  m_SceneType = WORKER_TYPE_DB_LOGIC;
-  m_Perfor.m_WorkerID = SceneID;
+  m_WorkerType = WORKER_TYPE_DB_LOGIC;
+  m_Perfor.m_WorkerID = WorkerID;
 
   m_pPacket_SysMsg = new GWSystemMsg;
 
   __LEAVE_FUNCTION
 }
 
-Scene::~Scene() {
+Worker::~Worker() {
   __ENTER_FUNCTION
 
   SAFE_DELETE(m_pPacket_SysMsg);
@@ -51,7 +51,7 @@ Scene::~Scene() {
   __LEAVE_FUNCTION
 }
 
-BOOL Scene::Init() {
+BOOL Worker::Init() {
   __ENTER_FUNCTION
 
   __LEAVE_FUNCTION
@@ -59,7 +59,7 @@ BOOL Scene::Init() {
   return FALSE;
 }
 
-BOOL Scene::Tick() {
+BOOL Worker::Tick() {
   __ENTER_FUNCTION
 
   BOOL ret = FALSE;
@@ -127,10 +127,10 @@ BOOL Scene::Tick() {
   return FALSE;
 }
 
-BOOL Scene::StatusLogic() {
+BOOL Worker::StatusLogic() {
   __ENTER_FUNCTION
 
-  switch (m_nSceneStatus) {
+  switch (m_nWorkerStatus) {
     case WORKER_STATUS_SLEEP: {
       return FALSE;
     } break;
@@ -158,7 +158,7 @@ BOOL Scene::StatusLogic() {
   return FALSE;
 }
 
-BOOL Scene::HeartBeat() {
+BOOL Worker::HeartBeat() {
   __ENTER_FUNCTION
 
   BOOL ret;
@@ -171,7 +171,7 @@ BOOL Scene::HeartBeat() {
     Assert(ret);
   }
   _MY_CATCH { SaveCodeLog(); }
-  m_Perfor.m_aPerfor[SPT_HEARTBEAT_SCENEPLAYERMANAGER]++;
+  m_Perfor.m_aPerfor[SPT_HEARTBEAT_WORKERPLAYERMANAGER]++;
 
   //用户回收处理
   _MY_TRY {
@@ -188,7 +188,7 @@ BOOL Scene::HeartBeat() {
   return FALSE;
 }
 
-BOOL Scene::ProcessCacheCommands() {
+BOOL Worker::ProcessCacheCommands() {
   __ENTER_FUNCTION
 
   BOOL ret = FALSE;
@@ -237,7 +237,7 @@ BOOL Scene::ProcessCacheCommands() {
           uret = PACKET_EXE_ERROR;
         }
         if (uret == PACKET_EXE_ERROR) {
-          GetScenePlayerManager()->RemovePlayer(pPlayer, "ERROR in executing package.", TRUE);
+          GetWorkerPlayerManager()->RemovePlayer(pPlayer, "ERROR in executing package.", TRUE);
           MovePacket(PlayerID);
         } else if (uret == PACKET_EXE_BREAK) {
         } else if (uret == PACKET_EXE_CONTINUE) {
@@ -246,7 +246,7 @@ BOOL Scene::ProcessCacheCommands() {
         } else if (uret == PACKET_EXE_NOTREMOVE_ERROR) {
           bNeedRemove = FALSE;
 
-          GetScenePlayerManager()->RemovePlayer(pPlayer,
+          GetWorkerPlayerManager()->RemovePlayer(pPlayer,
                                                 "Executed and disconnected.", TRUE);
           MovePacket(PlayerID);
         }
@@ -264,7 +264,7 @@ BOOL Scene::ProcessCacheCommands() {
   return FALSE;
 }
 
-BOOL Scene::ResizeCache() {
+BOOL Worker::ResizeCache() {
   __ENTER_FUNCTION
 
   ASYNC_PACKET* pNew = new ASYNC_PACKET[m_QueSize + MAX_CACHE_SIZE];
@@ -292,7 +292,7 @@ BOOL Scene::ResizeCache() {
   return FALSE;
 }
 
-BOOL Scene::SendPacket(Packet* pPacket, PlayerID_t PlayerID, UINT Flag) {
+BOOL Worker::SendPacket(Packet* pPacket, PlayerID_t PlayerID, UINT Flag) {
   __ENTER_FUNCTION
 
   m_pWorkerPlayerManager->Lock();
@@ -318,7 +318,7 @@ BOOL Scene::SendPacket(Packet* pPacket, PlayerID_t PlayerID, UINT Flag) {
   return FALSE;
 }
 
-BOOL Scene::MovePacket(PlayerID_t PlayerID) {
+BOOL Worker::MovePacket(PlayerID_t PlayerID) {
   __ENTER_FUNCTION
 
   m_pWorkerPlayerManager->Lock();
@@ -345,7 +345,7 @@ BOOL Scene::MovePacket(PlayerID_t PlayerID) {
   return FALSE;
 }
 
-BOOL Scene::RecvPacket(Packet*& pPacket, PlayerID_t& PlayerID, UINT& Flag) {
+BOOL Worker::RecvPacket(Packet*& pPacket, PlayerID_t& PlayerID, UINT& Flag) {
   __ENTER_FUNCTION
 
   m_pWorkerPlayerManager->Lock();
@@ -375,7 +375,7 @@ BOOL Scene::RecvPacket(Packet*& pPacket, PlayerID_t& PlayerID, UINT& Flag) {
   return FALSE;
 }
 
-BOOL Scene::CloseScene() {
+BOOL Worker::CloseWorker() {
   __ENTER_FUNCTION
 
   return TRUE;
@@ -386,7 +386,7 @@ BOOL Scene::CloseScene() {
 }
 
 
-BOOL Scene::IsCanEnter( )
+BOOL Worker::IsCanEnter( )
 {
 __ENTER_FUNCTION
 
@@ -403,7 +403,7 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-BOOL Scene::IsFull( )
+BOOL Worker::IsFull( )
 {
 __ENTER_FUNCTION
 
@@ -420,7 +420,7 @@ __LEAVE_FUNCTION
 	return TRUE ;
 }
 
-INT Scene::CheckEnter( PlayerID_t PlayerID )
+INT Worker::CheckEnter( PlayerID_t PlayerID )
 {
 __ENTER_FUNCTION
 	return 1 ;
@@ -428,7 +428,7 @@ __LEAVE_FUNCTION
 	return 0 ;
 }
 
-BOOL Scene::BroadCast_Scene(Packet* pPacket) {
+BOOL Worker::BroadCast_Worker(Packet* pPacket) {
   __ENTER_FUNCTION
 
   if (m_pWorkerPlayerManager != nullptr) {

@@ -24,9 +24,9 @@ UINT GWAskMailHandler::Execute(GWAskMail* pPacket, Player* pPlayer) {
   return PACKET_EXE_ERROR;
 }
 
-#include "GCEnterScene.h"
+#include "SCRetLogin.h"
 
-UINT GCEnterSceneHandler::Execute(GCEnterScene* pPacket, Player* pPlayer) {
+UINT SCRetLoginHandler::Execute(SCRetLogin* pPacket, Player* pPlayer) {
   __ENTER_FUNCTION
 
   return PACKET_EXE_CONTINUE;
