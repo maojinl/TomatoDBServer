@@ -513,7 +513,7 @@ __ENTER_FUNCTION
 		if ( packetID > PACKET_MAX)//PACKET_LC_MAXCOUNT)
 		{
 			//w = m_pSocketOutputStream->Write_ex( PACK_COMPART , PACK_COMPART_SIZE ) ;
-			g_pLog->FastSaveLog( LOG_FILE_1, "Mao ERROR Packid is %d%!! " ,packetID) ;
+			g_pLog->FastSaveLog( LOG_FILE_1, "ERROR Packid is %d%!! " ,packetID) ;
 			return TRUE;
 		}
 

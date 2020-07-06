@@ -435,7 +435,7 @@ __ENTER_FUNCTION
 		//初始化基本玩家信息
 		client->Init( ) ;
 		//设置当前客户端连接的状态
-		client->SetPlayerStatus( PS_SERVER_CONNECT ) ;
+		client->SetPlayerStatus(PS_SERVER_WAITING_FOR_ENTER) ;
 
 		iStep = 80 ;
 		_MY_TRY

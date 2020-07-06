@@ -1,4 +1,3 @@
-
 #ifndef __GAMEDEFINE_H__
 #define __GAMEDEFINE_H__
 
@@ -56,7 +55,7 @@
 #define DB_RECEIVE_ITEMCOUNT	(10)
 
 
-#define MAX_WORKER 1024
+#define MAX_WORKER 128
 #define MAX_DATABASE_SIZE 1024
 
 //数据库名称长度
