@@ -364,7 +364,10 @@ __ENTER_FUNCTION
 		{
 			GamePlayer* pGamePlayer = (GamePlayer*)pPlayer ;
 			Obj_Human *pHuman = pGamePlayer->GetHuman() ;
-			
+			if (pHuman != nullptr)
+			{
+				pWorker->UserLeaveWorker(pHuman);
+			}
 		}
 	}
 	_MY_CATCH
@@ -405,7 +408,7 @@ BOOL WorkerPlayerManager::AddPlayer( Player* pPlayer )
 __ENTER_FUNCTION
 
 	if( m_nFDSize>=FD_SETSIZE )
-	{//已经超出能够检测的网络句柄最大数；
+	{
 		return FALSE ;
 	}
 
@@ -415,7 +418,6 @@ __ENTER_FUNCTION
 		Assert( FALSE ) ;
 		return FALSE ;
 	}
-
 
 	SOCKET fd = pPlayer->GetSocket()->getSOCKET() ;
 	AddPlayerSocket( fd ) ;
@@ -462,9 +464,6 @@ __ENTER_FUNCTION
 
 //清除PlayerManager中的信息
 	PlayerManager::RemovePlayer( pid ) ;
-
-
-
 
 	return TRUE ;
 

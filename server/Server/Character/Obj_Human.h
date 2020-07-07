@@ -10,15 +10,54 @@
 class Obj_Human;
 class Player;
 
-class Obj_Human
+class User
+{
+private:
+	UINT					m_uLastTime;
+	UINT					m_uNowTime;
+	UINT					m_uCreateTime;
+	Worker*					m_pWorker;
+public:
+	User() {};
+	virtual ~User() {};
+	VOID OnEnterWorker(Worker* pWorker)
+	{
+		__ENTER_FUNCTION
+
+		m_uLastTime = 0;
+		m_uNowTime = 0;
+		m_uCreateTime = 0;
+		m_pWorker = pWorker;
+		__LEAVE_FUNCTION
+	}
+
+	VOID OnLeaveWorker(VOID)
+	{
+		__ENTER_FUNCTION
+
+		m_uLastTime = 0;
+		m_uNowTime = 0;
+		m_uCreateTime = 0;
+		m_pWorker = nullptr;
+
+		__LEAVE_FUNCTION
+	}
+
+	Worker* GetWorker()
+	{
+		return m_pWorker;
+	}
+};
+
+class Obj_Human : public User
 {
 //===========================================
 // Obj公有接口继承
 //===========================================
 public:
-	Obj_Human( );
-	virtual ~Obj_Human( );
-	virtual VOID CleanUp( VOID );
+	Obj_Human();
+	virtual ~Obj_Human();
+	virtual VOID CleanUp(VOID);
 
 protected:
     char m_Name[MAX_CHARACTER_NAME] = "human";
@@ -46,17 +85,6 @@ public:
 	virtual VOID SetLevel(INT nLevel) { m_Level = nLevel; };
     virtual INT GetLevel(VOID) const { return m_Level; };
 
-
-	//增加日志
-	//************************************
-	// 函数名:    AddLogBook
-	// 函数全名:  Obj_Human::AddLogBook
-	// 访问限制:  public 
-	// 返回:      VOID
-	// 函数修饰: 
-	// 参数:      UINT LogID
-	// 参数:      UINT LogTime
-	//************************************
 	VOID					AddLogBook(UINT		LogID,UINT	   LogTime);
 
 
@@ -75,25 +103,21 @@ public:
 	VOID					SetPlayer( Player* pPlayer ){ m_pPlayer = pPlayer; }
 
 protected:
-	BOOL						m_bIsPasswdUnlock;	// 密码解锁标记
+	BOOL						m_bIsPasswdUnlock;	//
 
 private :
 	PlayerID_t			m_PlayerID;
 	Player*				m_pPlayer;
 public:
-	//virtual const UINT			__GetCreateDate( ) const ;//创建时间 human
-	//virtual VOID				__SetCreateDate( const UINT createdate ) ;
+	//virtual const UINT			__GetCreateDate() const;
+	//virtual VOID				__SetCreateDate(const UINT createdate);
 	//virtual BOOL				__IsPasswordSetup();
 	//virtual BOOL				__IsPasswordUnlock();
-	//virtual VOID				__LockPassword(); // 输入二级密码错误，则调用
-	//virtual VOID				__UnlockPassword(); // 输入二级密码正确
+	//virtual VOID				__LockPassword();
+	//virtual VOID				__UnlockPassword();
 	virtual const CHAR* __GetPassword() { return nullptr; };  // human password
-	//virtual BOOL				__SetPassword( const CHAR* password );
-	//virtual VOID				__DelPassword( ); // 删除二级密码
-
+	//virtual BOOL				__SetPassword(const CHAR* password);
+	//virtual VOID				__DelPassword();
 };
-
-
-
 
 #endif

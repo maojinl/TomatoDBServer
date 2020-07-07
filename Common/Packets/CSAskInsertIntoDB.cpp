@@ -5,7 +5,7 @@
 BOOL CSAskCreateDB::Read( SocketInputStream& iStream )
 {
 __ENTER_FUNCTION
-	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * (MAX_DATABASE_NAME + 1));
+	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * (MAX_DATABASE_NAME));
 	return TRUE ;
 
 __LEAVE_FUNCTION

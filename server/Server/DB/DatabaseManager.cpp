@@ -6,7 +6,7 @@
 
 namespace tomatodb
 {
-	DatabaseManager* g_pDatabaseManager = NULL;
+	DatabaseManager* g_pDatabaseManager = nullptr;
 
 	DatabaseManager::DatabaseManager(const Config& config) :
 		m_DbCount(0),

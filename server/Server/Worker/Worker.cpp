@@ -452,6 +452,40 @@ BOOL Worker::BroadCast_Worker(Packet* pPacket) {
 }
 
 
+BOOL Worker::UserEnterWorker(User* pUser)
+{
+	__ENTER_FUNCTION
+
+	if (pUser == NULL)
+	{
+		Assert(pUser != NULL && "Worker::UserEnterWorker");
+		return FALSE;
+	}
+
+    pUser->OnEnterWorker(this);
+
+	return TRUE;
+
+	__LEAVE_FUNCTION
+
+	return FALSE;
+}
+
+VOID Worker::UserLeaveWorker(User* pUser)
+{
+	__ENTER_FUNCTION
+
+	if (pUser == nullptr)
+	{
+		Assert(pUser != nullptr && "Worker::UserLeaveWorker");
+		return;
+	}
+
+    pUser->OnLeaveWorker();
+
+	__LEAVE_FUNCTION
+}
+
 
 
 

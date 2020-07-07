@@ -6,8 +6,6 @@
 BOOL GWSystemMsg::Read( SocketInputStream& iStream ) 
 {
 	__ENTER_FUNCTION
-
-	
 	iStream.Read( (CHAR*)(&m_GUID), sizeof(GUID_t) ) ;
 	iStream.Read( (CHAR*)(&m_MessageType), sizeof(BYTE) ) ;
 	iStream.Read( (CHAR*)(&m_ContexSize), sizeof(BYTE) ) ;

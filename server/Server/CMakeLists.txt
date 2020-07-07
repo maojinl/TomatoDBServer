@@ -93,6 +93,10 @@ set(Common__Packets
     "../../Common/Packets/CSAskCreateDB.h"
     "../../Common/Packets/SCRetCreateDB.cpp"
     "../../Common/Packets/SCRetCreateDB.h"
+    "../../Common/Packets/CSAskInsertIntoDB.cpp"
+    "../../Common/Packets/CSAskInsertIntoDB.h"
+    "../../Common/Packets/SCRetInsertIntoDB.cpp"
+    "../../Common/Packets/SCRetInsertIntoDB.h"
     "../../Common/Packets/GCSystemMsg.cpp"
     "../../Common/Packets/GCSystemMsg.h"
     "../../Common/Packets/GWAskMail.cpp"
@@ -139,6 +143,7 @@ source_group("Main" FILES ${Main})
 set(Packets
     "Packets/CSAskLoginHandler.cpp"
     "Packets/CSAskCreateDBHandler.cpp"
+    "Packets/CSAskInsertIntoDBHandler.cpp"
     "Packets/NullHandler.cpp"
     "Packets/SSConnectHandler.cpp"
     "Packets/WGMailHandler.cpp"

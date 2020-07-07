@@ -54,6 +54,8 @@
 //tomatodb settings
 #define MAX_DATABASE_SIZE 1024
 #define MAX_DATABASE_NAME 64
+#define MAX_DATABASE_KEY 128
+#define MAX_DATABASE_VALUE 1048576
 //end tomatodb settings
 
 //==========================================

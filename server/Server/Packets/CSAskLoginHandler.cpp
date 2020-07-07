@@ -91,7 +91,7 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		//must return PACKET_EXE_BREAK £»
 		return PACKET_EXE_BREAK ;
 	}
-	else if( pGamePlayer->GetPlayerStatus()==PS_SERVER_READY_TO_ENTER )
+	else if(pGamePlayer->GetPlayerStatus() == PS_SERVER_READY_TO_ENTER)
 	{
 		WorkerID_t workerID = pPacket->GetWorkerID() ;
 		Worker* pWorker = g_pWorkerManager->GetWorker(workerID) ;
@@ -104,7 +104,7 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
 
 		//check thread
-		Assert(MyGetCurrentThreadID()== pWorker->m_ThreadID);
+		Assert(MyGetCurrentThreadID() == pWorker->m_ThreadID);
 
 		//add the session into the workers manager
 		BOOL ret = pWorker->GetWorkerPlayerManager()->AddPlayer(pPlayer);
@@ -119,6 +119,7 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
                             pGamePlayer->PlayerID());
 			return PACKET_EXE_ERROR ;
 		}
+		ret = pWorker->UserEnterWorker(pGamePlayer->GetHuman());
 
 		//reply the client with login success
 		SCRetLogin Msg0 ;

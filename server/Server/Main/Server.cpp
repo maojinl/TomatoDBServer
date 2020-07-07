@@ -22,7 +22,7 @@
 #include "ShareMemManager.h"
 #include "Performance.h"
 #include "DaemonThread.h"
-#include "leveldb/db.h"
+#include "DB/DatabaseManager.h"
 #include <gtest\gtest.h>
 
 Server g_Server;
@@ -153,21 +153,13 @@ __ENTER_FUNCTION
 	BOOL ret = FALSE ;
 	Log::SaveLog( SERVER_LOGFILE, "InitServer FD_SETSIZE=%d...", FD_SETSIZE ) ;
 
-	//ret = g_Config.Init( ) ;
-	//Assert( ret ) ;
-
-
 //分配内存
-	ret = NewStaticServer( ) ;
-	Assert( ret ) ;
-
-
+	ret = NewStaticServer();
+	Assert(ret);
 
 //初始化各个模块
 	ret = InitStaticServer( ) ;
-	Assert( ret ) ;
-
-
+	Assert(ret);
 
 __LEAVE_FUNCTION
 
@@ -245,8 +237,8 @@ __ENTER_FUNCTION
 	SAFE_DELETE( g_pLog ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pLog delete...OK" ) ;
 
-
-
+	SAFE_DELETE(tomatodb::g_pDatabaseManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pDatabaseManager delete...OK");
 __LEAVE_FUNCTION
 
 	return TRUE ;
@@ -337,7 +329,9 @@ __ENTER_FUNCTION
 	Assert( g_pClientManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "new ClientManager...OK" ) ;
 
-
+	tomatodb::g_pDatabaseManager = new tomatodb::DatabaseManager(g_Config);
+	Assert(tomatodb::g_pDatabaseManager);
+	Log::SaveLog(SERVER_LOGFILE, "new g_pDatabaseManager...OK");
 	return TRUE ;
 
 __LEAVE_FUNCTION
@@ -492,6 +486,10 @@ __ENTER_FUNCTION
 	Assert( ret ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pDaemonThread->Init()...OK" ) ;
 
+	ret = tomatodb::g_pDatabaseManager->Init();
+	Assert(ret);
+	Log::SaveLog(SERVER_LOGFILE, "g_pDatabaseManager->Init()...OK");
+
 	return TRUE ;
 
 __LEAVE_FUNCTION
@@ -554,3 +552,4 @@ ServerExceptionHandler::ServerExceptionHandler()
 }
 
 ServerExceptionHandler g_ServerExceptionHandler;
+

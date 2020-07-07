@@ -94,7 +94,8 @@ public :
     INT GetWorkerType() const { return m_WorkerType; };
 
 	BOOL BroadCast_Worker(Packet* pPacket);
-
+	BOOL UserEnterWorker(User* pUser);
+	VOID UserLeaveWorker(User* pUser);
 protected :
     //当前场景的状态，见SCENE_STATUS
     INT m_nWorkerStatus;
