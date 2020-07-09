@@ -11,6 +11,7 @@ class SceneTimer;
 class Packet;
 class GamePlayer ;
 class RecyclePlayerManager;
+class User;
 
 enum WORKER_STATUS {
 	WORKER_STATUS_SLEEP = 0,	//sleep status
@@ -89,7 +90,6 @@ public :
     //关闭当前场景
     BOOL CloseWorker();
 
-		//判断当前场景是否为副本场景 普通游戏场景 城市场景, enum SCENE_TYPE
     VOID SetWorkerType(INT type) { m_WorkerType = type; };
     INT GetWorkerType() const { return m_WorkerType; };
 

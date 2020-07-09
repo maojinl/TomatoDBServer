@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "CSAskCreateDB.h"
-#include "SCRetCreateDB.h"
+#include "CSAskDBManipulateData.h"
+#include "SCRetDBManipulateData.h"
 #include "GamePlayer.h"
 #include "IncomingPlayerManager.h"
 #include "PacketFactoryManager.h"
@@ -12,7 +12,7 @@
 
 using namespace tomatodb;
 
-UINT CSAskCreateDBHandler::Execute(CSAskCreateDB* pPacket, Player* pPlayer )
+UINT CSAskDBManipulateDataHandler::Execute(CSAskDBManipulateData* pPacket, Player* pPlayer )
 {
 	__ENTER_FUNCTION
 
@@ -35,20 +35,26 @@ UINT CSAskCreateDBHandler::Execute(CSAskCreateDB* pPacket, Player* pPlayer )
 		CHAR	dbname[MAX_DATABASE_NAME];
 		strncpy(dbname, pPacket->GetDatabaseName(), MAX_DATABASE_NAME);
 		dbname[MAX_DATABASE_NAME] = '\0';
-		BOOL ret = tomatodb::g_pDatabaseManager->CreateDatabase(std::string(dbname));
-		SCRetCreateDB msg0;
-		msg0.SetDatabaseName(dbname);
+
+		BOOL ret = tomatodb::g_pDatabaseManager->InsertIntoDB(
+			std::string(dbname), 
+			std::string(pPacket->GetDatabaseKey()), 
+			std::string(pPacket->GetDatabaseValue()),
+			pWorker->WorkerID()
+		);
+
+		SCRetDBManipulateData msg0;
 		if (ret)
 		{
-			msg0.SetResult(ASKCREATEDBR_SUCCESS);
+			msg0.SetResult(ASK_DB_OPERATION_R_SUCCESS);
 		}
 		else
 		{
-			msg0.SetResult(ASKCREATECHAR_INTERNAL_ERROR);
+			msg0.SetResult(ASK_DB_OPERATION_R_INTERNAL_ERROR);
 		}
 		pGamePlayer->SendPacket(&msg0);
 
-		g_pLog->FastSaveLog(LOG_FILE_1, "SCRetCreateDB D GUID=%X ...OK PID=%d",
+		g_pLog->FastSaveLog(LOG_FILE_1, "CSAskInsertIntoDB D GUID=%X ...OK PID=%d",
 			pGamePlayer->m_HumanGUID, pGamePlayer->PlayerID());
 
 		return PACKET_EXE_CONTINUE;

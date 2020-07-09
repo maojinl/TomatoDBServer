@@ -36,9 +36,21 @@ UINT SCRetLoginHandler::Execute(SCRetLogin* pPacket, Player* pPlayer) {
   return PACKET_EXE_ERROR;
 }
 
-#include "SCRetCreateDB.h"
+#include "SCRetDBDefinition.h"
 
-UINT SCRetCreateDBHandler::Execute(SCRetCreateDB* pPacket, Player* pPlayer) {
+UINT SCRetDBDefinitionHandler::Execute(SCRetDBDefinition* pPacket, Player* pPlayer) {
+	__ENTER_FUNCTION
+
+		return PACKET_EXE_CONTINUE;
+
+	__LEAVE_FUNCTION
+
+		return PACKET_EXE_ERROR;
+}
+
+#include "SCRetDBManipulateData.h"
+
+UINT SCRetDBManipulateDataHandler::Execute(SCRetDBManipulateData* pPacket, Player* pPlayer) {
 	__ENTER_FUNCTION
 
 		return PACKET_EXE_CONTINUE;
