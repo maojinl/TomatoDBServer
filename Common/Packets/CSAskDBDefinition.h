@@ -11,10 +11,10 @@ namespace Packets
 	{
 	public:
 		CSAskDBDefinition() :
-			m_OperationType(DB_OPERATION_TYPE_NONE)
-		{
-			memset(m_DatabaseName, 0, sizeof(CHAR) * (MAX_DATABASE_NAME));
-		};
+			m_OperationType(DB_OPERATION_TYPE_NONE),
+			m_DatabaseNameSize(MAX_DATABASE_NAME + 1)
+		{};
+
 		virtual ~CSAskDBDefinition() {};
 
 		//公用继承接口
@@ -25,8 +25,9 @@ namespace Packets
 		virtual PacketID_t		GetPacketID() const { return PACKET_CS_ASKDBDEFINITION; }
 		virtual UINT			GetPacketSize() const
 		{
-			return	sizeof(DB_OPERATION_TYPE) +
-				sizeof(CHAR) * (MAX_DATABASE_NAME + 1);
+			return	sizeof(DB_OPERATION_TYPE)
+				+ sizeof(BYTE)
+				+ sizeof(CHAR) * m_DatabaseNameSize;
 		}
 
 	public:
@@ -36,6 +37,7 @@ namespace Packets
 		VOID					SetDatabaseName(CHAR* pDBName);
 	private:
 		DB_OPERATION_TYPE		m_OperationType;
+		BYTE					m_DatabaseNameSize;
 		CHAR					m_DatabaseName[MAX_DATABASE_NAME + 1];	//database name
 	};
 

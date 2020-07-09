@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "CSAskDBDefinition.h"
-#include "SCRetDBDefinition.h"
+#include "CSAskDBQuery.h"
+#include "SCRetDBQuery.h"
 #include "GamePlayer.h"
 #include "IncomingPlayerManager.h"
 #include "PacketFactoryManager.h"
@@ -12,7 +12,7 @@
 
 using namespace tomatodb;
 
-UINT CSAskDBDefinitionHandler::Execute(CSAskDBDefinition* pPacket, Player* pPlayer )
+UINT CSAskDBQueryHandler::Execute(CSAskDBQuery* pPacket, Player* pPlayer )
 {
 	__ENTER_FUNCTION
 
@@ -35,15 +35,15 @@ UINT CSAskDBDefinitionHandler::Execute(CSAskDBDefinition* pPacket, Player* pPlay
 		CHAR	dbname[MAX_DATABASE_NAME + 1];
 		strncpy(dbname, pPacket->GetDatabaseName(), MAX_DATABASE_NAME);
 		dbname[MAX_DATABASE_NAME] = '\0';
-		DB_OPERATION_TYPE opType = pPacket->GetOperationType();
+		DB_QUERY_TYPE opType = pPacket->GetQueryType();
 
 		BOOL ret;
 		switch (opType)
 		{
-		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_INSERT:
+		case DB_QUERY_TYPE::DB_QUERY_TYPE_DB_LIST:
 			ret = tomatodb::g_pDatabaseManager->CreateDatabase(std::string(dbname));
 			break;
-		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_DELETE:
+		case DB_QUERY_TYPE::DB_QUERY_TYPE_KEY_VALUE:
 			ret = tomatodb::g_pDatabaseManager->DeleteDatabase(std::string(dbname));
 			break;
 		default:

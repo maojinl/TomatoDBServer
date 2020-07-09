@@ -1,5 +1,5 @@
-#ifndef __CSASKDBMANIPULATEDATA_H__
-#define __CSASKDBMANIPULATEDATA_H__
+#ifndef __CSASKDBMANIPULATE_H__
+#define __CSASKDBMANIPULATE_H__
 
 #include "Type.h"
 #include "Packet.h"
@@ -7,29 +7,33 @@
 
 namespace Packets
 {
-	class CSAskDBManipulateData : public Packet
+	class CSAskDBManipulate : public Packet
 	{
 	public:
-		CSAskDBManipulateData() :
-			m_OperationType(DB_OPERATION_TYPE_NONE)
+		CSAskDBManipulate() :
+			m_OperationType(DB_OPERATION_TYPE_NONE),
+			m_DatabaseNameSize(MAX_DATABASE_NAME + 1),
+			m_KeySize(MAX_DATABASE_KEY + 1),
+			m_ValueSize(MAX_DATABASE_VALUE + 1)
 		{
-			memset(m_DatabaseName, 0, sizeof(CHAR) * (MAX_DATABASE_NAME + 1));
-			memset(m_Key, 0, sizeof(CHAR) * (MAX_DATABASE_KEY + 1));
-			memset(m_Value, 0, sizeof(CHAR) * (MAX_DATABASE_VALUE + 1));
 		};
-		virtual ~CSAskDBManipulateData() {};
+
+		virtual ~CSAskDBManipulate() {};
 
 		virtual BOOL			Read(SocketInputStream& iStream);
 		virtual BOOL			Write(SocketOutputStream& oStream) const;
 		virtual UINT			Execute(Player* pPlayer);
 
-		virtual PacketID_t		GetPacketID() const { return PACKET_CS_ASKDBMANIPULATEDATA; }
+		virtual PacketID_t		GetPacketID() const { return PACKET_CS_ASKDBMANIPULATE; }
 		virtual UINT			GetPacketSize() const
 		{
 			return	sizeof(DB_OPERATION_TYPE)
-				+ sizeof(CHAR) * (MAX_DATABASE_NAME + 1)
-				+ sizeof(CHAR) * (MAX_DATABASE_KEY + 1)
-				+ sizeof(CHAR) * (MAX_DATABASE_VALUE + 1);
+				+ sizeof(BYTE)
+				+ sizeof(CHAR) * m_DatabaseNameSize
+				+ sizeof(BYTE)
+				+ sizeof(CHAR) * m_KeySize
+				+ sizeof(UINT)
+				+ sizeof(CHAR) * m_ValueSize;
 		}
 
 	public:
@@ -43,30 +47,35 @@ namespace Packets
 		VOID					SetDatabaseValue(CHAR* pValue);
 	private:
 		DB_OPERATION_TYPE		m_OperationType;
+		BYTE					m_DatabaseNameSize;
 		CHAR					m_DatabaseName[MAX_DATABASE_NAME + 1];	//database name
+		BYTE					m_KeySize;
 		CHAR					m_Key[MAX_DATABASE_KEY + 1];	//key
+		UINT					m_ValueSize;
 		CHAR					m_Value[MAX_DATABASE_VALUE + 1];	//database name
 	};
 
-	class CSAskDBManipulateDataFactory : public PacketFactory
+	class CSAskDBManipulateFactory : public PacketFactory
 	{
 	public:
-		Packet* CreatePacket() { return new CSAskDBManipulateData(); }
-		PacketID_t	GetPacketID()const { return PACKET_CS_ASKDBMANIPULATEDATA; }
+		Packet* CreatePacket() { return new CSAskDBManipulate(); }
+		PacketID_t	GetPacketID() const { return PACKET_CS_ASKDBMANIPULATE; }
 		UINT		GetPacketMaxSize() const
 		{
 			return	sizeof(DB_OPERATION_TYPE)
+				+ sizeof(BYTE)
 				+ sizeof(CHAR) * (MAX_DATABASE_NAME + 1)
+				+ sizeof(BYTE)
 				+ sizeof(CHAR) * (MAX_DATABASE_KEY + 1)
+				+ sizeof(UINT)
 				+ sizeof(CHAR) * (MAX_DATABASE_VALUE + 1);
 		}
 	};
 
-
-	class CSAskDBManipulateDataHandler
+	class CSAskDBManipulateHandler
 	{
 	public:
-		static UINT Execute(CSAskDBManipulateData* pPacket, Player* pPlayer);
+		static UINT Execute(CSAskDBManipulate* pPacket, Player* pPlayer);
 	};
 
 };

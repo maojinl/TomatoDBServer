@@ -5,8 +5,10 @@
 BOOL CSAskDBDefinition::Read(SocketInputStream& iStream)
 {
 __ENTER_FUNCTION
-	iStream.Read((CHAR*)(m_OperationType), sizeof(DB_OPERATION_TYPE_NONE));
-	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * (MAX_DATABASE_NAME + 1));
+	iStream.Read((CHAR*)(m_OperationType), sizeof(DB_QUERY_TYPE));
+	iStream.Read((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
+	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
+	m_DatabaseName[m_DatabaseNameSize] = 0;
 	return TRUE ;
 
 __LEAVE_FUNCTION
@@ -41,8 +43,9 @@ const CHAR* CSAskDBDefinition::GetDatabaseName() const
 VOID CSAskDBDefinition::SetDatabaseName(CHAR* pDBName)
 {
 	Assert(pDBName);
-	strncpy(m_DatabaseName, pDBName, MAX_DATABASE_NAME);
-	m_DatabaseName[MAX_DATABASE_NAME] = 0;
+	memset(m_DatabaseName, 0, m_DatabaseNameSize); 
+	memcpy(m_DatabaseName, pDBName, m_DatabaseNameSize);
+	m_DatabaseName[m_DatabaseNameSize] = 0;
 }
 
 UINT CSAskDBDefinition::Execute(Player* pPlayer)

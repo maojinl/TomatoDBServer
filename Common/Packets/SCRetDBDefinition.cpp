@@ -8,7 +8,9 @@ BOOL SCRetDBDefinition::Read(SocketInputStream& iStream)
 	__ENTER_FUNCTION
 	iStream.Read((CHAR*)(m_OperationType), sizeof(DB_OPERATION_TYPE_NONE));
 	iStream.Read((CHAR*)(&Result), sizeof(ASKDBOPERATION_RESULT));
-	iStream.Read((CHAR*)(&m_DatabaseName), sizeof(CHAR) * (MAX_DATABASE_NAME + 1));
+	iStream.Read((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
+	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
+	m_DatabaseName[m_DatabaseNameSize] = 0;
 	return TRUE;
 	__LEAVE_FUNCTION
 	return FALSE;
@@ -19,7 +21,8 @@ BOOL SCRetDBDefinition::Write(SocketOutputStream& oStream) const
 	__ENTER_FUNCTION
 	oStream.Write((CHAR*)(m_OperationType), sizeof(DB_OPERATION_TYPE_NONE));
 	oStream.Write((CHAR*)(&Result), sizeof(ASKDBOPERATION_RESULT));
-	oStream.Write((CHAR*)(&m_DatabaseName), sizeof(CHAR) * (MAX_DATABASE_NAME + 1));
+	oStream.Write((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
+	oStream.Write((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
 	return TRUE;
 	__LEAVE_FUNCTION
 	return FALSE;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "CSAskDBManipulateData.h"
-#include "SCRetDBManipulateData.h"
+#include "CSAskDBManipulate.h"
+#include "SCRetDBManipulate.h"
 #include "GamePlayer.h"
 #include "IncomingPlayerManager.h"
 #include "PacketFactoryManager.h"
@@ -12,7 +12,7 @@
 
 using namespace tomatodb;
 
-UINT CSAskDBManipulateDataHandler::Execute(CSAskDBManipulateData* pPacket, Player* pPlayer )
+UINT CSAskDBManipulateHandler::Execute(CSAskDBManipulate* pPacket, Player* pPlayer )
 {
 	__ENTER_FUNCTION
 
@@ -29,21 +29,38 @@ UINT CSAskDBManipulateDataHandler::Execute(CSAskDBManipulateData* pPacket, Playe
 		//the code should be executed by WorkerPlayerManager
 
 		//check thread
-		Assert( MyGetCurrentThreadID()== pWorker->m_ThreadID ) ;
+		Assert( MyGetCurrentThreadID() == pWorker->m_ThreadID ) ;
 
 		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
-		CHAR	dbname[MAX_DATABASE_NAME];
+		CHAR	dbname[MAX_DATABASE_NAME + 1];
 		strncpy(dbname, pPacket->GetDatabaseName(), MAX_DATABASE_NAME);
 		dbname[MAX_DATABASE_NAME] = '\0';
+		DB_OPERATION_TYPE opType = pPacket->GetOperationType();
 
-		BOOL ret = tomatodb::g_pDatabaseManager->InsertIntoDB(
-			std::string(dbname), 
-			std::string(pPacket->GetDatabaseKey()), 
-			std::string(pPacket->GetDatabaseValue()),
-			pWorker->WorkerID()
-		);
+		BOOL ret;
+		switch (opType)
+		{
+		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_INSERT:
+			ret = tomatodb::g_pDatabaseManager->InsertIntoDB(
+				std::string(dbname),
+				std::string(pPacket->GetDatabaseKey()),
+				std::string(pPacket->GetDatabaseValue()),
+				pWorker->WorkerID()
+			);
+			break;
+		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_DELETE:
+			ret = tomatodb::g_pDatabaseManager->DeleteFromDB(
+				std::string(dbname),
+				std::string(pPacket->GetDatabaseKey()),
+				pWorker->WorkerID()
+			);
+			break;
+		default:
+			ret = FALSE;
+			break;
+		}
 
-		SCRetDBManipulateData msg0;
+		SCRetDBManipulate msg0;
 		if (ret)
 		{
 			msg0.SetResult(ASK_DB_OPERATION_R_SUCCESS);
