@@ -2,7 +2,6 @@
 
 #include "SCRetDBManipulate.h"
 
-
 BOOL SCRetDBManipulate::Read(SocketInputStream& iStream)
 {
 	__ENTER_FUNCTION

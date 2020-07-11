@@ -27,6 +27,7 @@ namespace tomatodb
 		BOOL InsertIntoDB(const string& database_name, const string& key, const string& val, UINT threadIdx);
 		BOOL DeleteFromDB(const string& database_name, const string& key, UINT threadIdx);
 		BOOL GetFromDB(const string& database_name, const string& key, string* val);
+		BOOL GetDatabasesList(vector<string>& database_list);
 	private:
 		MyLock m_Lock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];
@@ -36,7 +37,7 @@ namespace tomatodb
 		std::unordered_map<string, UINT> m_DbIndexer;
 		const DatabaseOptions dbOptions;
 		DBThreadObjectsPool* threadObjectsPool;
-
+		vector<string> m_DBlist;
 		VOID UpdateRecycleDBList();
 		DatabaseObject* RefDatabaseHandler(string database_name);
 		VOID UnrefDatabaseHandler(DatabaseObject* pDbObj);

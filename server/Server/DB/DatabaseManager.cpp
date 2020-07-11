@@ -51,20 +51,20 @@ namespace tomatodb
 		string fullDbName = dbOptions.adminDBPathName;
 		m_pAdmin = AdminDB::GetInstance();
 		m_pAdmin->Init(fullDbName);
-		vector<string> dblist;
-		if (!m_pAdmin->GetDatabasesList(dblist))
+		
+		if (!m_pAdmin->GetDatabasesList(m_DBlist))
 		{
 			Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->GetDatabasesList Error!");
 			return FALSE;
 		}
 
-		for (int i = 0; i < dblist.size(); i++)
+		for (int i = 0; i < m_DBlist.size(); i++)
 		{
-			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dblist[i]);
-			m_pDbList[i] = new DatabaseObject(dblist[i], dbPathName);
+			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, m_DBlist[i]);
+			m_pDbList[i] = new DatabaseObject(m_DBlist[i], dbPathName);
 			m_pDbList[i]->pDb = nullptr;
 			Status s = DB::Open(dbOptions.openOptions, fullDbName, &(m_pDbList[i]->pDb));
-			m_DbIndexer[dblist[i]] = i;
+			m_DbIndexer[m_DBlist[i]] = i;
 			m_DbCount++;
 		}
 		return TRUE;
@@ -189,6 +189,16 @@ namespace tomatodb
 			UnrefDatabaseHandler(dbObj);
 		}
 		return ret;
+		__LEAVE_FUNCTION
+		return FALSE;
+	}
+
+	BOOL DatabaseManager::GetDatabasesList(vector<string>& database_list)
+	{
+		__ENTER_FUNCTION
+		database_list.clear();
+		database_list.assign(m_DBlist.begin(), m_DBlist.end());
+		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}

@@ -5,7 +5,7 @@
 BOOL CSAskDBQuery::Read(SocketInputStream& iStream)
 {
 	__ENTER_FUNCTION
-		iStream.Read((CHAR*)(m_QueryType), sizeof(DB_QUERY_TYPE));
+	iStream.Read((CHAR*)(m_QueryType), sizeof(DB_QUERY_TYPE));
 	iStream.Read((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
 	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
 	m_DatabaseName[m_DatabaseNameSize] = 0;
@@ -28,6 +28,15 @@ BOOL CSAskDBQuery::Write(SocketOutputStream& oStream)const
 	__LEAVE_FUNCTION
 
 		return FALSE;
+}
+
+const DB_QUERY_TYPE CSAskDBQuery::GetQueryType() const
+{
+	return m_QueryType;
+}
+VOID CSAskDBQuery::SetQueryType(DB_QUERY_TYPE qType)
+{
+	m_QueryType = qType;
 }
 
 const CHAR* CSAskDBQuery::GetDatabaseName()	const

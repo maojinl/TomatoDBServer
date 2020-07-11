@@ -5,7 +5,7 @@
 BOOL CSAskDBManipulate::Read( SocketInputStream& iStream )
 {
 __ENTER_FUNCTION
-	iStream.Read((CHAR*)(m_OperationType), sizeof(DB_OPERATION_TYPE_NONE));
+	iStream.Read((CHAR*)(m_ManipulateType), sizeof(DB_MANIPULATE_TYPE));
 	iStream.Read((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
 	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
 	m_DatabaseName[m_DatabaseNameSize] = 0;
@@ -56,6 +56,15 @@ VOID CSAskDBManipulate::SetDatabaseKey(CHAR* pKey)
 	memset(m_Key, 0, m_KeySize);
 	memcpy(m_Key, pKey, m_KeySize);
 	m_Key[m_KeySize] = 0;
+}
+
+const DB_MANIPULATE_TYPE CSAskDBManipulate::GetManipulateType() const
+{
+	return m_ManipulateType;
+}
+VOID CSAskDBManipulate::SetManipulateType(DB_MANIPULATE_TYPE manType)
+{
+	m_ManipulateType = manType;
 }
 
 const CHAR* CSAskDBManipulate::GetDatabaseValue()	const

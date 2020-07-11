@@ -1,54 +1,71 @@
-#ifndef _SCRETDBMANIPULATEDATA_H_
-#define _SCRETDBMANIPULATEDATA_H_
+#ifndef _SCRETDBQUERY_H_
+#define _SCRETDBQUERY_H_
 #include "Type.h"
 #include "Packet.h"
 #include "PacketFactory.h"
 
 namespace Packets
 {
-	class SCRetDBManipulateData : public Packet
+	class SCRetDBQuery : public Packet
 	{
 	public:
-		SCRetDBManipulateData() {};
-		virtual ~SCRetDBManipulateData() {};
+		SCRetDBQuery() :
+			m_QueryType(DB_QUERY_TYPE_NONE),
+			m_Values()
+		{};
+
+		virtual ~SCRetDBQuery() {};
 
 		//公用继承接口
 		virtual BOOL			Read(SocketInputStream& iStream);
 		virtual BOOL			Write(SocketOutputStream& oStream) const;
 		virtual UINT			Execute(Player* pPlayer);
 
-		virtual PacketID_t		GetPacketID() const { return PACKET_SC_RETDBMANIPULATEDATA; }
+		virtual PacketID_t		GetPacketID() const { return PACKET_SC_RETDBQUERY; }
 		virtual UINT			GetPacketSize() const
 		{
-			return	sizeof(ASKDBOPERATION_RESULT);
+			UINT sz = sizeof(DB_QUERY_TYPE)
+				+ sizeof(ASKDBOPERATION_RESULT)
+				+ sizeof(UINT);
+			for (int i = 0; i < m_ValuesSize; i++)
+			{
+				sz += sizeof(size_t);
+				sz += sizeof(CHAR) * m_Values[i].size();
+			}
+			return sz;
 		}
 
 	public:
-		const					DB_OPERATION_TYPE GetOperationType() const;
-		VOID					SetOperationType(DB_OPERATION_TYPE opType);
+		const					DB_QUERY_TYPE GetQueryType() const;
+		VOID					SetQueryType(DB_QUERY_TYPE opType);
 		ASKDBOPERATION_RESULT	GetResult() const;
 		VOID					SetResult(ASKDBOPERATION_RESULT result);
+		vector<string>&			GetValues();
+		VOID					SetValues(const vector<string>& values);
 	private:
-		DB_OPERATION_TYPE		m_OperationType;
+		DB_QUERY_TYPE			m_QueryType;
 		ASKDBOPERATION_RESULT	Result;
+		UINT					m_ValuesSize;
+		vector<string>			m_Values;
 	};
 
-	class SCRetDBManipulateDataFactory : public PacketFactory
+	class SCRetDBQueryFactory : public PacketFactory
 	{
 	public:
-		Packet* CreatePacket() { return new SCRetDBManipulateData(); }
-		PacketID_t	GetPacketID()const { return PACKET_SC_RETDBMANIPULATEDATA; }
+		Packet* CreatePacket() { return new SCRetDBQuery(); }
+		PacketID_t	GetPacketID()const { return PACKET_SC_RETDBQUERY; }
 		UINT		GetPacketMaxSize() const
 		{
-			return	sizeof(ASKDBOPERATION_RESULT);
+			UINT sz = 0xFFFFFFFF;
+			return sz;
 		}
 	};
 
 
-	class SCRetDBManipulateDataHandler
+	class SCRetDBQueryHandler
 	{
 	public:
-		static UINT Execute(SCRetDBManipulateData* pPacket, Player* pPlayer);
+		static UINT Execute(SCRetDBQuery* pPacket, Player* pPlayer);
 	};
 };
 

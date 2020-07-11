@@ -41,21 +41,33 @@ UINT SCRetLoginHandler::Execute(SCRetLogin* pPacket, Player* pPlayer) {
 UINT SCRetDBDefinitionHandler::Execute(SCRetDBDefinition* pPacket, Player* pPlayer) {
 	__ENTER_FUNCTION
 
-		return PACKET_EXE_CONTINUE;
+	return PACKET_EXE_CONTINUE;
 
 	__LEAVE_FUNCTION
 
-		return PACKET_EXE_ERROR;
+	return PACKET_EXE_ERROR;
 }
 
-#include "SCRetDBManipulateData.h"
+#include "SCRetDBManipulate.h"
 
-UINT SCRetDBManipulateDataHandler::Execute(SCRetDBManipulateData* pPacket, Player* pPlayer) {
+UINT SCRetDBManipulateHandler::Execute(SCRetDBManipulate* pPacket, Player* pPlayer) {
 	__ENTER_FUNCTION
 
-		return PACKET_EXE_CONTINUE;
+	return PACKET_EXE_CONTINUE;
 
 	__LEAVE_FUNCTION
 
-		return PACKET_EXE_ERROR;
+	return PACKET_EXE_ERROR;
+}
+
+#include "SCRetDBQuery.h"
+
+UINT SCRetDBQueryHandler::Execute(SCRetDBQuery* pPacket, Player* pPlayer) {
+	__ENTER_FUNCTION
+
+	return PACKET_EXE_CONTINUE;
+
+	__LEAVE_FUNCTION
+
+	return PACKET_EXE_ERROR;
 }

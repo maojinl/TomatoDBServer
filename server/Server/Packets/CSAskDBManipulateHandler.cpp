@@ -35,12 +35,12 @@ UINT CSAskDBManipulateHandler::Execute(CSAskDBManipulate* pPacket, Player* pPlay
 		CHAR	dbname[MAX_DATABASE_NAME + 1];
 		strncpy(dbname, pPacket->GetDatabaseName(), MAX_DATABASE_NAME);
 		dbname[MAX_DATABASE_NAME] = '\0';
-		DB_OPERATION_TYPE opType = pPacket->GetOperationType();
+		DB_MANIPULATE_TYPE manType = pPacket->GetManipulateType();
 
 		BOOL ret;
-		switch (opType)
+		switch (manType)
 		{
-		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_INSERT:
+		case DB_MANIPULATE_TYPE::DB_MANIPULATE_TYPE_INSERT:
 			ret = tomatodb::g_pDatabaseManager->InsertIntoDB(
 				std::string(dbname),
 				std::string(pPacket->GetDatabaseKey()),
@@ -48,7 +48,7 @@ UINT CSAskDBManipulateHandler::Execute(CSAskDBManipulate* pPacket, Player* pPlay
 				pWorker->WorkerID()
 			);
 			break;
-		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_DELETE:
+		case DB_MANIPULATE_TYPE::DB_MANIPULATE_TYPE_DELETE:
 			ret = tomatodb::g_pDatabaseManager->DeleteFromDB(
 				std::string(dbname),
 				std::string(pPacket->GetDatabaseKey()),

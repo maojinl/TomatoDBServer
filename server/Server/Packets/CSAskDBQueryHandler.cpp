@@ -35,24 +35,25 @@ UINT CSAskDBQueryHandler::Execute(CSAskDBQuery* pPacket, Player* pPlayer )
 		CHAR	dbname[MAX_DATABASE_NAME + 1];
 		strncpy(dbname, pPacket->GetDatabaseName(), MAX_DATABASE_NAME);
 		dbname[MAX_DATABASE_NAME] = '\0';
-		DB_QUERY_TYPE opType = pPacket->GetQueryType();
-
+		DB_QUERY_TYPE qrType = pPacket->GetQueryType();
+		SCRetDBQuery msg0;
 		BOOL ret;
-		switch (opType)
+		vector<string>& values = msg0.GetValues();
+		string s;
+		switch (qrType)
 		{
 		case DB_QUERY_TYPE::DB_QUERY_TYPE_DB_LIST:
-			ret = tomatodb::g_pDatabaseManager->CreateDatabase(std::string(dbname));
+			ret = g_pDatabaseManager->GetDatabasesList(values);
 			break;
 		case DB_QUERY_TYPE::DB_QUERY_TYPE_KEY_VALUE:
-			ret = tomatodb::g_pDatabaseManager->DeleteDatabase(std::string(dbname));
+			ret = tomatodb::g_pDatabaseManager->GetFromDB(std::string(dbname), std::string(pPacket->GetDatabaseKey()), &s);
+			values.push_back(s);
 			break;
 		default:
 			ret = FALSE;
 			break;
 		}
 
-		SCRetDBDefinition msg0;
-		msg0.SetDatabaseName(dbname);
 		if (ret)
 		{
 			msg0.SetResult(ASK_DB_OPERATION_R_SUCCESS);
@@ -63,7 +64,7 @@ UINT CSAskDBQueryHandler::Execute(CSAskDBQuery* pPacket, Player* pPlayer )
 		}
 		pGamePlayer->SendPacket(&msg0);
 
-		g_pLog->FastSaveLog(LOG_FILE_1, "SCRetDBDefinition D GUID=%X ...OK PID=%d",
+		g_pLog->FastSaveLog(LOG_FILE_1, "SCRetDBQuery D GUID=%X ...OK PID=%d",
 			pGamePlayer->m_HumanGUID, pGamePlayer->PlayerID());
 
 		return PACKET_EXE_CONTINUE;

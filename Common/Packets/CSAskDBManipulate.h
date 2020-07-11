@@ -11,7 +11,7 @@ namespace Packets
 	{
 	public:
 		CSAskDBManipulate() :
-			m_OperationType(DB_OPERATION_TYPE_NONE),
+			m_ManipulateType(DB_MANIPULATE_TYPE_NONE),
 			m_DatabaseNameSize(MAX_DATABASE_NAME + 1),
 			m_KeySize(MAX_DATABASE_KEY + 1),
 			m_ValueSize(MAX_DATABASE_VALUE + 1)
@@ -27,7 +27,7 @@ namespace Packets
 		virtual PacketID_t		GetPacketID() const { return PACKET_CS_ASKDBMANIPULATE; }
 		virtual UINT			GetPacketSize() const
 		{
-			return	sizeof(DB_OPERATION_TYPE)
+			return	sizeof(DB_MANIPULATE_TYPE)
 				+ sizeof(BYTE)
 				+ sizeof(CHAR) * m_DatabaseNameSize
 				+ sizeof(BYTE)
@@ -37,8 +37,8 @@ namespace Packets
 		}
 
 	public:
-		const					DB_OPERATION_TYPE GetOperationType() const;
-		VOID					SetOperationType(DB_OPERATION_TYPE opType);
+		const					DB_MANIPULATE_TYPE GetManipulateType() const;
+		VOID					SetManipulateType(DB_MANIPULATE_TYPE manType);
 		const					CHAR* GetDatabaseName()	const;
 		VOID					SetDatabaseName(CHAR* pDBName);
 		const					CHAR* GetDatabaseKey()	const;
@@ -46,7 +46,7 @@ namespace Packets
 		const					CHAR* GetDatabaseValue()	const;
 		VOID					SetDatabaseValue(CHAR* pValue);
 	private:
-		DB_OPERATION_TYPE		m_OperationType;
+		DB_MANIPULATE_TYPE		m_ManipulateType;
 		BYTE					m_DatabaseNameSize;
 		CHAR					m_DatabaseName[MAX_DATABASE_NAME + 1];	//database name
 		BYTE					m_KeySize;
@@ -62,7 +62,7 @@ namespace Packets
 		PacketID_t	GetPacketID() const { return PACKET_CS_ASKDBMANIPULATE; }
 		UINT		GetPacketMaxSize() const
 		{
-			return	sizeof(DB_OPERATION_TYPE)
+			return	sizeof(DB_MANIPULATE_TYPE)
 				+ sizeof(BYTE)
 				+ sizeof(CHAR) * (MAX_DATABASE_NAME + 1)
 				+ sizeof(BYTE)

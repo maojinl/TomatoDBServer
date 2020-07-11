@@ -12,12 +12,11 @@ namespace Packets
 		SCRetDBManipulate() {};
 		virtual ~SCRetDBManipulate() {};
 
-		//公用继承接口
 		virtual BOOL			Read(SocketInputStream& iStream);
 		virtual BOOL			Write(SocketOutputStream& oStream) const;
 		virtual UINT			Execute(Player* pPlayer);
 
-		virtual PacketID_t		GetPacketID() const { return PACKET_SC_RETDBMANIPULATEDATA; }
+		virtual PacketID_t		GetPacketID() const { return PACKET_SC_RETDBMANIPULATE; }
 		virtual UINT			GetPacketSize() const
 		{
 			return	sizeof(ASKDBOPERATION_RESULT);
@@ -37,7 +36,7 @@ namespace Packets
 	{
 	public:
 		Packet* CreatePacket() { return new SCRetDBManipulate(); }
-		PacketID_t	GetPacketID()const { return PACKET_SC_RETDBMANIPULATEDATA; }
+		PacketID_t	GetPacketID()const { return PACKET_SC_RETDBMANIPULATE; }
 		UINT		GetPacketMaxSize() const
 		{
 			return	sizeof(ASKDBOPERATION_RESULT);

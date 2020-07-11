@@ -40,7 +40,7 @@ UINT CSAskDBDefinitionHandler::Execute(CSAskDBDefinition* pPacket, Player* pPlay
 		BOOL ret;
 		switch (opType)
 		{
-		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_INSERT:
+		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_CREATE:
 			ret = tomatodb::g_pDatabaseManager->CreateDatabase(std::string(dbname));
 			break;
 		case DB_OPERATION_TYPE::DB_OPERATION_TYPE_DELETE:
