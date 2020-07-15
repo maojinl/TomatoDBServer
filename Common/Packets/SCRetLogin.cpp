@@ -7,12 +7,11 @@ BOOL SCRetLogin::Read( SocketInputStream& iStream )
 {
 	__ENTER_FUNCTION
 
-	//iStream.Read( (CHAR*)(&szAccount), sizeof(CHAR)*MAX_ACCOUNT);
-	iStream.Read((CHAR*)(&m_CharName), sizeof(CHAR) * MAX_CHARACTER_NAME);
-	iStream.Read((CHAR*)(&m_TitleName), sizeof(CHAR) * MAX_CHARACTER_TITLE);
+	iStream.Read((CHAR*)(&Result), sizeof(LOGIN_RESULT));
+	iStream.Read((CHAR*)(&m_CharName), sizeof(CHAR) * (MAX_CHARACTER_NAME + 1));
+	iStream.Read((CHAR*)(&m_TitleName), sizeof(CHAR) * (MAX_CHARACTER_TITLE + 1));
 	iStream.Read((CHAR*)(&m_iLevel), sizeof(UINT));
-	iStream.Read((CHAR*)(&Result),sizeof(LOGIN_RESULT));
-	
+
 	return TRUE ;
 	
 	__LEAVE_FUNCTION
@@ -24,11 +23,11 @@ BOOL SCRetLogin::Write( SocketOutputStream& oStream )const
 {
 	__ENTER_FUNCTION
 
-	//oStream.Write( (CHAR*)(&szAccount), sizeof(CHAR)*MAX_ACCOUNT);
-	oStream.Write((CHAR*)(&m_CharName), sizeof(CHAR) * MAX_CHARACTER_NAME);
-	oStream.Write((CHAR*)(&m_TitleName), sizeof(CHAR) * MAX_CHARACTER_TITLE);
+	oStream.Write((CHAR*)(&Result), sizeof(LOGIN_RESULT));
+	oStream.Write((CHAR*)(&m_CharName), sizeof(CHAR) * (MAX_CHARACTER_NAME + 1));
+	oStream.Write((CHAR*)(&m_TitleName), sizeof(CHAR) * (MAX_CHARACTER_TITLE + 1));
 	oStream.Write((CHAR*)(&m_iLevel), sizeof(UINT));
-	oStream.Write((CHAR*)(&Result),sizeof(LOGIN_RESULT));
+	
 	return TRUE ;
 
 	__LEAVE_FUNCTION

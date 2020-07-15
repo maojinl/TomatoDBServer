@@ -110,6 +110,8 @@ typedef UCHAR			BYTE;
 #define PACK_COMPART "$-$"//·â°ü·Ö¸ô·û
 #define PACK_COMPART_SIZE strlen(PACK_COMPART)
 
+#define NO_ENCRYPT
+
 #ifndef ENCRYPT
 
 	#if defined(NO_ENCRYPT)

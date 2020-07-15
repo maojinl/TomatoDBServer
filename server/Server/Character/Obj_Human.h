@@ -56,8 +56,8 @@ class Obj_Human : public User
 //===========================================
 public:
 	Obj_Human();
-	virtual ~Obj_Human();
-	virtual VOID CleanUp(VOID);
+	virtual ~Obj_Human() {};
+	virtual VOID CleanUp(VOID) {};
 
 protected:
     char m_Name[MAX_CHARACTER_NAME] = "human";
@@ -68,7 +68,7 @@ protected:
 //  Ù–‘
 //===========================================
 public:  
-	virtual GUID_t			GetGUID( VOID )const;
+	virtual GUID_t			GetGUID(VOID) const { return 0; };
 
 	virtual VOID SetName(const CHAR* pszName) {};
     virtual const CHAR* GetName(VOID) const { return m_Name; };

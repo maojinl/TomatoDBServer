@@ -526,6 +526,7 @@ BOOL ServerManager::HeartBeat( )
 __ENTER_FUNCTION
 
 	BOOL ret ;
+	return TRUE;
 
 	if( IsWorldServerActive( ) )
 	{

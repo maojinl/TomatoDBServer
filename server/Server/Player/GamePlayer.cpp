@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "ServerManager.h"
 #include "RecyclePlayerManager.h"
+#include "Obj_Human.h"
 
 GamePlayer::GamePlayer( )
 {
@@ -25,6 +26,9 @@ __ENTER_FUNCTION
 	m_LeftTimeToQuit = 0 ;
 
 	m_SaveTime = 0 ;
+
+	m_pHuman = new Obj_Human();
+	m_pHuman->SetPlayer(this);
 
 __LEAVE_FUNCTION
 }

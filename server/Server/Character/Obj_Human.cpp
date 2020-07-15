@@ -2,6 +2,14 @@
 
 #include "Obj_Human.h"
 
+Obj_Human::Obj_Human()
+{
+	__ENTER_FUNCTION
+
+	CleanUp();
+
+	__LEAVE_FUNCTION
+}
 VOID	Obj_Human::AddLogBook(UINT LogID,UINT LogTime)
 {
 	//if(m_DB.AddLogBook(LogID,LogTime))

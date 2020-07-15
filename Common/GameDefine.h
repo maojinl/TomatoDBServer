@@ -12,10 +12,10 @@
 //GamePlayer管理器的上限
 #define MAX_PLAYER 1024
 
-#define MAX_CHARACTER_NAME 30
+#define MAX_CHARACTER_NAME 31
 
 //玩家称号长度
-#define MAX_CHARACTER_TITLE 34
+#define MAX_CHARACTER_TITLE 31
 
 //二级密码最短长度
 #define MIN_PWD 4
@@ -24,10 +24,10 @@
 #define MAX_PWD 17
 
 //用户帐号的最大值
-#define MAX_ACCOUNT 16
+#define MAX_ACCOUNT 15
 
 //用户密码的最大值
-#define MAX_PASSWORD 32
+#define MAX_PASSWORD 31
 
 //ID最大长度
 #define MAX_ID_LENGTH  24
@@ -53,8 +53,8 @@
 
 //tomatodb settings
 #define MAX_DATABASE_SIZE 1024
-#define MAX_DATABASE_NAME 64
-#define MAX_DATABASE_KEY 128
+#define MAX_DATABASE_NAME 63
+#define MAX_DATABASE_KEY 127
 #define MAX_DATABASE_VALUE 1048576
 //end tomatodb settings
 
