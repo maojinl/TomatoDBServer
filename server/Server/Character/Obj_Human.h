@@ -20,7 +20,7 @@ private:
 public:
 	User() {};
 	virtual ~User() {};
-	VOID OnEnterWorker(Worker* pWorker)
+	virtual VOID OnEnterWorker(Worker* pWorker)
 	{
 		__ENTER_FUNCTION
 
@@ -31,7 +31,7 @@ public:
 		__LEAVE_FUNCTION
 	}
 
-	VOID OnLeaveWorker(VOID)
+	virtual VOID OnLeaveWorker(VOID)
 	{
 		__ENTER_FUNCTION
 

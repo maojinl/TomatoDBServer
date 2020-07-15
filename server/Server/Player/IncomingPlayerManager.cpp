@@ -431,11 +431,9 @@ __ENTER_FUNCTION
 			goto EXCEPTION ;
 		}
 
-		iStep = 70 ;
-		//初始化基本玩家信息
-		client->Init( ) ;
-		//设置当前客户端连接的状态
-		client->SetPlayerStatus(PS_SERVER_WAITING_FOR_ENTER) ;
+		iStep = 70;
+		client->Init();
+		client->SetPlayerStatus(PS_SERVER_WAITING_FOR_ENTER);
 
 		iStep = 80 ;
 		_MY_TRY
@@ -482,7 +480,7 @@ BOOL IncomingPlayerManager::AddPlayer( Player* pPlayer )
 __ENTER_FUNCTION
 
 	if( m_nFDSize>=FD_SETSIZE )
-	{//已经超出能够检测的网络句柄最大数；
+	{
 		return FALSE ;
 	}
 	SOCKET fd = pPlayer->GetSocket()->getSOCKET() ;
@@ -545,7 +543,6 @@ __ENTER_FUNCTION
 			Assert( pPlayer ) ;
 			if( pPlayer==NULL )
 				continue ;
-
 
 			SOCKET temp = pPlayer->GetSocket()->getSOCKET() ;
 			if( temp == fd )
@@ -670,7 +667,7 @@ __ENTER_FUNCTION
 		}
 		if( !ret )
 		{//如果逻辑操作返回失败，则需要断开当前连接
-			ret = RemovePlayer( pPlayer, "逻辑操作返回失败，则需要断开当前连接" ) ;
+			ret = RemovePlayer( pPlayer, "Operations failed, disconnecting..." ) ;
 			Assert( ret ) ;
 		}
 	}
@@ -702,7 +699,7 @@ __ENTER_FUNCTION
 			break ;
 		}
 	
-		RemovePlayer( pPlayer, "断开所有玩家" ) ;
+		RemovePlayer( pPlayer, "Disconnecting all players..." ) ;
 	}
 
 __LEAVE_FUNCTION
@@ -766,7 +763,7 @@ __ENTER_FUNCTION
 
 				if( uret == PACKET_EXE_ERROR )
 				{
-					RemovePlayer( pPlayer, "包执行错误" ) ;
+					RemovePlayer( pPlayer, "Execute packet error." ) ;
 					MovePacket( PlayerID ) ;
 				}
 				else if( uret == PACKET_EXE_BREAK )
@@ -783,7 +780,7 @@ __ENTER_FUNCTION
 				{
 					bNeedRemove = FALSE ;
 
-					RemovePlayer( pPlayer, "包执行后断开玩家" ) ;
+					RemovePlayer( pPlayer, "Disconnect user after packet executed." ) ;
 					MovePacket( PlayerID ) ;
 				}
 			}

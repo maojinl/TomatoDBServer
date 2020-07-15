@@ -60,6 +60,7 @@ public :
 
 	VOID SetHuman(Obj_Human* pHuman) { m_pHuman = pHuman; };
     Obj_Human* GetHuman() { return m_pHuman; };
+	BOOL		InitHuman();
 
 public :
 	//通用游戏接口
@@ -68,8 +69,9 @@ public :
 	BOOL		CheckKey( UINT key ) ;
 
 
-	BOOL		IsDirty( ){ return m_Dirty ; } ;
-	VOID		SetDirty( BOOL bValue ){ m_Dirty = bValue ; } ;
+	BOOL		IsDirty( ){ return m_Dirty; };
+	VOID		SetDirty( BOOL bValue ){ m_Dirty = bValue ; };
+
 private :
 	UINT					m_Status ;
 

@@ -40,12 +40,15 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		strncpy(PassKey, pPacket->GetPassKey(), MAX_ACCOUNT + 1);
 		ENCRYPT(PassKey, iAccountLen, USER_ACCOUNT_KEY, 0);
 
-		/* compare password and account
+		/* Get human data from AdminDB compare password and account
 		if (strcmp(Account, PassKey) != 0)
 		{
 			return PACKET_EXE_ERROR;
 		}
 		*/
+
+		//Init human user data from AdminDB
+		pGamePlayer->InitHuman();
 
 		//Illegal worker
 		if( WorkerID==INVALID_ID || pWorker==NULL )
@@ -131,7 +134,7 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		pGamePlayer->SendPacket( &Msg0 );
 
 		//set user session to PS_SERVER_NORMAL
-		pGamePlayer->SetPlayerStatus( PS_SERVER_NORMAL ) ;
+		pGamePlayer->SetPlayerStatus( PS_SERVER_NORMAL );
 
 		g_pLog->FastSaveLog( LOG_FILE_1, "SCRetLogin D GUID=%X To:%d ...OK PID=%d",
 			pGamePlayer->m_HumanGUID, workerID,  pGamePlayer->PlayerID() ) ;

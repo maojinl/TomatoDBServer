@@ -212,3 +212,21 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 }
+
+BOOL GamePlayer::InitHuman()
+{
+	__ENTER_FUNCTION
+
+	//init user data from input parameter
+	//if (m_pHuman->IsInited() || m_pHuman->Init(&initHuman, age))
+	//{
+	//}
+
+	SetDirty(FALSE);
+
+	return TRUE;
+
+	__LEAVE_FUNCTION
+
+	return FALSE;
+}
