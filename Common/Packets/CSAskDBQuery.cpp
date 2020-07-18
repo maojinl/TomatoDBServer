@@ -5,7 +5,7 @@
 BOOL CSAskDBQuery::Read(SocketInputStream& iStream)
 {
 	__ENTER_FUNCTION
-	iStream.Read((CHAR*)(m_QueryType), sizeof(DB_QUERY_TYPE));
+	iStream.Read((CHAR*)(&m_QueryType), sizeof(DB_QUERY_TYPE));
 	iStream.Read((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
 	iStream.Read((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
 	m_DatabaseName[m_DatabaseNameSize] = 0;

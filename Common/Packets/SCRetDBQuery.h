@@ -27,7 +27,8 @@ namespace Packets
 			UINT sz = sizeof(DB_QUERY_TYPE)
 				+ sizeof(ASKDBOPERATION_RESULT)
 				+ sizeof(UINT);
-			for (int i = 0; i < m_ValuesSize; i++)
+			int valueSize = m_Values.size();
+			for (int i = 0; i < valueSize; i++)
 			{
 				sz += sizeof(size_t);
 				sz += sizeof(CHAR) * m_Values[i].size();
@@ -45,7 +46,6 @@ namespace Packets
 	private:
 		DB_QUERY_TYPE			m_QueryType;
 		ASKDBOPERATION_RESULT	Result;
-		UINT					m_ValuesSize;
 		vector<string>			m_Values;
 	};
 

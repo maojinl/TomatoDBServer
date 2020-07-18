@@ -17,13 +17,13 @@ BOOL SCRetDBQuery::Write(SocketOutputStream& oStream) const
 	__ENTER_FUNCTION
 	oStream.Write((CHAR*)(&m_QueryType), sizeof(DB_QUERY_TYPE));
 	oStream.Write((CHAR*)(&Result), sizeof(ASKDBOPERATION_RESULT));
-	int sz = m_Values.size();
-	oStream.Write((CHAR*)(&sz), sizeof(size_t));
+	UINT sz = m_Values.size();
+	oStream.Write((CHAR*)(&sz), sizeof(UINT));
 	for (int i = 0; i < sz; i++)
 	{
-		int sz1 = m_Values[i].size();
-		oStream.Write((CHAR*)(&sz1), sizeof(size_t));
-		oStream.Write((CHAR*)(m_Values[i].c_str()), sizeof(CHAR*) * sz1);
+		UINT sz1 = m_Values[i].size();
+		oStream.Write((CHAR*)(&sz1), sizeof(UINT));
+		oStream.Write((CHAR*)(m_Values[i].c_str()), sizeof(CHAR) * sz1);
 	}
 	return TRUE;
 	__LEAVE_FUNCTION

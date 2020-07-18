@@ -13,6 +13,13 @@
 #include "SSConnect.h"
 #include "CSAskLogin.h"
 #include "SCRetLogin.h"
+#include "CSAskDBDefinition.h"
+#include "SCRetDBDefinition.h"
+#include "CSAskDBManipulate.h"
+#include "SCRetDBManipulate.h"
+#include "CSAskDBQuery.h"
+#include "SCRetDBQuery.h"
+
 #endif
 
 using namespace Packets;
@@ -64,9 +71,15 @@ BOOL PacketFactoryManager::Init( )
 __ENTER_FUNCTION
 
 #if defined(_TMT_CLIENT) && defined(_TMT_SERVER)
-//CG && GC
+//CS && SC
 	AddFactory( new CSAskLoginFactory()) ;
 	AddFactory( new SCRetLoginFactory()) ;
+	AddFactory(new CSAskDBDefinitionFactory());
+	AddFactory(new SCRetDBDefinitionFactory());
+	AddFactory(new CSAskDBManipulateFactory());
+	AddFactory(new SCRetDBManipulateFactory());
+	AddFactory(new CSAskDBQueryFactory());
+	AddFactory(new SCRetDBQueryFactory());
 #endif
 
 #if defined(_TMT_WORLD) && defined(_TMT_SERVER)
