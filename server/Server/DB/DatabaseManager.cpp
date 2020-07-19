@@ -120,6 +120,7 @@ namespace tomatodb
 					return FALSE;
 				}
 				m_DbIndexer[database_name] = m_DbCount;
+				m_DBlist.push_back(database_name);
 				m_DbCount++;
 				return TRUE;
 			}
@@ -141,6 +142,14 @@ namespace tomatodb
 				m_pDbList[ite->second] = m_pDbList[m_DbCount - 1];
 				m_DbIndexer[m_pDbList[m_DbCount - 1]->database_name] = ite->second;
 				m_DbIndexer.erase(ite);
+				for (auto ite = m_DBlist.begin(); ite != m_DBlist.end(); ite++)
+				{
+					if ((*ite) == database_name)
+					{
+						m_DBlist.erase(ite);
+						break;
+					}
+				}
 				m_DbCount--;
 				return TRUE;
 			}

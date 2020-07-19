@@ -8,8 +8,8 @@ BOOL SCRetLogin::Read( SocketInputStream& iStream )
 	__ENTER_FUNCTION
 
 	iStream.Read((CHAR*)(&Result), sizeof(LOGIN_RESULT));
-	iStream.Read((CHAR*)(&m_CharName), sizeof(CHAR) * (MAX_CHARACTER_NAME + 1));
-	iStream.Read((CHAR*)(&m_TitleName), sizeof(CHAR) * (MAX_CHARACTER_TITLE + 1));
+	iStream.Read((CHAR*)(m_CharName), sizeof(CHAR) * (MAX_CHARACTER_NAME + 1));
+	iStream.Read((CHAR*)(m_TitleName), sizeof(CHAR) * (MAX_CHARACTER_TITLE + 1));
 	iStream.Read((CHAR*)(&m_iLevel), sizeof(UINT));
 
 	return TRUE ;
