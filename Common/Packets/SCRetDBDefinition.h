@@ -43,7 +43,6 @@ namespace Packets
 		}
 		CHAR* GetDatabaseName() { return m_DatabaseName; };
 
-
 	private:
 		DB_OPERATION_TYPE		m_OperationType;
 		ASKDBOPERATION_RESULT	Result;
