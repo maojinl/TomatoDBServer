@@ -7,6 +7,7 @@
 #include "PlayerPool.h"
 #include "Performance.h"
 #include "Log.h"
+#include "DatabaseManager.h"
 
 
 DaemonThread* g_pDaemonThread = NULL ;
@@ -35,7 +36,7 @@ __ENTER_FUNCTION
 	while( IsActive() )
 	{
 		BOOL ret = FALSE ;
-		UINT uTime = g_pTimeManager->CurrentTime() ;//当前时间
+		UINT uTime = g_pTimeManager->CurrentTime();
 		if( !m_WorkingTime.IsSetTimer() )
 		{
 			m_WorkingTime.BeginTimer( 1000, uTime ) ;
@@ -47,7 +48,6 @@ __ENTER_FUNCTION
 			continue ;
 		}
 
-		//日志刷入文件
 		_MY_TRY
 		{
 			if( m_FlushLogTimer.CountingTimer(uTime) && g_pLog )
@@ -64,19 +64,17 @@ __ENTER_FUNCTION
 		{
 		}
 
-		//数据监控逻辑调用
 		_MY_TRY
 		{
 			if( g_pPerformanceManager )
 				g_pPerformanceManager->HeartBeat( uTime ) ;
 	
-			g_ShareMemNotifyer.HeartBeat(uTime);
+			//g_ShareMemNotifyer.HeartBeat(uTime);
 		}
 		_MY_CATCH
 		{
 		}
 		
-		//定时关闭服务器处理
 		if( g_Server.m_TimeToQuit.IsSetTimer() )
 		{
 			if( g_Server.m_TimeToQuit.CountingTimer(uTime) )
@@ -84,15 +82,21 @@ __ENTER_FUNCTION
 				g_Server.Stop( ) ;
 			}
 		}
+
+		if (tomatodb::g_pDatabaseManager)
+		{
+			tomatodb::g_pDatabaseManager->HeartBeat();
+		}
+
 	};
 
-	Quit( ) ;
+	Quit();
 
 __LEAVE_FUNCTION
 
 	return TRUE ;
 }
 
-VOID DaemonThread::Quit( )
+VOID DaemonThread::Quit()
 {
 }

@@ -28,6 +28,7 @@ namespace tomatodb
 		BOOL DeleteFromDB(const string& database_name, const string& key, UINT threadIdx);
 		BOOL GetFromDB(const string& database_name, const string& key, string* val);
 		BOOL GetDatabasesList(vector<string>& database_list);
+		BOOL HeartBeat();
 	private:
 		MyLock m_Lock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];

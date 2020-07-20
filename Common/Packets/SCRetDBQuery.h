@@ -11,6 +11,7 @@ namespace Packets
 	public:
 		SCRetDBQuery() :
 			m_QueryType(DB_QUERY_TYPE_NONE),
+			Result(ASK_DB_OPERATION_R_SUCCESS),
 			m_Values()
 		{};
 

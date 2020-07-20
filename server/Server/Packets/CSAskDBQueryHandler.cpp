@@ -44,24 +44,23 @@ UINT CSAskDBQueryHandler::Execute(CSAskDBQuery* pPacket, Player* pPlayer )
 		{
 		case DB_QUERY_TYPE::DB_QUERY_TYPE_DB_LIST:
 			ret = g_pDatabaseManager->GetDatabasesList(values);
+			if (!ret)
+			{
+				msg0.SetResult(ASK_DB_OPERATION_R_INTERNAL_ERROR);
+			}
 			break;
 		case DB_QUERY_TYPE::DB_QUERY_TYPE_KEY_VALUE:
 			ret = tomatodb::g_pDatabaseManager->GetFromDB(std::string(dbname), std::string(pPacket->GetDatabaseKey()), &s);
-			values.push_back(s);
+			if (ret)
+			{
+				values.push_back(s);
+			}
 			break;
 		default:
 			ret = FALSE;
 			break;
 		}
 
-		if (ret)
-		{
-			msg0.SetResult(ASK_DB_OPERATION_R_SUCCESS);
-		}
-		else
-		{
-			msg0.SetResult(ASK_DB_OPERATION_R_INTERNAL_ERROR);
-		}
 		pGamePlayer->SendPacket(&msg0);
 
 		g_pLog->FastSaveLog(LOG_FILE_1, "SCRetDBQuery D GUID=%X ...OK PID=%d",

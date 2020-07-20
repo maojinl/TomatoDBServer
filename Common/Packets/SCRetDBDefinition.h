@@ -1,5 +1,7 @@
 #ifndef _SCRETDBDEFINITION_H_
 #define _SCRETDBDEFINITION_H_
+#include <cstring>
+#include <algorithm>
 #include "Type.h"
 #include "Packet.h"
 #include "PacketFactory.h"
@@ -37,10 +39,11 @@ namespace Packets
 		VOID					SetResult(ASKDBOPERATION_RESULT result);
 		VOID					SetDatabaseName(const CHAR* pDBName) {
 			Assert(pDBName);
+			m_DatabaseNameSize = min(m_DatabaseNameSize, std::strlen(pDBName));
 			memset(m_DatabaseName, 0, m_DatabaseNameSize);
 			memcpy(m_DatabaseName, pDBName, m_DatabaseNameSize);
 			m_DatabaseName[m_DatabaseNameSize] = 0;
-		}
+		};
 		CHAR* GetDatabaseName() { return m_DatabaseName; };
 
 	private:

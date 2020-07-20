@@ -63,7 +63,7 @@ namespace tomatodb
 			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, m_DBlist[i]);
 			m_pDbList[i] = new DatabaseObject(m_DBlist[i], dbPathName);
 			m_pDbList[i]->pDb = nullptr;
-			Status s = DB::Open(dbOptions.openOptions, fullDbName, &(m_pDbList[i]->pDb));
+			Status s = DB::Open(dbOptions.openOptions, m_pDbList[i]->database_path_name, &(m_pDbList[i]->pDb));
 			m_DbIndexer[m_DBlist[i]] = i;
 			m_DbCount++;
 		}
@@ -210,6 +210,18 @@ namespace tomatodb
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
+	}
+
+	BOOL DatabaseManager::HeartBeat()
+	{
+		__ENTER_FUNCTION
+
+			UpdateRecycleDBList();
+			return TRUE;
+
+		__LEAVE_FUNCTION
+
+			return FALSE;
 	}
 
 	VOID DatabaseManager::UpdateRecycleDBList()
