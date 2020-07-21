@@ -4,7 +4,7 @@
 #include "MachineManager.h"
 #include "ServerManager.h"
 
-MachineManager* g_pMachineManager=NULL ;
+MachineManager* g_pMachineManager=nullptr ;
 
 MachineManager::MachineManager( )
 {
@@ -68,7 +68,7 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 _MACHINE_DATA* MachineManager::GetMachineInfo( ID_t MachineID )
@@ -83,6 +83,6 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 

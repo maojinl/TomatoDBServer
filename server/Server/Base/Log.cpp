@@ -29,7 +29,7 @@ CHAR* g_pLogFileName[] =
 
 MyLock g_log_lock ;
 
-Log* g_pLog=NULL ;
+Log* g_pLog=nullptr ;
 
 Log::Log( )
 {
@@ -37,7 +37,7 @@ __ENTER_FUNCTION
 
 	for( INT i=0; i<LOG_FILE_NUMBER; i++ )
 	{
-		m_LogCache[i] = NULL ;
+		m_LogCache[i] = nullptr ;
 		m_LogPos[i] = 0 ;
 	}
 	m_CacheSize = 0 ;
@@ -71,7 +71,7 @@ __ENTER_FUNCTION
 		for( INT i=0; i<LOG_FILE_NUMBER; i++ )
 		{
 			m_LogCache[i] = new CHAR[m_CacheSize] ;
-			if( m_LogCache[i] == NULL )
+			if( m_LogCache[i] == nullptr )
 			{
 				return FALSE ;
 			}

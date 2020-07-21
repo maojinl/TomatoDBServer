@@ -24,13 +24,13 @@
 
 using namespace Packets;
 
-PacketFactoryManager* g_pPacketFactoryManager = NULL ;
+PacketFactoryManager* g_pPacketFactoryManager = nullptr ;
 
 PacketFactoryManager::PacketFactoryManager( ) 
 {
 __ENTER_FUNCTION
 
-	m_Factories = NULL ;
+	m_Factories = nullptr ;
 	m_Size = PACKET_MAX ;
 
 	Assert( m_Size>0 ) ;
@@ -42,7 +42,7 @@ __ENTER_FUNCTION
 	
 	for( INT i=0; i<m_Size; i++ ) 
 	{
-		m_Factories[i] = NULL ;
+		m_Factories[i] = nullptr ;
 		m_pPacketAllocCount[i] = 0 ;
 	}
 			
@@ -53,7 +53,7 @@ PacketFactoryManager::~PacketFactoryManager( )
 {
 __ENTER_FUNCTION
 		
-	Assert( m_Factories!=NULL ) ;
+	Assert( m_Factories!=nullptr ) ;
 
 	for( INT i=0; i<m_Size; i++ ) 
 	{
@@ -100,7 +100,7 @@ VOID PacketFactoryManager::AddFactory( PacketFactory* pFactory )
 {
 __ENTER_FUNCTION
 		
-	if( m_Factories[pFactory->GetPacketID()]!=NULL ) 
+	if( m_Factories[pFactory->GetPacketID()]!=nullptr ) 
 	{//重复设定
         UINT I=pFactory->GetPacketID();
 		Assert( FALSE ) ;
@@ -116,13 +116,13 @@ Packet* PacketFactoryManager::CreatePacket( PacketID_t packetID )
 {
 __ENTER_FUNCTION
 
-	if( packetID>=m_Size || m_Factories[packetID]==NULL ) 
+	if( packetID>=m_Size || m_Factories[packetID]==nullptr ) 
 	{
 		Assert(FALSE) ;
-		return NULL ;
+		return nullptr ;
 	}
 
-	Packet* pPacket = NULL ;
+	Packet* pPacket = nullptr ;
 	Lock() ;
 	_MY_TRY
 	{
@@ -131,7 +131,7 @@ __ENTER_FUNCTION
 	}
 	_MY_CATCH
 	{
-		pPacket = NULL ;
+		pPacket = nullptr ;
 	}
 	Unlock() ;
 
@@ -139,7 +139,7 @@ __ENTER_FUNCTION
 			
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 UINT PacketFactoryManager::GetPacketMaxSize( PacketID_t packetID ) 
@@ -147,7 +147,7 @@ UINT PacketFactoryManager::GetPacketMaxSize( PacketID_t packetID )
 __ENTER_FUNCTION
 
 
-	if( packetID>=m_Size || m_Factories[packetID]==NULL ) 
+	if( packetID>=m_Size || m_Factories[packetID]==nullptr ) 
 	{
 		char buff[256] = {0};
 		sprintf(buff,"PacketID= %d 消息没有注册到PacketFactoryManager上",packetID);
@@ -170,7 +170,7 @@ VOID PacketFactoryManager::RemovePacket( Packet* pPacket )
 {
 __ENTER_FUNCTION
 
-	if( pPacket==NULL )
+	if( pPacket==nullptr )
 	{
 		Assert(FALSE) ;
 		return ;

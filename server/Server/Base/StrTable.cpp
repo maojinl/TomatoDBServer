@@ -8,7 +8,7 @@ StrTable::StrTable( )
 {
 __ENTER_FUNCTION
 
-	m_pTable = NULL ;
+	m_pTable = nullptr ;
 	m_Count = 0 ;
 	m_StringSize = 0 ;
 
@@ -41,9 +41,9 @@ __ENTER_FUNCTION
 	{
 		m_pTable[i].m_pString = new CHAR[m_StringSize] ;
 		memset( m_pTable[i].m_pString, 0, sizeof(CHAR)*m_StringSize ) ;
-		//m_pTable[i].m_pString = NULL ;
+		//m_pTable[i].m_pString = nullptr ;
 
-		m_pTable[i].m_pPtr = NULL ;
+		m_pTable[i].m_pPtr = nullptr ;
 		m_pTable[i].m_Status = STRTS_EMPTY ;
 	}
 #endif
@@ -83,7 +83,7 @@ __ENTER_FUNCTION
 			continue ;
 		}
 
-		if( m_pTable[c].m_pString == NULL )
+		if( m_pTable[c].m_pString == nullptr )
 		{
 			m_pTable[c].m_pString = new CHAR[m_StringSize] ;
 		}
@@ -108,17 +108,17 @@ VOID* StrTable::Get( const CHAR* szString )
 {
 __ENTER_FUNCTION
 
-	if( szString==NULL || szString[0]==0 )
+	if( szString==nullptr || szString[0]==0 )
 	{
 		Assert( FALSE ) ;
-		return NULL ;
+		return nullptr ;
 	}
 
 #ifdef USE_STD_MAP
 	strMap::const_iterator	itr = m_mTable.find(szString);
 	if (itr == m_mTable.end())
 	{
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
@@ -132,7 +132,7 @@ __ENTER_FUNCTION
 	{
 		if( m_pTable[c].m_Status == STRTS_EMPTY )
 		{
-			return NULL ;
+			return nullptr ;
 		}
 		else if( m_pTable[c].m_Status == STRTS_USE )
 		{
@@ -146,7 +146,7 @@ __ENTER_FUNCTION
 			if  (!m_pTable[c].m_pPtr)
 			{
 				Assert( FALSE ) ;
-				return NULL ;
+				return nullptr ;
 			}
 
 			return m_pTable[c].m_pPtr ;
@@ -158,7 +158,7 @@ __ENTER_FUNCTION
 #endif
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 VOID StrTable::Remove( const CHAR* szString )
@@ -167,7 +167,7 @@ __ENTER_FUNCTION
 
 #ifdef USE_STD_MAP
 	
-	if (szString!=NULL)
+	if (szString!=nullptr)
 	{
 		m_mTable.erase(szString);
 	}
@@ -191,7 +191,7 @@ __ENTER_FUNCTION
 		if( strcmp( m_pTable[c].m_pString, szString )==0 )
 		{
 			memset( m_pTable[c].m_pString, 0, sizeof(CHAR)*m_StringSize ) ;
-			m_pTable[c].m_pPtr = NULL;
+			m_pTable[c].m_pPtr = nullptr;
 			m_pTable[c].m_Status = STRTS_USE ;
 
 			return ;
@@ -209,7 +209,7 @@ VOID StrTable::RemoveWithData( const CHAR* szString, VOID* pPrt )
 __ENTER_FUNCTION
 
 #ifdef USE_STD_MAP
-	if (szString!=NULL)
+	if (szString!=nullptr)
 	{
 		m_mTable.erase(szString);
 	}
@@ -242,20 +242,20 @@ __ENTER_FUNCTION
 			{
 				memset( m_pTable[cplus].m_pString, 0, sizeof(CHAR)*m_StringSize ) ;
 				m_pTable[c].m_pPtr = m_pTable[cplus].m_pPtr;
-				m_pTable[cplus].m_pPtr = NULL;
+				m_pTable[cplus].m_pPtr = nullptr;
 				m_pTable[cplus].m_Status = STRTS_EMPTY ;
 			}
 			/*else */if( m_pTable[cplusplus].m_Status == STRTS_SET && strcmp( m_pTable[cplusplus].m_pString, szString )==0 )
 			{
 				memset( m_pTable[cplusplus].m_pString, 0, sizeof(CHAR)*m_StringSize ) ;
 				m_pTable[c].m_pPtr = m_pTable[cplusplus].m_pPtr;
-				m_pTable[cplusplus].m_pPtr = NULL;
+				m_pTable[cplusplus].m_pPtr = nullptr;
 				m_pTable[cplusplus].m_Status = STRTS_EMPTY ;
 			}
 			/*else*/
 			{
 				memset( m_pTable[c].m_pString, 0, sizeof(CHAR)*m_StringSize ) ;
-				m_pTable[c].m_pPtr = NULL;
+				m_pTable[c].m_pPtr = nullptr;
 				m_pTable[c].m_Status = STRTS_EMPTY ;
 			}
 
@@ -272,13 +272,13 @@ VOID StrTable::CleanUp( )
 {
 __ENTER_FUNCTION
 
-	if( m_pTable == NULL )
+	if( m_pTable == nullptr )
 		return ;
 
 	for( UINT i=0; i<m_Count; i++ )
 	{
 		memset( m_pTable[i].m_pString, 0, sizeof(CHAR)*m_StringSize ) ;
-		m_pTable[i].m_pPtr = NULL ;
+		m_pTable[i].m_pPtr = nullptr ;
 		m_pTable[i].m_Status = STRTS_EMPTY ;
 	}
 

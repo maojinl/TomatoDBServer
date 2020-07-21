@@ -66,7 +66,7 @@ public :
     //此接口是不同场景间通讯的唯一接口
     //注意：pPacket消息需要用g_pPacketFactoryManager创建出来，用完后不能删除
     //如果 PlayerID为INVALID_ID, 则广播此消息到整个场景
-    //如果 PlayerID为INVALID_ID_EX, 则此消息会被场景执行（Player为NULL）
+    //如果 PlayerID为INVALID_ID_EX, 则此消息会被场景执行（Player为nullptr）
     BOOL SendPacket(Packet* pPacket, PlayerID_t PlayerID,
                     UINT Flag = PF_NONE);
 

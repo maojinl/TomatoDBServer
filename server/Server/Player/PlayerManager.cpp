@@ -109,9 +109,9 @@ __ENTER_FUNCTION
 	Assert( m_nPlayers > 0 ) ;
 
 	Player* pRemovePlayer = g_pPlayerPool->GetPlayer(pid) ;
-	if( pRemovePlayer==NULL )
+	if( pRemovePlayer==nullptr )
 	{
-		g_pLog->FastSaveLog( LOG_FILE_2, "ERROR: pRemovePlayer==NULL PID=%d",
+		g_pLog->FastSaveLog( LOG_FILE_2, "ERROR: pRemovePlayer==nullptr PID=%d",
 			pid ) ;
 		return ;
 	}
@@ -132,9 +132,9 @@ __ENTER_FUNCTION
 	else
 	{
 		Player* pPlayer = g_pPlayerPool->GetPlayer( m_pPlayers[m_nPlayers-1] ) ;
-		if( pPlayer==NULL )
+		if( pPlayer==nullptr )
 		{
-			g_pLog->FastSaveLog( LOG_FILE_2, "ERROR: pPlayer==NULL PID=%d LastPID=%d",
+			g_pLog->FastSaveLog( LOG_FILE_2, "ERROR: pPlayer==nullptr PID=%d LastPID=%d",
 				m_pPlayers[m_nPlayers-1],m_nPlayers-1 ) ;
 			return ;
 		}

@@ -31,7 +31,7 @@ namespace Packets
 			int valueSize = m_Values.size();
 			for (int i = 0; i < valueSize; i++)
 			{
-				sz += sizeof(size_t);
+				sz += sizeof(UINT);
 				sz += sizeof(CHAR) * m_Values[i].size();
 			}
 			return sz;

@@ -29,7 +29,7 @@ class MyLock
 {
 	pthread_mutex_t 	m_Mutex; 
 public :
-	MyLock( ){ pthread_mutex_init( &m_Mutex , NULL );} ;
+	MyLock( ){ pthread_mutex_init( &m_Mutex , nullptr );} ;
 	~MyLock( ){ pthread_mutex_destroy( &m_Mutex) ; } ;
 	VOID	Lock( ){ pthread_mutex_lock(&m_Mutex); } ;
 	VOID	Unlock( ){ pthread_mutex_unlock(&m_Mutex); } ;
@@ -339,7 +339,7 @@ template <typename U, size_t nSizeLimit>
 		{
 			SIZE_LIMIT = nSizeLimit, //信息区最大单元个数，主要功能是限制数组无限增长
 		};
-		ResizableVector_T(VOID) : m_nCurrentSize(0), m_pUnits(NULL)
+		ResizableVector_T(VOID) : m_nCurrentSize(0), m_pUnits(nullptr)
 		{
 		};
 		~ResizableVector_T()
@@ -349,7 +349,7 @@ template <typename U, size_t nSizeLimit>
 		//Init Function
 		BOOL Init(size_t nSize)
 		{
-			if(NULL!=m_pUnits)
+			if(nullptr!=m_pUnits)
 			{
 				AssertEx(FALSE,"[ResizableVector_T::Init]: Init a Used vector!!Check it now.");
 				return FALSE;
@@ -360,7 +360,7 @@ template <typename U, size_t nSizeLimit>
 				return FALSE;
 			}
 			m_pUnits = new U[nSize];
-			if(NULL==m_pUnits)
+			if(nullptr==m_pUnits)
 			{
 				AssertEx(FALSE,"[ResizableVector_T::Init]: Allocate memory Failed!!Check it now.");
 				return FALSE;
@@ -376,7 +376,7 @@ template <typename U, size_t nSizeLimit>
 				return FALSE;
 			}
 			U* pNewBlock = new U[nSize];
-			if(NULL==pNewBlock)
+			if(nullptr==pNewBlock)
 			{
 				AssertEx(FALSE,"[ResizableVector_T::Resize]: new memory Failed!!Check it now.");
 				return FALSE;
@@ -407,7 +407,7 @@ template <typename U, size_t nSizeLimit>
 			{
 				return m_pUnits[nIdx];
 			}
-			return NULL;
+			return nullptr;
 		}
 		BOOL SetUnitByIndex(size_t nIdx, U const& rU)
 		{

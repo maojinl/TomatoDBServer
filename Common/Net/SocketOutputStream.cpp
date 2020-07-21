@@ -12,7 +12,7 @@ __ENTER_FUNCTION_FOXNET
 	m_pSocket = sock ;
 	m_BufferLen = BufferLen ;
 	m_MaxBufferLen = MaxBufferLen ;
-//	Assert( m_pSocket != NULL );
+//	Assert( m_pSocket != nullptr );
 //	Assert( m_BufferLen > 0 );
 
 	m_Head = 0 ;
@@ -203,7 +203,7 @@ UINT SocketOutputStream::Flush( )
 {
 __ENTER_FUNCTION_FOXNET
 
-//	Assert( m_pSocket != NULL );
+//	Assert( m_pSocket != nullptr );
 
 	UINT nFlushed = 0;
 	UINT nSent = 0;
@@ -323,7 +323,7 @@ __ENTER_FUNCTION_FOXNET
 	
 	CHAR * newBuffer = new CHAR[ newBufferLen ] ;
 //	Assert( newBuffer ) ;
-	if( newBuffer==NULL )
+	if( newBuffer==nullptr )
 		return FALSE ;
 		
 	if( m_Head<m_Tail ) 

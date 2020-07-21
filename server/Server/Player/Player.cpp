@@ -92,7 +92,7 @@ BOOL Player::IsValid( )
 {
 __ENTER_FUNCTION
 
-	if( m_pSocket==NULL ) return FALSE ;
+	if( m_pSocket==nullptr ) return FALSE ;
 
 	if( !m_pSocket->isValid() ) return FALSE ;
 
@@ -144,7 +144,7 @@ __ENTER_FUNCTION
 	Header header;
 	PacketID_t packetID = 0;
 	UINT packetFlag = 0, packetSize = 0, packetIndex = 0, packetTick = 0;
-	Packet* pPacket = NULL ;
+	Packet* pPacket = nullptr ;
 
 	if( IsDisconnect( ) )
 		return TRUE ;
@@ -202,7 +202,7 @@ __ENTER_FUNCTION
 				}
 
 				Packet* pPacket = g_pPacketFactoryManager->CreatePacket( packetID ) ;
-				if( pPacket==NULL )
+				if( pPacket==nullptr )
 				{//不能分配到足够的内存
 //					m_pSocketInputStream->Skip( PACKET_HEADER_SIZE+packetSize ) ;
 					g_pLog->FastSaveLog( LOG_FILE_1, "Lack of memory ") ;
@@ -496,7 +496,7 @@ __ENTER_FUNCTION
 	if( IsDisconnect( ) )
 		return TRUE ;
 
-	if( m_pSocketOutputStream!=NULL )
+	if( m_pSocketOutputStream!=nullptr )
 	{
 		Header header;
 

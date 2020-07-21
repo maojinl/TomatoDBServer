@@ -6,23 +6,23 @@
 #include "Log.h"
 
 
-ClientManager* g_pClientManager = NULL ;
+ClientManager* g_pClientManager = nullptr;
 
-ClientManager::ClientManager( )
+ClientManager::ClientManager()
 {
 __ENTER_FUNCTION
 
-	if( !g_pIncomingPlayerManager )
+	if(!g_pIncomingPlayerManager)
 	{
-		g_pIncomingPlayerManager = new IncomingPlayerManager ;
-		Assert( g_pIncomingPlayerManager ) ;
+		g_pIncomingPlayerManager = new IncomingPlayerManager;
+		Assert(g_pIncomingPlayerManager);
 	}
-	m_Active = FALSE ;
+	m_Active = FALSE;
 
 __LEAVE_FUNCTION
 }
 
-ClientManager::~ClientManager( )
+ClientManager::~ClientManager()
 {
 __ENTER_FUNCTION
 

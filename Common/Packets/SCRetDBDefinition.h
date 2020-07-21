@@ -25,7 +25,7 @@ namespace Packets
 
 		virtual PacketID_t		GetPacketID() const { return PACKET_SC_RETDBDEFINITION; }
 		virtual UINT			GetPacketSize() const
-		{
+		{ 
 			return sizeof(DB_OPERATION_TYPE)
 				+ sizeof(ASKDBOPERATION_RESULT)
 				+ sizeof(BYTE)

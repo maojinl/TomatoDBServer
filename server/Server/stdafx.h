@@ -41,7 +41,6 @@
 #include "PlayerPool.h"
 #include "PacketFactoryManager.h"
 #include "ServerManager.h"
-#include "WorldManager.h"
 #include "MachineManager.h"
 #include "GUIDManager.h"
 #include "Worker.h"

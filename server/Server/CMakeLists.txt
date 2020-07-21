@@ -139,8 +139,6 @@ set(Main
     "Main/ThreadManager.h"
     "Main/ThreadPool.cpp"
     "Main/ThreadPool.h"
-    "Main/WorldManager.cpp"
-    "Main/WorldManager.h"
 )
 source_group("Main" FILES ${Main})
 

@@ -51,10 +51,10 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		pGamePlayer->InitHuman();
 
 		//Illegal worker
-		if( WorkerID==INVALID_ID || pWorker==NULL )
+		if( WorkerID==INVALID_ID || pWorker==nullptr )
 		{
 			pWorker = g_pWorkerManager->GetWorker(0) ;
-			if(pWorker ==NULL )
+			if(pWorker ==nullptr )
 			{
 				SCRetLogin Msg ;
 				Msg.SetResult(LOGINR_STOP_SERVICE);
@@ -98,7 +98,7 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 	{
 		WorkerID_t workerID = pPacket->GetWorkerID() ;
 		Worker* pWorker = g_pWorkerManager->GetWorker(workerID) ;
-		if(pWorker ==NULL )
+		if(pWorker ==nullptr )
 		{
 			Assert(FALSE) ;
 			return PACKET_EXE_ERROR ;

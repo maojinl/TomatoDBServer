@@ -38,8 +38,8 @@ namespace tomatodb
 		std::unordered_map<string, UINT> m_DbIndexer;
 		const DatabaseOptions dbOptions;
 		DBThreadObjectsPool* threadObjectsPool;
-		vector<string> m_DBlist;
 		VOID UpdateRecycleDBList();
+		BOOL DeleteDatabaseCore(DatabaseObject* pDbObj);
 		DatabaseObject* RefDatabaseHandler(string database_name);
 		VOID UnrefDatabaseHandler(DatabaseObject* pDbObj);
 	};

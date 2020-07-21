@@ -13,7 +13,7 @@ __ENTER_FUNCTION_FOXNET
 	m_BufferLen = BufferLen ;
 	m_MaxBufferLen = MaxBufferLen ;
 		
-//	Assert( m_pSocket != NULL );
+//	Assert( m_pSocket != nullptr );
 //	Assert( m_BufferLen > 0 );
 
 	m_Head = 0 ;
@@ -88,7 +88,7 @@ UINT SocketInputStream::Read( CHAR* buf, UINT len )
 {
 __ENTER_FUNCTION_FOXNET
 
-//	Assert( buf != NULL );	
+//	Assert( buf != nullptr );	
 	
 	if ( len == 0 )
 		return 0 ;
@@ -146,7 +146,7 @@ BOOL SocketInputStream::Peek( CHAR* buf, UINT len )
 {
 __ENTER_FUNCTION_FOXNET
 			
-//	Assert( buf!=NULL ) ;	
+//	Assert( buf!=nullptr ) ;	
 
 	if( len==0 )
 		return FALSE ;
@@ -185,7 +185,7 @@ BOOL SocketInputStream::Find( CHAR* buf )
 {
 	__ENTER_FUNCTION_FOXNET
 
-		//	Assert( buf!=NULL ) ;	
+		//	Assert( buf!=nullptr ) ;	
 
 		BOOL IsFind = FALSE;
 		while ( Length() > PACK_COMPART_SIZE )
@@ -207,7 +207,7 @@ BOOL SocketInputStream::Find( CHAR* buf )
 					memcpy( &buf[rightLen], &m_Buffer[0], PACK_COMPART_SIZE-rightLen ) ;
 				}
 			}
-			if (strstr(buf, PACK_COMPART) == NULL){
+			if (strstr(buf, PACK_COMPART) == nullptr){
 				m_Head++;
 				if (m_Head >= m_BufferLen){
 					m_Head -= m_BufferLen;

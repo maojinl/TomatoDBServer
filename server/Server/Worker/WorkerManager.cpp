@@ -7,7 +7,7 @@
 #include "MachineManager.h"
 
 
-WorkerManager* g_pWorkerManager=NULL ;
+WorkerManager* g_pWorkerManager=nullptr ;
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -20,7 +20,7 @@ __ENTER_FUNCTION
 
 	for( INT i=0; i < MAX_WORKER; i++ )
 	{
-		m_pWorker[i]=NULL ;
+		m_pWorker[i]=nullptr ;
 		m_aWorkerPlayerCount[i]=0 ;
 	}
 	m_Count = 0 ;
@@ -47,14 +47,14 @@ __ENTER_FUNCTION
 
 	if( (UINT)WorkerID >=MAX_WORKER )
 	{
-		return NULL ;
+		return nullptr ;
 	}
 
 	return m_pWorker[WorkerID] ;
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 _WORKER_DATA* WorkerManager::GetWorkerInfo(WorkerID_t WorkerID)
@@ -69,7 +69,7 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 
@@ -136,13 +136,13 @@ BOOL WorkerManager::AddWorker( Worker* pWorker)
 __ENTER_FUNCTION
 
 	Assert( pWorker ) ;
-	if( pWorker==NULL )
+	if( pWorker==nullptr )
 		return FALSE ;
 
 	WorkerID_t WorkerID = pWorker->WorkerID() ;
 	Assert( WorkerID < MAX_WORKER ) ;
 	
-	Assert( m_pWorker[WorkerID]==NULL ) ;
+	Assert( m_pWorker[WorkerID]==nullptr ) ;
 	m_pWorker[WorkerID] = pWorker ;
 
 	m_Count ++ ;
@@ -164,7 +164,7 @@ __ENTER_FUNCTION
 	if( m_pWorker[WorkerID] ) 
 		return FALSE ;
 
-	m_pWorker[WorkerID] = NULL ;
+	m_pWorker[WorkerID] = nullptr ;
 	m_Count -- ;
 
 	return TRUE ;

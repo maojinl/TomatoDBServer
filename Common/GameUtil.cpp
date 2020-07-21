@@ -205,7 +205,7 @@ UINT g_aCrc32Table[256] =
 
 UINT MyCRC( const CHAR* szString )
 {
-	if(szString==NULL || szString[0]==0) return 0;
+	if(szString==nullptr || szString[0]==0) return 0;
 
 	UINT dwCrc32 = 0xFFFFFFFF;
 	INT nSize = (INT)strlen(szString);
@@ -666,7 +666,7 @@ BOOL		CommandSafeCheck(const CHAR* pIn,UINT InLength)
 
 CHAR* ReplaceIllegalString( CHAR* strText, INT nLength, INT nLevel )
 {
-	if( strText == NULL ) return NULL;
+	if( strText == nullptr ) return nullptr;
 	INT i;
 	for( i = 0; i < nLength; i ++ )
 	{
@@ -679,7 +679,7 @@ CHAR* ReplaceIllegalString( CHAR* strText, INT nLength, INT nLevel )
 
 BOOL CheckIllegalString( const CHAR* strText, INT nLength, INT nLevel )
 {
-	if( strText == NULL ) return FALSE;
+	if( strText == nullptr ) return FALSE;
 	INT i;
 	if( nLevel == CHECK_STRING_NORMAL )
 	{

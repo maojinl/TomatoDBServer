@@ -25,8 +25,8 @@ public:
 	SMUPool()
 	{
 		__ENTER_FUNCTION
-		m_pRefObjPtr	= NULL;	
-		m_hObj			= NULL;
+		m_pRefObjPtr	= nullptr;	
+		m_hObj			= nullptr;
 		m_nMaxSize		= -1;
 		m_nPosition		= -1;
 
@@ -85,9 +85,9 @@ public:
 		for( i = 0; i < m_nMaxSize; i++ )
 		{
 			m_hObj[i] = reinterpret_cast<T*>(m_pRefObjPtr->GetTypePtr(sizeof(T),i));
-			if ( m_hObj[i] == NULL )
+			if ( m_hObj[i] == nullptr )
 			{
-				Assert( m_hObj[i] != NULL );
+				Assert( m_hObj[i] != nullptr );
 				return FALSE;
 			}
 		}
@@ -120,7 +120,7 @@ public:
 		Assert( m_nPosition < m_nMaxSize );
 		if ( m_nPosition >= m_nMaxSize )
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		T *pObj = m_hObj[m_nPosition];
@@ -128,15 +128,15 @@ public:
 		m_nPosition++;
 		return pObj;
 		__LEAVE_FUNCTION
-		return NULL;
+		return nullptr;
 	}
 
 	VOID DeleteObj( T *pObj )
 	{
 		__ENTER_FUNCTION
 
-		Assert( pObj != NULL );	
-		if ( pObj == NULL )
+		Assert( pObj != nullptr );	
+		if ( pObj == nullptr )
 		{
 			return ;
 		}
@@ -323,7 +323,7 @@ private:
 //	{
 //		Assert(SMUId<m_nCount);
 //		if( SMUId>=m_nCount )
-//			return NULL ;
+//			return nullptr ;
 //		return m_pSMU[SMUId];
 //		
 //	}

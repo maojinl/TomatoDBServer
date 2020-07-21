@@ -14,7 +14,7 @@ struct _RANDOM_TABLE
 
 	_RANDOM_TABLE()
 	{
-		srand((unsigned)time(NULL));
+		srand((unsigned)time(nullptr));
 
 		for(INT i = 0; i < max_record_num; i++)
 			m_uRecord[i] = rand()*rand();
@@ -32,7 +32,7 @@ struct _100_PER_RANDOM_TABLE
 
 	_100_PER_RANDOM_TABLE()
 	{
-		srand((unsigned)time(NULL));
+		srand((unsigned)time(nullptr));
 
 		for(INT i = 0; i < max_record_num; i++)
 			m_uRecord[i] = i;

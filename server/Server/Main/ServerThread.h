@@ -4,9 +4,6 @@
 #include "Type.h"
 #include "Thread.h"
 
-
-//用来处理服务器之间数据通讯的线程
-
 class ServerThread : public Thread
 {
 public :
@@ -26,8 +23,6 @@ public :
 
 private :
 	BOOL		m_Active ;
-
-
 };
 
 

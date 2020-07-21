@@ -15,7 +15,6 @@
 #include "Thread.h"
 #include "PacketFactoryManager.h"
 #include "ServerManager.h"
-#include "WorldManager.h"
 #include "MachineManager.h"
 #include "GUIDManager.h"
 #include "SMUManager.h"
@@ -69,7 +68,6 @@ INT main(INT argc, CHAR* argv[])
 	ret = g_pTimeManager->Init( ) ;
 	Assert(ret) ;
 
-//日志模块初始化需要最开始设置
 	g_pLog = new Log ;
 	Assert( g_pLog ) ;
 	ret = g_pLog->Init( ) ;
@@ -200,19 +198,15 @@ __ENTER_FUNCTION
 
 	Log::SaveLog( SERVER_LOGFILE, "\r\nExitServer..." ) ;
 
-	//////////////////
-	//等待所有线程完全推出后执行清除操作
 	WaitForAllThreadQuit( ) ;
 
 	Log::SaveLog( SERVER_LOGFILE, "Begin delete..." ) ;
-	//动态数据
+
 	SAFE_DELETE( g_pClientManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pClientManager delete...OK" ) ;
 	SAFE_DELETE( g_pThreadManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pThreadManager delete...OK" ) ;
 
-
-	//静态数据
 	SAFE_DELETE( g_pWorkerManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pWorkerManager delete...OK" ) ;
 	SAFE_DELETE( g_pPlayerPool ) ;
@@ -221,8 +215,6 @@ __ENTER_FUNCTION
 	Log::SaveLog( SERVER_LOGFILE, "g_pPacketFactoryManager delete...OK" ) ;
 	SAFE_DELETE( g_pServerManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pServerManager delete...OK" ) ;
-	SAFE_DELETE( g_pWorldManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pWorldManager delete...OK" ) ;
 	SAFE_DELETE( g_pMachineManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pMachineManager delete...OK" ) ;
 	SAFE_DELETE( g_pGUIDManager ) ;
@@ -252,7 +244,6 @@ __ENTER_FUNCTION
 #define MAX_WAIT_QUIT 300
 
 	INT iQuit ;
-	//最长时间可以等待MAX_WAIT_QUIT秒
 	for( INT i=0;i<MAX_WAIT_QUIT;i++ )
 	{
 		iQuit = g_QuitThreadCount ;
@@ -289,11 +280,6 @@ __ENTER_FUNCTION
 	g_pServerManager = new ServerManager ;
 	Assert( g_pServerManager ) ;
 	Log::SaveLog( SERVER_LOGFILE, "new ServerManager...OK" ) ;
-
-	//
-	g_pWorldManager = new WorldManager ;
-	Assert( g_pWorldManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new WorldManager...OK" ) ;
 
 	//
 	g_pMachineManager = new MachineManager ;
@@ -390,7 +376,7 @@ __ENTER_FUNCTION
 
 		if(g_HumanSMUPool.GetHeadVer()!=0)
 		{
-			AssertEx(ret,"ShareMemory 存盘尚未完成，请稍后启动Server");
+			AssertEx(ret,"ShareMemory Server");
 		}
 	}
 
@@ -413,11 +399,6 @@ __ENTER_FUNCTION
 	Log::SaveLog( SERVER_LOGFILE, "g_pPacketFactoryManager->Init()...OK" ) ;
 
 	//
-	ret = g_pWorldManager->Init( ) ;
-	Assert( ret ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pWorldManager->Init()...OK" ) ;
-
-	//
 	ret = g_pMachineManager->Init( ) ;
 	Assert( ret ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pMachineManager->Init()...OK" ) ;
@@ -426,8 +407,7 @@ __ENTER_FUNCTION
 	ret = g_pGUIDManager->Init( ) ;
 	Assert( ret );
 	Log::SaveLog( SERVER_LOGFILE, "g_pGUIDManager->Init()...OK" ) ;
-	
-	//物品盒初始化
+
 	//________________________________________________________
 	if( g_Config.m_ConfigInfo.m_SystemModel == 0 )
 	{

@@ -28,7 +28,7 @@ ServerSocket::ServerSocket ( UINT port , UINT backlog )
 //	{
 //		while (1)
 //		{
-//			MessageBox(NULL,"序列号错误，为了不误伤队友，提示你一下！","严重错误!",MB_ICONERROR);//正式时注释掉
+//			MessageBox(nullptr,"序列号错误，为了不误伤队友，提示你一下！","严重错误!",MB_ICONERROR);//正式时注释掉
 //			//double *d = new double[10000];//正式时打开
 //		}
 //		//throw 1 ;//正式时打开
@@ -47,7 +47,7 @@ ServerSocket::ServerSocket ( UINT port , UINT backlog )
 	// create socket implementation object
 	m_Socket = new Socket;
 //	Assert( m_Socket ) ;
-	if( m_Socket==NULL )
+	if( m_Socket==nullptr )
 		throw 1 ;
 	
 	// create socket
@@ -87,11 +87,11 @@ ServerSocket::~ServerSocket ()
 {
 	__ENTER_FUNCTION_FOXNET
 		
-	if ( m_Socket != NULL ) 
+	if ( m_Socket != nullptr ) 
 	{
 		m_Socket->close();
 		delete m_Socket;
-		m_Socket = NULL;
+		m_Socket = nullptr;
 	}
 
 	__LEAVE_FUNCTION_FOXNET

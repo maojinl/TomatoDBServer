@@ -8,7 +8,7 @@ __ENTER_FUNCTION
 
 	for( INT i=0; i<MAX_THREAD; i++ )
 	{
-		m_pThread[i] = NULL ;
+		m_pThread[i] = nullptr ;
 	}
 	m_Count = 0 ;
 	m_Position = 0 ;
@@ -36,7 +36,7 @@ __ENTER_FUNCTION
 
 	for( INT i=0; i<MAX_THREAD; i++ )
 	{
-		if( m_pThread[m_Position] == NULL )
+		if( m_pThread[m_Position] == nullptr )
 		{
 			m_pThread[m_Position] = pThread ;
 			m_Position ++ ;
@@ -65,7 +65,7 @@ __ENTER_FUNCTION
 		if( m_pThread[i] && m_pThread[i]->getTID()==id )
 		{
 			m_Position = i ;
-			m_pThread[i] = NULL ;
+			m_pThread[i] = nullptr ;
 			m_Count -- ;
 			Assert( m_Count >= 0 ) ;
 
@@ -94,7 +94,7 @@ __ENTER_FUNCTION
 __LEAVE_FUNCTION
 
 
-	return NULL ;
+	return nullptr ;
 }
 
 Thread* ThreadPool::GetThreadByIndex( UINT index )
@@ -102,13 +102,13 @@ Thread* ThreadPool::GetThreadByIndex( UINT index )
 __ENTER_FUNCTION
 
 	if( index>=m_Count )
-		return NULL ;
+		return nullptr ;
 
 	return m_pThread[index] ; 
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 BOOL ThreadPool::Start( )

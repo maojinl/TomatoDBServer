@@ -7,6 +7,11 @@
 
 namespace tomatodb
 {
+	enum DatabaseStatus	{
+		DatabaseStatusNormal = 0,
+		DatabaseStatusDeletePending
+	};
+
 	class DatabaseObject
 	{
 	private:
@@ -16,13 +21,15 @@ namespace tomatodb
 		leveldb::DB* pDb;
 		int refs;
 		MyLock dblock;
+		DatabaseStatus status;
 	public:
 		DatabaseObject(string dbname, string dbpathname) :
 			database_name(dbname),
 			database_path_name(dbpathname),
 			pDb(nullptr),
 			refs(0),
-			dblock()
+			dblock(),
+			status(DatabaseStatusNormal)
 		{
 		};
 		~DatabaseObject(){};
@@ -31,12 +38,26 @@ namespace tomatodb
 			return refs == 0;
 		};
 
-		void Ref() { ++refs; };
+		void Ref() { 
+			AutoLock_T l(dblock); 
+			++refs; 
+		};
 
 		void Unref() {
 			//assert(refs_ >= 1);
+			AutoLock_T l(dblock);
 			--refs;
 		};
+
+		BOOL IsNormal()
+		{
+			return status == DatabaseStatusNormal;
+		}
+
+		BOOL IsDeletePending()
+		{
+			return status == DatabaseStatusDeletePending;
+		}
 
 		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch)
 		{

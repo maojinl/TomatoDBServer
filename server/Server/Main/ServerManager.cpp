@@ -6,13 +6,13 @@
 #include "PacketFactoryManager.h"
 
 
-ServerManager* g_pServerManager = NULL ;
+ServerManager* g_pServerManager = nullptr ;
 
 ServerManager::ServerManager( )
 {
 __ENTER_FUNCTION
 
-	//m_pServerSocket = NULL ;
+	//m_pServerSocket = nullptr ;
 
 	m_PacketQue = new ASYNC_PACKET[MAX_CACHE_SIZE] ;
 	Assert(m_PacketQue) ;
@@ -60,7 +60,7 @@ __ENTER_FUNCTION
 
 	m_ServerPlayer.SetPlayerID( 0 ) ;
 
-	m_pCurServerInfo = NULL ;
+	m_pCurServerInfo = nullptr ;
 
 __LEAVE_FUNCTION
 }
@@ -89,14 +89,14 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 _SERVER_DATA* ServerManager::GetCurrentServerInfo( )
 {
 __ENTER_FUNCTION
 
-	if( m_pCurServerInfo==NULL )
+	if( m_pCurServerInfo==nullptr )
 	{
 		INT iIndex = g_Config.m_ServerInfo.m_HashServer[g_Config.m_ConfigInfo.m_ServerID] ;
 
@@ -110,7 +110,7 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 
-	return NULL ;
+	return nullptr ;
 }
 
 BOOL	ServerManager::IsEnableShareMem()
@@ -542,7 +542,6 @@ __ENTER_FUNCTION
 	{
 		if (!IsWorldServerActive())
 		{
-			//连接TestServerID的内网端口
 			ret = ConnectWorldServer( ) ;
 			if( ret==FALSE )
 			{
@@ -580,7 +579,7 @@ __ENTER_FUNCTION
 
 	BOOL ret ;
 	UINT i = 0 ;
-	SSConnect* pMsg=NULL ;
+	SSConnect* pMsg=nullptr ;
 
 	Socket* pSocket = m_ServerPlayer.GetSocket() ;
 	_SERVER_WORLD* pWorld = &(g_Config.m_ServerInfo.m_World) ;
@@ -690,7 +689,7 @@ __ENTER_FUNCTION
 
 	Lock( ) ;
 
-	if( m_PacketQue[m_Head].m_pPacket==NULL )
+	if( m_PacketQue[m_Head].m_pPacket==nullptr )
 	{//缓冲区中没有消息
 		Unlock( ) ;
 		return FALSE ;
@@ -700,7 +699,7 @@ __ENTER_FUNCTION
 	PlayerID = m_PacketQue[m_Head].m_PlayerID ;
 	Flag = m_PacketQue[m_Head].m_Flag ;
 
-	m_PacketQue[m_Head].m_pPacket = NULL ;
+	m_PacketQue[m_Head].m_pPacket = nullptr ;
 	m_PacketQue[m_Head].m_PlayerID = INVALID_ID ;
 	m_PacketQue[m_Head].m_Flag = PF_NONE ;
 
@@ -729,7 +728,7 @@ __ENTER_FUNCTION
 
 	for( UINT i=0; i<MAX_CACHE_SIZE; i++ )
 	{
-		Packet* pPacket = NULL ;
+		Packet* pPacket = nullptr ;
 		PlayerID_t PlayerID ;
 		UINT Flag ;
 
@@ -769,7 +768,7 @@ BOOL  ServerManager::ResizeCache( )
 __ENTER_FUNCTION
 
 	ASYNC_PACKET* pNew = new ASYNC_PACKET[m_QueSize+MAX_CACHE_SIZE] ;
-	if( pNew==NULL )
+	if( pNew==nullptr )
 		return FALSE ;
 
 	memcpy( pNew, &(m_PacketQue[m_Head]), sizeof(ASYNC_PACKET)*(m_QueSize-m_Head) ) ;

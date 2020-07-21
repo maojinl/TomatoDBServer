@@ -1,20 +1,18 @@
 #include "stdafx.h"
 
-
 #include "WorkerThread.h"
 #include "Log.h"
 #include "WorkerManager.h"
 
-
-WorkerThread::WorkerThread( )
+WorkerThread::WorkerThread()
 {
 __ENTER_FUNCTION
 
 	m_Active = TRUE ;
 	m_nWorkerCount = 0 ;
-	for( INT i=0; i<MAX_WORKER_PER_THREAD; i++ )
+	for(INT i=0; i<MAX_WORKER_PER_THREAD; i++)
 	{
-		m_apWorker[i] = NULL ;
+		m_apWorker[i] = nullptr;
 	}
 
 __LEAVE_FUNCTION
@@ -29,31 +27,31 @@ __ENTER_FUNCTION
 __LEAVE_FUNCTION
 }
 
-VOID WorkerThread::Quit( )
+VOID WorkerThread::Quit()
 {
 __ENTER_FUNCTION
 
-	for( INT i=0; i<m_nWorkerCount; i++ )
+	for(INT i=0; i<m_nWorkerCount; i++)
 	{
-		m_apWorker[i]->GetPlayerManager()->RemoveAllPlayer( ) ;
+		m_apWorker[i]->GetPlayerManager()->RemoveAllPlayer();
 	}
 
 __LEAVE_FUNCTION
 }
 
-VOID WorkerThread::run( )
+VOID WorkerThread::run()
 {
 __ENTER_FUNCTION
 	
 	INT i;
 
-	TID cTid = getTID( ) ;
-	for( i=0; i<m_nWorkerCount; i++ )
+	TID cTid = getTID() ;
+	for(i=0; i<m_nWorkerCount; i++)
 	{
-		m_apWorker[i]->m_ThreadID = cTid ;
+		m_apWorker[i]->m_ThreadID = cTid;
 	}
 
-	if( m_nWorkerCount==0 )
+	if(m_nWorkerCount == 0)
 	{
 		Log::SaveLog( SERVER_LOGFILE, "WorkerThread:: no scene add! TID:%d", cTid ) ;
 		return ;
@@ -68,12 +66,12 @@ __ENTER_FUNCTION
 				cTid, m_apWorker[i]->WorkerID(), g_pWorkerManager->GetWorkerInfo(m_apWorker[i]->WorkerID())->m_ThreadIndex ) ;
 		}
 
-		while( IsActive() )
+		while(IsActive())
 		{
-			for( i=0; i<m_nWorkerCount; i++ )
+			for(i=0; i<m_nWorkerCount; i++)
 			{
-				BOOL ret = m_apWorker[i]->Tick( ) ;
-				Assert( ret ) ;
+				BOOL ret = m_apWorker[i]->Tick();
+				Assert(ret);
 			}
 		}
 	}
@@ -82,13 +80,13 @@ __ENTER_FUNCTION
 		SaveCodeLog( ) ;
 	}
 
-	Quit( ) ;
+	Quit() ;
 
 
 __LEAVE_FUNCTION
 }
 
-BOOL WorkerThread::AddWorker(Worker* pScene )
+BOOL WorkerThread::AddWorker(Worker* pWorker )
 {
 __ENTER_FUNCTION
 
@@ -98,7 +96,7 @@ __ENTER_FUNCTION
 		return FALSE ;
 	}
 
-	m_apWorker[m_nWorkerCount] = pScene ;
+	m_apWorker[m_nWorkerCount] = pWorker;
 	m_nWorkerCount ++ ;
 
 	return TRUE ;

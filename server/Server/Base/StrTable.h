@@ -18,14 +18,14 @@ struct _TABLEITEM_STR
 
 	_TABLEITEM_STR( )
 	{
-		m_pString = NULL ;
-		m_pPtr = NULL ;
+		m_pString = nullptr ;
+		m_pPtr = nullptr ;
 		m_Status = 0 ;
 	}
 	~_TABLEITEM_STR( )
 	{
 		SAFE_DELETE_ARRAY( m_pString ) ;
-		m_pPtr = NULL ;
+		m_pPtr = nullptr ;
 		m_Status = 0 ;
 	}
 };

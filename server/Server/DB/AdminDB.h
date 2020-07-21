@@ -28,7 +28,7 @@ namespace tomatodb
 
 		static AdminDB* GetInstance() {
 			//must be called firstly in main thread
-			if (m_pAdminDBObj == NULL) {
+			if (m_pAdminDBObj == nullptr) {
 				m_pAdminDBObj = new AdminDB();
 			}
 			return m_pAdminDBObj;

@@ -95,14 +95,14 @@ bool DBCFile::_FieldEqu(const FIELD& a, const FIELD& b)
 DBCFile::DBCFile(UINT id)
 {
 	m_ID = id;
-	m_pStringBuf = NULL;
+	m_pStringBuf = nullptr;
 	m_nIndexColum = -1;
 }
 
 DBCFile::~DBCFile()
 {
 	if(m_pStringBuf) delete[] m_pStringBuf;
-	m_pStringBuf = NULL;
+	m_pStringBuf = nullptr;
 }
 
 //从内存中字符串读取一行文本(按照换行符)
@@ -114,7 +114,7 @@ const CHAR* DBCFile::_GetLineFromMemory(CHAR* pStringBuf, INT nBufSize, const CH
 
 	while(pMem < pDeadEnd && pMem-pMemory+1<nBufSize && 
 			*pMem != 0 && *pMem != '\r' && *pMem != '\n') *(pStringBuf++) = *(pMem++);
-	//add 'null' end
+	//add 'nullptr' end
 	*pStringBuf = 0;
 
 	//skip all next \r and \n
@@ -406,7 +406,7 @@ BOOL DBCFile::OpenFromTXT(const CHAR* szFileName)
 	//----------------------------------------------------
 	//打开文件
 	FILE* fp = fopen(szFileName, "rb");
-	if(NULL == fp) return FALSE;
+	if(nullptr == fp) return FALSE;
 
 	fseek(fp, 0, SEEK_END);
 	int nFileSize = ftell(fp);
@@ -452,7 +452,7 @@ VOID DBCFile::CreateIndex(INT nColum, const CHAR* szFileName)
 const DBCFile::FIELD* DBCFile::Search_Index_EQU(INT iIndex) const
 {
 	FIELD_HASHMAP::const_iterator itFind = m_hashIndex.find(iIndex);
-	if(itFind == m_hashIndex.end()) return NULL;
+	if(itFind == m_hashIndex.end()) return nullptr;
 
 	return itFind->second;
 }
@@ -470,7 +470,7 @@ const DBCFile::FIELD* DBCFile::Search_Posistion(INT nRecordLine, INT nColumNum) 
 #else
 		AssertEx(FALSE, szTemp);
 #endif
-		return NULL;
+		return nullptr;
 	}
 
 	return &(m_vDataBuf[nPosition]);

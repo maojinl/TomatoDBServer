@@ -42,7 +42,7 @@ namespace tomatodb
 
 		static DBThreadObjectsPool* GetInstance() {
 			//must be called firstly in main thread
-			if (m_pDBThreadObjPool == NULL) {
+			if (m_pDBThreadObjPool == nullptr) {
 				m_pDBThreadObjPool = new DBThreadObjectsPool();
 			}
 			return m_pDBThreadObjPool;

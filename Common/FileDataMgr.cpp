@@ -52,7 +52,7 @@ CFileDataMgr::CFileDataMgr( VOID )
 
 	m_uCount		= 0;
 	m_uLength		= 0;
-	m_apFileData	= NULL;
+	m_apFileData	= nullptr;
 }
 
 CFileDataMgr::~CFileDataMgr( VOID )
@@ -62,11 +62,11 @@ CFileDataMgr::~CFileDataMgr( VOID )
 
 BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 {
-	if ( pszMgrPathFileName == NULL )
+	if ( pszMgrPathFileName == nullptr )
 		return FALSE;
 
 	FILE *fp = fopen( pszMgrPathFileName, "rb" );
-	if ( fp == NULL )
+	if ( fp == nullptr )
 		return FALSE;
 
 	BOOL bResult;
@@ -128,7 +128,7 @@ BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 
 		// 分析文件
 		SFileDataLink *pHead;
-		pHead = NULL;
+		pHead = nullptr;
 
 		nFileSize -= MGR_HEAD_SIZE + 1;
 		CHAR *szBuffer, *szTempBuffer;
@@ -248,21 +248,21 @@ BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 						FILE *fpItem = fopen( szItemPathFileName, "rb" );
 						UINT uItemID = (UINT)(atoi( szIDString ));
 						bResult = pFileData->Init( uItemID, szItemPathFileName, fpItem );
-						if ( fpItem != NULL )
+						if ( fpItem != nullptr )
 							fclose( fpItem );
 
 						if ( bResult )
 						{
-							if ( pHead == NULL )
+							if ( pHead == nullptr )
 							{
 								pHead = new SFileDataLink;
-								pHead->m_pPrev = pHead->m_pNext = NULL;
+								pHead->m_pPrev = pHead->m_pNext = nullptr;
 								pHead->m_pData = pFileData;
 							}
 							else
 							{
 								SFileDataLink *pLink = new SFileDataLink;
-								pLink->m_pPrev = NULL;
+								pLink->m_pPrev = nullptr;
 								pLink->m_pNext = pHead;
 								pHead->m_pPrev = pLink;
 								pLink->m_pData = pFileData;
@@ -318,7 +318,7 @@ BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 				m_apFileData = new SFileData* [m_uLength];
 				memset( m_apFileData, 0, sizeof ( SFileData* ) * m_uLength );
 
-				while( pHead != NULL )
+				while( pHead != nullptr )
 				{
 					m_apFileData[pHead->m_pData->GetID()-m_uMinID] = pHead->m_pData;
 					SFileDataLink *pPrevLink = pHead;
@@ -338,25 +338,25 @@ BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 				// 排序
 				SFileDataLink *pCurLink = pHead;
 				SFileDataLink *pNextLink;
-				while( pCurLink != NULL )
+				while( pCurLink != nullptr )
 				{
 					pNextLink = pCurLink->m_pNext;
-					if ( pCurLink->m_pPrev != NULL )
+					if ( pCurLink->m_pPrev != nullptr )
 					{
 						SFileDataLink *pSortPrev;
 						SFileDataLink *pSortCur;
 						pSortCur = pCurLink;
 						pSortPrev = pCurLink->m_pPrev;
-						while ( pSortPrev != NULL )
+						while ( pSortPrev != nullptr )
 						{
 							if ( pSortCur->m_pData->GetID() < pSortPrev->m_pData->GetID() )
 							{
 								pSortCur->m_pPrev = pSortPrev->m_pPrev;
-								if ( pSortPrev->m_pPrev != NULL )
+								if ( pSortPrev->m_pPrev != nullptr )
 									pSortPrev->m_pPrev->m_pNext = pSortCur;
 
 								pSortPrev->m_pNext = pSortCur->m_pNext;
-								if ( pSortCur->m_pNext != NULL )
+								if ( pSortCur->m_pNext != nullptr )
 									pSortCur->m_pNext->m_pPrev = pSortPrev;
 
 								pSortCur->m_pNext = pSortPrev;
@@ -368,7 +368,7 @@ BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 							}
 
 							pSortPrev = pSortCur->m_pPrev;
-							if ( pSortPrev == NULL )
+							if ( pSortPrev == nullptr )
 								pHead = pSortCur;
 						}
 					}
@@ -377,7 +377,7 @@ BOOL CFileDataMgr::Init( const CHAR *pszMgrPathFileName, BOOL bForceArrayMode )
 
 				UINT uIndex;
 				uIndex = 0;
-				while( pHead != NULL )
+				while( pHead != nullptr )
 				{
 					m_apFileData[uIndex++] = pHead->m_pData;
 					SFileDataLink *pPrevLink = pHead;
@@ -482,12 +482,12 @@ VOID CFileDataMgr::Term( VOID )
 	m_uMaxID		= 0xFFFFFFFF;
 
 	m_uCount		= 0;
-	if ( m_apFileData != NULL )
+	if ( m_apFileData != nullptr )
 	{
 		UINT i;
 		for ( i = 0; i < m_uLength; i++ )
 		{
-			if ( m_apFileData[i] != NULL )
+			if ( m_apFileData[i] != nullptr )
 			{
 				m_apFileData[i]->Term();
 				delete m_apFileData[i];
@@ -495,7 +495,7 @@ VOID CFileDataMgr::Term( VOID )
 		}
 		m_uLength		= 0;
 		delete [] m_apFileData;
-		m_apFileData = NULL;
+		m_apFileData = nullptr;
 	}
 }
 
@@ -503,12 +503,12 @@ SFileData *CFileDataMgr::GetFileData( UINT uID )
 {
 	if ( m_bArrayMode )
 	{
-		return (uID - m_uMinID < m_uLength)?(m_apFileData[uID - m_uMinID]):(NULL);
+		return (uID - m_uMinID < m_uLength)?(m_apFileData[uID - m_uMinID]):(nullptr);
 	}
 	else
 	{
 		if ( uID < m_uMinID || uID > m_uMaxID )
-			return NULL;
+			return nullptr;
 
 		// 二分查找
 		UINT uMinID, uMaxID;
@@ -555,7 +555,7 @@ SFileData *CFileDataMgr::GetFileData( UINT uID )
  		if ( uCurIndex != 0xFFFFFFFF )
 			return m_apFileData[uCurIndex];
 		else
-			return NULL;
+			return nullptr;
 	}
 }
 
@@ -566,7 +566,7 @@ const SFileData *CFileDataMgr::GetConstFileData( UINT uID )const
 
 BOOL CFileDataMgr::OnNewFileData( SFileData **ppFileData )
 {
-	if ( ppFileData != NULL )
+	if ( ppFileData != nullptr )
 	{
 		*ppFileData = new SFileData;
 		return TRUE;
@@ -576,9 +576,9 @@ BOOL CFileDataMgr::OnNewFileData( SFileData **ppFileData )
 
 VOID CFileDataMgr::OnDeleteFileData( SFileData **ppFileData )
 {
-	if ( ppFileData != NULL )
+	if ( ppFileData != nullptr )
 	{
 		delete *ppFileData;
-		*ppFileData = NULL;
+		*ppFileData = nullptr;
 	}
 }

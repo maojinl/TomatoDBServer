@@ -10,7 +10,7 @@
 #include "ServerManager.h"
 
 
-PerformanceManager* g_pPerformanceManager=NULL ;
+PerformanceManager* g_pPerformanceManager=nullptr ;
 
 ShareMemoryNotifyer	g_ShareMemNotifyer;
 
@@ -50,7 +50,7 @@ __ENTER_FUNCTION
 	for( INT i=0; i<MAX_WORKER; i++ )
 	{
 		Worker* pWorker = g_pWorkerManager->GetWorker( (WorkerID_t)i ) ;
-		if(pWorker == NULL)
+		if(pWorker == nullptr)
 			continue ;
 
 		m_aHash[i] = m_PerforCount ;
@@ -107,7 +107,7 @@ __ENTER_FUNCTION
 	
 
 	Worker* pWorker = g_pWorkerManager->GetWorker( pPerfor->m_WorkerID ) ;
-	if( pWorker ==NULL )
+	if( pWorker ==nullptr )
 	{
 		Assert(FALSE) ;
 		return ;

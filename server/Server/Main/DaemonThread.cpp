@@ -10,7 +10,7 @@
 #include "DatabaseManager.h"
 
 
-DaemonThread* g_pDaemonThread = NULL ;
+DaemonThread* g_pDaemonThread = nullptr ;
 
 DaemonThread::DaemonThread()
 {

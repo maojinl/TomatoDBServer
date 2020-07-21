@@ -77,7 +77,7 @@ public:
 		Assert(tSize>0);
 		Assert(tSize*tIndex<m_Size);
 		if( tSize<=0 || tIndex>=m_Size )
-			return NULL ;
+			return nullptr ;
 		return m_pDataPtr+tSize*tIndex;
 	}
 	/*

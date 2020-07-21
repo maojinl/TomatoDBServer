@@ -6,9 +6,7 @@
 #include "WorkerManager.h"
 #include "Config.h"
 
-
-
-ThreadManager*	g_pThreadManager=NULL ;
+ThreadManager*	g_pThreadManager=nullptr ;
 
 ThreadManager::ThreadManager( )
 {
@@ -41,8 +39,6 @@ __ENTER_FUNCTION
 
 	BOOL ret = FALSE ;
 
-	//根据配置文件读取需要使用的场景，为每个场景分配一个线程；
-	//读取场景数量
 	UINT count = MaxWorkerCount ;
 
 	Assert( count<=MAX_WORKER ) ;
@@ -51,13 +47,12 @@ __ENTER_FUNCTION
 	UINT i ;
 	for( i=0; i<count; i++ )
 	{
-		//读取场景“i”
 		WorkerID_t WorkerID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
 		Assert( WorkerID<MAX_WORKER ) ;
 
 		UINT ServerID = g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID ;
 		if( ServerID != g_Config.m_ConfigInfo.m_ServerID )
-		{//不是当前服务器的程序运行的场景
+		{
 			continue ;
 		}
 
@@ -67,7 +62,7 @@ __ENTER_FUNCTION
 		}
 	}
 
-	WorkerThread* pWorkerThread=NULL ;
+	WorkerThread* pWorkerThread=nullptr ;
 	for( i=0; i<=uMaxThreadCount; i++ )
 	{
 		pWorkerThread = new WorkerThread ;
@@ -82,20 +77,19 @@ __ENTER_FUNCTION
 
 	for( i=0; i<count; i++ )
 	{
-		//读取场景“i”
 		WorkerID_t WorkerID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
 		Assert( WorkerID<MAX_WORKER ) ;
 
 		UINT ServerID = g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID ;
 		if( ServerID != g_Config.m_ConfigInfo.m_ServerID )
-		{//不是当前服务器的程序运行的场景
-			continue ;
+		{
+			continue;
 		}
 
 		WorkerThread* pWorkerThread = (WorkerThread*)(m_pThreadPool->GetThreadByIndex(g_Config.m_WorkerInfo.m_pWorker[i].m_ThreadIndex)) ;
-		if( pWorkerThread==NULL )
+		if( pWorkerThread==nullptr )
 		{
-			AssertEx(FALSE,"没有创建所需的线程") ;
+			AssertEx(FALSE,"pWorkerThread is nullptr") ;
 		}
 		else
 		{
@@ -128,8 +122,6 @@ __ENTER_FUNCTION
 	MySleep( 500 ) ;
 
 	ret = m_pThreadPool->Start( ) ;
-	
-	
 
 	return ret ;
 

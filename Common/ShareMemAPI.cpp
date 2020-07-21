@@ -31,7 +31,7 @@ SMHandle		CreateShareMem(SM_KEY key,UINT Size)
 	CHAR keybuf[64];
 	memset(keybuf,0,64);
 	sprintf(keybuf,"%d",key);
-	return  CreateFileMapping( (HANDLE)0xFFFFFFFFFFFFFFFF, NULL, PAGE_READWRITE, 0, Size, keybuf);
+	return  CreateFileMapping( (HANDLE)0xFFFFFFFFFFFFFFFF, nullptr, PAGE_READWRITE, 0, Size, keybuf);
 #endif
 	__LEAVE_FUNCTION
 	return SMHandle(-1);

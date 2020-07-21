@@ -20,7 +20,7 @@ GetMacByCmd(lpszMac);
 char lpszMac[128];
 HINSTANCE hinst;
 hinst=LoadLibrary("DllNet.dll");
-if(hinst==NULL)
+if(hinst==nullptr)
 {
   return 0;
 }

@@ -57,10 +57,10 @@ namespace Packets
 		PacketID_t	GetPacketID()const { return PACKET_SC_RETLOGIN ; }
 		UINT		GetPacketMaxSize() const
 		{
-			return	sizeof(LOGIN_RESULT) +
-				sizeof(CHAR) * MAX_CHARACTER_NAME +
-				sizeof(CHAR) * MAX_CHARACTER_TITLE +
-				sizeof(UINT);
+			return	sizeof(LOGIN_RESULT)
+				+ sizeof(CHAR) * (MAX_CHARACTER_NAME + 1)
+				+ sizeof(CHAR) * (MAX_CHARACTER_TITLE + 1)
+				+ sizeof(UINT);
 		}
 	};
 

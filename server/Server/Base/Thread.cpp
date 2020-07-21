@@ -244,7 +244,7 @@ VOID Get_Exception_Info(PEXCEPTION_POINTERS pException, FILE* fp, UINT dwLastErr
 	_ftprintf(fp, _T("------------------------------------------------------------------------------\n"));
 	_ftprintf(fp, _T("Process:  ") );
 
-	GetModuleFileName(NULL, Module_Name, MAX_PATH);
+	GetModuleFileName(nullptr, Module_Name, MAX_PATH);
 	_ftprintf(fp, _T("%s\n") , Module_Name);
 
 	// If exception occurred.
@@ -258,10 +258,10 @@ VOID Get_Exception_Info(PEXCEPTION_POINTERS pException, FILE* fp, UINT dwLastErr
 		{
 			_ftprintf(fp, _T("Module:   %s\n") , Module_Name);
 
-			if ((hFile = CreateFile(Module_Name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
-				FILE_ATTRIBUTE_NORMAL, NULL)) != INVALID_HANDLE_VALUE)
+			if ((hFile = CreateFile(Module_Name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL, nullptr)) != INVALID_HANDLE_VALUE)
 			{
-				if (GetFileTime(hFile, NULL, NULL, &Last_Write_Time))
+				if (GetFileTime(hFile, nullptr, nullptr, &Last_Write_Time))
 				{
 					FileTimeToLocalFileTime(&Last_Write_Time, &Local_File_Time);
 					FileTimeToSystemTime(&Local_File_Time, &T);
@@ -304,7 +304,7 @@ BOOL CreateBigInfoFile(PEXCEPTION_POINTERS pException, CHAR* szBigFile, UINT dwL
 
 	Get_Exception_Info(pException, fp, dwLastError);
 
-	fclose(fp); fp = NULL;
+	fclose(fp); fp = nullptr;
 
 	::GetShortPathName(szTempFile, szBigFile, MAX_PATH);
 	if(szBigFile[0] == 0) return FALSE;
@@ -353,7 +353,7 @@ __ENTER_FUNCTION
 	m_Status	= Thread::READY ;
 
 #if defined(__WINDOWS__)
-	m_hThread = NULL ;
+	m_hThread = nullptr ;
 #endif
 
 __LEAVE_FUNCTION
@@ -389,9 +389,9 @@ __ENTER_FUNCTION
 		return ;
 
 #if defined(__LINUX__)
-	pthread_create( &m_TID, NULL , MyThreadProcess , this );
+	pthread_create( &m_TID, nullptr , MyThreadProcess , this );
 #elif defined(__WINDOWS__)
-	m_hThread = ::CreateThread( NULL, 0, MyThreadProcess , this, 0, &m_TID ) ;
+	m_hThread = ::CreateThread( nullptr, 0, MyThreadProcess , this, 0, &m_TID ) ;
 #endif
 
 __LEAVE_FUNCTION
@@ -442,8 +442,8 @@ VOID * MyThreadProcess ( VOID * derivedThread )
 __ENTER_FUNCTION
 
 	Thread * thread = (Thread *)derivedThread;
-	if( thread==NULL )
-		return NULL;
+	if( thread==nullptr )
+		return nullptr;
 	
 	// set thread's status to "RUNNING"
 	thread->setStatus(Thread::RUNNING);
@@ -463,7 +463,7 @@ __ENTER_FUNCTION
 
 __LEAVE_FUNCTION
 
-	return NULL;	// avoid compiler's warning
+	return nullptr;	// avoid compiler's warning
 }
 #elif defined (__WINDOWS__)
 
@@ -474,7 +474,7 @@ DWORD WINAPI MyThreadProcess(  VOID* derivedThread )
 	__try
 	{
 		Thread * thread = (Thread *)derivedThread;
-		if( thread==NULL )
+		if( thread==nullptr )
 			return 0;
 		
 		// set thread's status to "RUNNING"
@@ -486,7 +486,7 @@ DWORD WINAPI MyThreadProcess(  VOID* derivedThread )
 		// set thread's status to "EXIT"
 		thread->setStatus(Thread::EXIT);
 
-		thread->exit(NULL);
+		thread->exit(nullptr);
 
 		g_thread_lock.Lock() ;
 		g_QuitThreadCount++ ;

@@ -36,7 +36,7 @@ struct ASYNC_PACKET
 
 	ASYNC_PACKET( )
 	{
-		m_pPacket = NULL ;
+		m_pPacket = nullptr ;
 		m_PlayerID = INVALID_ID ;
 		m_Flag = PF_NONE ;
 	};

@@ -48,7 +48,7 @@ VOID __show__( const CHAR* szTemp )
 		fwrite( szTemp, 1, strlen(szTemp), f ) ;
 		fwrite( "\r\n", 1, 2, f ) ;
 		fclose(f) ;
-		//INT iRet = ::MessageBoxA( NULL, szTemp, "异常", MB_OK ) ;
+		//INT iRet = ::MessageBoxA( nullptr, szTemp, "异常", MB_OK ) ;
 		lock.Unlock() ;
 	}
 #elif defined(__LINUX__)
@@ -67,7 +67,7 @@ VOID __messagebox__(const CHAR*msg )
 	if( g_Command_IgnoreMessageBox )
 		return ;
 #if defined(__WINDOWS__)
-	::MessageBoxA( NULL, msg, "信息", MB_OK ) ;
+	::MessageBoxA( nullptr, msg, "信息", MB_OK ) ;
 #elif defined(__LINUX__)
 #endif
 }

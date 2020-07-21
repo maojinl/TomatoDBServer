@@ -4,7 +4,7 @@
 #include "Log.h"
 
 
-GUIDManager* g_pGUIDManager=NULL ;
+GUIDManager* g_pGUIDManager=nullptr ;
 
 GUIDManager::GUIDManager( )
 {
@@ -32,7 +32,7 @@ __ENTER_FUNCTION
 	for( INT i=0; i<MAX_GUID_SIZE; i++ )
 	{
 		m_pGuidItem[i].m_GUID = INVALID_ID ;
-		m_pGuidItem[i].m_pPtr = NULL ;
+		m_pGuidItem[i].m_pPtr = nullptr ;
 		m_pGuidItem[i].m_Status = GUIDTS_EMPTY ;
 	}
 
@@ -97,7 +97,7 @@ VOID* GUIDManager::Get( GUID_t gid )
 {
 __ENTER_FUNCTION
 
-	if( gid==INVALID_ID ) return NULL ;
+	if( gid==INVALID_ID ) return nullptr ;
 
 	m_Lock.Lock() ;
 
@@ -108,7 +108,7 @@ __ENTER_FUNCTION
 		if( m_pGuidItem[c].m_Status == GUIDTS_EMPTY )
 		{
 			m_Lock.Unlock() ;
-			return NULL ;
+			return nullptr ;
 		}
 		else if( m_pGuidItem[c].m_Status == GUIDTS_USE )
 		{
@@ -131,7 +131,7 @@ __ENTER_FUNCTION
 __LEAVE_FUNCTION
 
 	m_Lock.Unlock() ;
-	return NULL ;
+	return nullptr ;
 }
 
 BOOL GUIDManager::Del( GUID_t gid, VOID* pPtr )
@@ -160,7 +160,7 @@ __ENTER_FUNCTION
 		if( m_pGuidItem[c].m_GUID == gid && m_pGuidItem[c].m_pPtr==pPtr )
 		{
 			m_pGuidItem[c].m_GUID = INVALID_ID ;
-			m_pGuidItem[c].m_pPtr = NULL;
+			m_pGuidItem[c].m_pPtr = nullptr;
 			m_pGuidItem[c].m_Status = GUIDTS_USE ;
 
 			m_nCount -- ;

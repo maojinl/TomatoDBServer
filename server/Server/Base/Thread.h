@@ -69,7 +69,7 @@ public :
 	
 	virtual VOID stop () ;
 
-	VOID exit ( VOID * retval = NULL ) ;
+	VOID exit ( VOID * retval = nullptr ) ;
 
 	virtual VOID run () ;
 

@@ -18,9 +18,9 @@ Ini::Ini()
 	__ENTER_FUNCTION
 
 	m_lDataLen = 0;
-	m_strData = NULL;
+	m_strData = nullptr;
 	IndexNum = 0;
-	IndexList = NULL;
+	IndexList = nullptr;
 
 	__LEAVE_FUNCTION
 }
@@ -31,9 +31,9 @@ Ini::Ini( const CHAR *filename )
 	__ENTER_FUNCTION
 
 	m_lDataLen=0;
-	m_strData=NULL;
+	m_strData=nullptr;
 	IndexNum=0;
-	IndexList=NULL;
+	IndexList=nullptr;
 	memset( m_strFileName, 0, _MAX_PATH ) ;
 	memset( m_szValue, 0, MAX_INI_VALUE ) ;
 	memset( m_szRet, 0, MAX_INI_VALUE) ;
@@ -96,7 +96,7 @@ BOOL Ini::Open( const CHAR *filename )
 
 		FILE *fp;
 		fp=fopen(filename, "rb");
-		AssertEx( fp!=NULL, filename );
+		AssertEx( fp!=nullptr, filename );
 		fread(m_strData, m_lDataLen, 1, fp);		//¶ÁÊý¾Ý
 		fclose(fp);
 
@@ -146,14 +146,14 @@ BOOL Ini::Save(CHAR *filename)
 {
 	__ENTER_FUNCTION
 
-	if( filename==NULL )
+	if( filename==nullptr )
 	{
 		filename=m_strFileName;
 	}
 
 	FILE *fp;
 	fp=fopen(filename, "wb");
-	AssertEx( fp!=NULL, filename );
+	AssertEx( fp!=nullptr, filename );
 
 	fwrite(m_strData, m_lDataLen, 1, fp);
 	fclose(fp);
@@ -526,12 +526,12 @@ CHAR *Ini::ReadText(CHAR *index, CHAR *name, CHAR* str, INT size)
 	AssertEx( n != -1, szTmp );
 
 	if ( n == -1 )
-		return NULL;
+		return nullptr;
 
 	INT m=FindData(n, name);
 	AssertEx( m != -1, szTmp );
 	if ( m == -1 )
-		return NULL;
+		return nullptr;
 
 	CHAR* ret = ReadText(m);
 	strncpy( str, ret, size ) ;
@@ -599,12 +599,12 @@ CHAR *Ini::ReadText(CHAR *index, INT lines, CHAR* str, INT size)
 		}
 		if( m_strData[n] == '\r' )
 		{
-			return NULL;
+			return nullptr;
 		}
 		n++;
 	}
 
-	return NULL;
+	return nullptr;
 
 	__LEAVE_FUNCTION
 
@@ -857,7 +857,7 @@ __LEAVE_FUNCTION
 }
 INT Ini::FindOneLine(INT p)
 {
-	CHAR*	Ret = NULL;
+	CHAR*	Ret = nullptr;
 	INT		n = 0;
 	INT     m = 0;
 	if(p==0)	return -1;
@@ -875,7 +875,7 @@ INT Ini::FindOneLine(INT p)
 INT Ini::ReturnLineNum(CHAR* string)
 {
 	INT p = FindIndex(string);
-	CHAR*	Ret = NULL;
+	CHAR*	Ret = nullptr;
 	INT		n = 0;
 	INT     m = 0;
 	if(p==0)	return -1;

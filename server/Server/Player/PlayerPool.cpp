@@ -3,13 +3,13 @@
 #include "PlayerPool.h"
 #include "GUIDManager.h"
 
-PlayerPool* g_pPlayerPool=NULL ;
+PlayerPool* g_pPlayerPool=nullptr ;
 
 PlayerPool::PlayerPool( )
 {
 	__ENTER_FUNCTION
 
-		m_pPlayer = NULL ;
+		m_pPlayer = nullptr ;
 	m_Position = 0 ;
 	m_PlayerCount = 0 ;
 	m_PlayerPoolMaxCount = 0;
@@ -83,13 +83,13 @@ GamePlayer* PlayerPool::NewPlayer( )
 
 		Unlock() ;
 
-		return NULL ;
+		return nullptr ;
 
 	__LEAVE_FUNCTION
 
 		Unlock() ;
 
-	return NULL ;
+	return nullptr ;
 }
 
 GamePlayer* PlayerPool::NewPlayer( PlayerID_t PlayerID)
@@ -101,7 +101,7 @@ GamePlayer* PlayerPool::NewPlayer( PlayerID_t PlayerID)
 		if(PlayerID>=(PlayerID_t)m_PlayerPoolMaxCount)
 		{
 			Unlock();
-			return NULL;
+			return nullptr;
 		}
 
 
@@ -122,10 +122,10 @@ GamePlayer* PlayerPool::NewPlayer( PlayerID_t PlayerID)
 		}
 
 		Unlock() ;
-		return NULL ;
+		return nullptr ;
 	__LEAVE_FUNCTION
 		Unlock() ;
-	return NULL ;
+	return nullptr ;
 }
 
 VOID PlayerPool::DelPlayer( PlayerID_t PlayerID )

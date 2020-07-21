@@ -513,7 +513,7 @@ __ENTER_FUNCTION
 
 			GamePlayer* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[i]) ;
 			Assert( pPlayer ) ;
-			if( pPlayer==NULL )
+			if( pPlayer==nullptr )
 				continue ;
 
 
@@ -549,7 +549,7 @@ __ENTER_FUNCTION
 
 			GamePlayer* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[i]) ;
 			Assert( pPlayer ) ;
-			if( pPlayer==NULL )
+			if( pPlayer==nullptr )
 				continue ;
 
 
@@ -607,7 +607,7 @@ __ENTER_FUNCTION
 			continue ;
 
 		GamePlayer* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[i]) ;
-		if( pPlayer==NULL )
+		if( pPlayer==nullptr )
 		{
 			Assert(FALSE) ;
 			return FALSE ;
@@ -642,7 +642,7 @@ __ENTER_FUNCTION
 			break ;
 
 		Player* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[0]) ;
-		if( pPlayer==NULL )
+		if( pPlayer==nullptr )
 		{
 			Assert(FALSE) ;
 			break ;

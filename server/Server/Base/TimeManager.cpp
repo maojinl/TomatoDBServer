@@ -2,7 +2,7 @@
 
 #include "TimeManager.h"
 
-TimeManager*	g_pTimeManager=NULL ;
+TimeManager*	g_pTimeManager=nullptr ;
 
 TimeManager::TimeManager( )
 {
@@ -344,5 +344,5 @@ tm* TimeManager::CurrentTm()
 
 	__LEAVE_FUNCTION
 
-		return NULL;
+		return nullptr;
 }

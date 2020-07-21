@@ -6,7 +6,6 @@
 BOOL SCRetDBQuery::Read(SocketInputStream& iStream)
 {
 	__ENTER_FUNCTION
-	iStream.Read((CHAR*)(&Result), sizeof(ASKDBOPERATION_RESULT));
 	return TRUE;
 	__LEAVE_FUNCTION
 	return FALSE;

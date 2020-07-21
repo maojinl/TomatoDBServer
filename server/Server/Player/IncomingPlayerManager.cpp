@@ -13,7 +13,7 @@
 #define ACCEPT_ONESTEP 50
 
 
-IncomingPlayerManager* g_pIncomingPlayerManager = NULL ;
+IncomingPlayerManager* g_pIncomingPlayerManager = nullptr ;
 
 IncomingPlayerManager::IncomingPlayerManager( )
 {
@@ -372,7 +372,7 @@ __ENTER_FUNCTION
 	//从玩家池中找出一个空闲的玩家数据集
 	GamePlayer* client = g_pPlayerPool->NewPlayer() ;
 //	Assert( client ) ;
-	if( client==NULL )
+	if( client==nullptr )
 		return FALSE ;
 
 	iStep = 5 ;
@@ -541,7 +541,7 @@ __ENTER_FUNCTION
 
 			GamePlayer* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[i]) ;
 			Assert( pPlayer ) ;
-			if( pPlayer==NULL )
+			if( pPlayer==nullptr )
 				continue ;
 
 			SOCKET temp = pPlayer->GetSocket()->getSOCKET() ;
@@ -583,7 +583,7 @@ __ENTER_FUNCTION
 
 			GamePlayer* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[i]) ;
 			Assert( pPlayer ) ;
-			if( pPlayer==NULL )
+			if( pPlayer==nullptr )
 				continue ;
 
 
@@ -650,7 +650,7 @@ __ENTER_FUNCTION
 			continue ;
 
 		Player* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[i]) ;
-		if( pPlayer==NULL )
+		if( pPlayer==nullptr )
 		{
 			Assert(FALSE) ;
 			return FALSE ;
@@ -693,7 +693,7 @@ __ENTER_FUNCTION
 			break ;
 
 		Player* pPlayer = g_pPlayerPool->GetPlayer(m_pPlayers[0]) ;
-		if( pPlayer==NULL )
+		if( pPlayer==nullptr )
 		{
 			Assert(FALSE) ;
 			break ;
@@ -714,7 +714,7 @@ __ENTER_FUNCTION
 
 	for( UINT i=0; i<m_QueSize; i++ )
 	{
-		Packet* pPacket = NULL ;
+		Packet* pPacket = nullptr ;
 		PlayerID_t PlayerID ;
 		UINT Flag ;
 
@@ -736,7 +736,7 @@ __ENTER_FUNCTION
 		{
 			_MY_TRY
 			{
-				pPacket->Execute(NULL) ;
+				pPacket->Execute(nullptr) ;
 			}
 			_MY_CATCH
 			{
@@ -814,7 +814,7 @@ __ENTER_FUNCTION
 
 	for( UINT i=0; i<m_QueSize; i++ )
 	{
-		if( m_PacketQue[Cur].m_pPacket == NULL )
+		if( m_PacketQue[Cur].m_pPacket == nullptr )
 			break ;
 
 		if( m_PacketQue[Cur].m_PlayerID == PlayerID )
@@ -840,7 +840,7 @@ BOOL IncomingPlayerManager::ResizeCache( )
 __ENTER_FUNCTION
 
 	ASYNC_PACKET* pNew = new ASYNC_PACKET[m_QueSize+MAX_CACHE_SIZE] ;
-	if( pNew==NULL )
+	if( pNew==nullptr )
 		return FALSE ;
 
 	memcpy( pNew, &(m_PacketQue[m_Head]), sizeof(ASYNC_PACKET)*(m_QueSize-m_Head) ) ;
@@ -899,7 +899,7 @@ __ENTER_FUNCTION
 
 	Lock( ) ;
 
-	if( m_PacketQue[m_Head].m_pPacket==NULL )
+	if( m_PacketQue[m_Head].m_pPacket==nullptr )
 	{//缓冲区中没有消息
 		Unlock( ) ;
 		return FALSE ;
@@ -909,7 +909,7 @@ __ENTER_FUNCTION
 	PlayerID = m_PacketQue[m_Head].m_PlayerID ;
 	Flag = m_PacketQue[m_Head].m_Flag ;
 
-	m_PacketQue[m_Head].m_pPacket = NULL ;
+	m_PacketQue[m_Head].m_pPacket = nullptr ;
 	m_PacketQue[m_Head].m_PlayerID = INVALID_ID ;
 	m_PacketQue[m_Head].m_Flag = PF_NONE ;
 

@@ -6,7 +6,7 @@
 UINT MyRand::m_uKey = 0 ;
 CHAR MyRand::m_pKey[MAX_KEY_SIZE] ;
 MyLock MyRand::m_Lock ;
-RandGen	g_RandGen	= RandGen((unsigned)time(NULL));
+RandGen	g_RandGen	= RandGen((unsigned)time(nullptr));
 
 MyRand::MyRand( )
 {
@@ -31,7 +31,7 @@ UINT MyRand::Rand( )
 
 	if( m_uKey == 0 )
 	{
-		srand( (unsigned)time( NULL ) ) ;
+		srand( (unsigned)time( nullptr ) ) ;
 		for( INT i=0; i<MAX_KEY_SIZE; i++ )
 		{
 			m_pKey[i] = rand()%255 ;

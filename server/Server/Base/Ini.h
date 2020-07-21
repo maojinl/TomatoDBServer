@@ -45,7 +45,7 @@ public:
 
 	BOOL			Open(const CHAR* filename);				//打开配置文件
 	VOID			Close();							//关闭配置文件
-	BOOL			Save(CHAR *filename=NULL);			//保存配置文件
+	BOOL			Save(CHAR *filename=nullptr);			//保存配置文件
 	INT				FindIndex(CHAR *);					//返回标题位置
 
 ////////////////////////////////////////////////

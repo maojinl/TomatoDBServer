@@ -72,11 +72,11 @@ VOID* IDTable::Get( UINT id )
 		return iter->second;
 	}
 	else
-		return NULL;
+		return nullptr;
 
 	__LEAVE_FUNCTION
 
-		return NULL ;
+		return nullptr ;
 }
 
 VOID IDTable::Remove( UINT id )

@@ -33,7 +33,7 @@ public :
 	GamePlayer*			GetPlayer( PlayerID_t PlayerID )
 	{
 		if( PlayerID==INVALID_ID || PlayerID>=(PlayerID_t)m_PlayerPoolMaxCount || PlayerID<0 )
-			return NULL ;
+			return nullptr ;
 		return &(m_pPlayer[PlayerID]) ;
 	};
 
@@ -51,7 +51,7 @@ public :
 			return &(m_pPlayer[iter->second]) ; 
 		}
 
-		return NULL;
+		return nullptr;
 	};
 
 	//根据玩家的Name取得数据指针
@@ -68,7 +68,7 @@ public :
 			return &(m_pPlayer[iter->second]) ; 
 		}
 
-		return NULL;
+		return nullptr;
 	};
 
 	UINT				GetPlayerPoolMaxCount()

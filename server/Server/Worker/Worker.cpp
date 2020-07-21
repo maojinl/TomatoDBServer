@@ -194,7 +194,7 @@ BOOL Worker::ProcessCacheCommands() {
   BOOL ret = FALSE;
 
   for (UINT i = 0; i < m_QueSize; i++) {
-    Packet* pPacket = NULL;
+    Packet* pPacket = nullptr;
     PlayerID_t PlayerID;
     UINT Flag;
 
@@ -212,7 +212,7 @@ BOOL Worker::ProcessCacheCommands() {
 
     if (PlayerID == INVALID_ID_EX) {
       UINT uret;
-      _MY_TRY { uret = pPacket->Execute(NULL); }
+      _MY_TRY { uret = pPacket->Execute(nullptr); }
       _MY_CATCH {
         SaveCodeLog();
         uret = PACKET_EXE_ERROR;
@@ -268,7 +268,7 @@ BOOL Worker::ResizeCache() {
   __ENTER_FUNCTION
 
   ASYNC_PACKET* pNew = new ASYNC_PACKET[m_QueSize + MAX_CACHE_SIZE];
-  if (pNew == NULL) return FALSE;
+  if (pNew == nullptr) return FALSE;
 
   memcpy(pNew, &(m_PacketQue[m_Head]),
          sizeof(ASYNC_PACKET) * (m_QueSize - m_Head));
@@ -326,7 +326,7 @@ BOOL Worker::MovePacket(PlayerID_t PlayerID) {
   UINT Cur = m_Head;
 
   for (UINT i = 0; i < m_QueSize; i++) {
-    if (m_PacketQue[Cur].m_pPacket == NULL) break;
+    if (m_PacketQue[Cur].m_pPacket == nullptr) break;
 
     if (m_PacketQue[Cur].m_PlayerID == PlayerID) {
       m_PacketQue[Cur].m_Flag = PF_REMOVE;
@@ -350,7 +350,7 @@ BOOL Worker::RecvPacket(Packet*& pPacket, PlayerID_t& PlayerID, UINT& Flag) {
 
   m_pWorkerPlayerManager->Lock();
 
-  if (m_PacketQue[m_Head].m_pPacket == NULL) {  //no package in the buffer
+  if (m_PacketQue[m_Head].m_pPacket == nullptr) {  //no package in the buffer
     m_pWorkerPlayerManager->Unlock();
     return FALSE;
   }
@@ -359,7 +359,7 @@ BOOL Worker::RecvPacket(Packet*& pPacket, PlayerID_t& PlayerID, UINT& Flag) {
   PlayerID = m_PacketQue[m_Head].m_PlayerID;
   Flag = m_PacketQue[m_Head].m_Flag;
 
-  m_PacketQue[m_Head].m_pPacket = NULL;
+  m_PacketQue[m_Head].m_pPacket = nullptr;
   m_PacketQue[m_Head].m_PlayerID = INVALID_ID;
   m_PacketQue[m_Head].m_Flag = PF_NONE;
 
@@ -456,9 +456,9 @@ BOOL Worker::UserEnterWorker(User* pUser)
 {
 	__ENTER_FUNCTION
 
-	if (pUser == NULL)
+	if (pUser == nullptr)
 	{
-		Assert(pUser != NULL && "Worker::UserEnterWorker");
+		Assert(pUser != nullptr && "Worker::UserEnterWorker");
 		return FALSE;
 	}
 

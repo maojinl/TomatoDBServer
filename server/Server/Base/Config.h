@@ -109,7 +109,7 @@ struct _SHAREMEM_INFO
 	INT				DATAInterval;
 	_SHAREMEM_INFO()
 	{
-		m_pShareData	=	NULL;
+		m_pShareData	=	nullptr;
 		m_SMUObjCount	=	0;
 		memset(m_DBIP,0,IP_SIZE);
 		m_DBPort		= -1;
@@ -147,7 +147,7 @@ struct _MACHINE_INFO
 
 	_MACHINE_INFO( )
 	{
-		m_pMachine = NULL ;
+		m_pMachine = nullptr ;
 		m_MachineCount = 0 ;
 	};
 	~_MACHINE_INFO( )
@@ -219,7 +219,7 @@ struct _SERVER_INFO
 
 	_SERVER_INFO( )
 	{
-		m_pServer = NULL ;
+		m_pServer = nullptr ;
 		m_ServerCount = 0 ;
 		for( INT i=0; i<OVER_MAX_SERVER; i++ )
 		{
@@ -263,7 +263,7 @@ struct _WORKER_INFO
 	INT				m_HashWorker[MAX_WORKER] ;
 
 	_WORKER_INFO(){
-		m_pWorker = NULL ;
+		m_pWorker = nullptr ;
 		m_WorkerCount = 0 ;
 		for( INT i=0; i< MAX_WORKER; i++ )
 		{
