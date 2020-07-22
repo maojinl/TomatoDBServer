@@ -1,6 +1,3 @@
-[submodule "server/engine/third_party/googletest"]
-	path = server/engine/third_party/googletest
-	url = https://github.com/google/googletest.git
-[submodule "server/engine/third_party/json"]
-	path = server/engine/third_party/json
-	url = https://github.com/nlohmann/json.git
+[submodule "server/engine"]
+	path = server/engine
+	url = https://github.com/maojinl/TomatoDB.git
