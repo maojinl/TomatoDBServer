@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "gtest/gtest.h"
 #include "DatabaseManager.h"
-#include <chrono>
+#include "unittestutils.h"
 
 using namespace tomatodb;
 #define TEST_THREADS 10
@@ -18,11 +18,12 @@ public:
 	DatabaseManager* pDBMan;
 	RandGen rand;
 	int Id;
-	const string DBNamePrefix = "TestDB";
 	int FailedCount;
 
 	static vector<bool> DBNameIndex;
 	static MyLock* pLock;
+	static string DBNamePrefix;
+
 	DBManagerTestThread(int id, int type, int round, DatabaseManager* pdbman)
 		:Id(id), TestType(type), TestRound(round), pDBMan(pdbman), rand(1000 + id), FailedCount(0)
 	{
@@ -141,25 +142,32 @@ public:
 			MySleep(1000);
 			pDBMan->Tick();
 		}
+		Active = false;
 	};
 
 };
+
+vector<bool> DBManagerTestThread::DBNameIndex;
+MyLock* DBManagerTestThread::pLock;
+string DBManagerTestThread::DBNamePrefix = "TestDB";
 
 class DatabaseManagerTest : public testing::Test {
 public:
 	DatabaseManager* pDBManager;
 	DatabaseManagerTest()
 	{
-
+		UpdateUnitTestPath(g_Config);
+		AdminDB::ReleaseInstance();
 	}
 };
 
 TEST_F(DatabaseManagerTest, InitFunction) {
 	pDBManager = new DatabaseManager(g_Config);
 	pDBManager->Init();
+	
 	AdminDB* pAdmin = AdminDB::GetInstance();
 	vector<string> dblist;
-	pAdmin->GetDatabasesList(dblist);
+	pDBManager->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
 	SAFE_DELETE(pDBManager);
 	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
@@ -172,12 +180,12 @@ TEST_F(DatabaseManagerTest, CreateAndDeleteDB) {
 	pDBManager->CreateDatabase("TestDB");
 	AdminDB* pAdmin = AdminDB::GetInstance();
 	vector<string> dblist;
-	pAdmin->GetDatabasesList(dblist);
+	pDBManager->GetDatabasesList(dblist);
 	ASSERT_EQ(1, dblist.size());
 	ASSERT_EQ("TestDB", dblist[0]);
 	pDBManager->DeleteDatabase("TestDB");
 	dblist.clear();
-	pAdmin->GetDatabasesList(dblist);
+	pDBManager->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
 	SAFE_DELETE(pDBManager);
 	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
@@ -205,8 +213,84 @@ TEST_F(DatabaseManagerTest, AccessDataDB) {
 	ASSERT_EQ(FALSE, ret);
 	pDBManager->DeleteDatabase("TestDB");
 	dblist.clear();
-	pAdmin->GetDatabasesList(dblist);
+	pDBManager->GetDatabasesList(dblist);
 	ASSERT_EQ(true, dblist.empty());
+	SAFE_DELETE(pDBManager);
+	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
+		, Options());
+}
+
+TEST_F(DatabaseManagerTest, MultiThread) {
+	pDBManager = new DatabaseManager(g_Config);
+	pDBManager->Init();
+	
+	DBManagerTestThread::pLock = new MyLock();
+
+	for (int i = 0; i < MAX_TEST_DATABASE; i++)
+	{
+		DBManagerTestThread::DBNameIndex.push_back(false);
+	}
+
+	DBManagerTestThread* testThread[TEST_THREADS];
+	for (int i = 0; i < TEST_THREADS; i++)
+	{
+		if (i < TEST_THREADS / 3)
+		{
+			testThread[i] = new DBManagerTestThread(i, 0, TEST_ROUNDS, pDBManager);
+		}
+		else if (i < TEST_THREADS / 3 * 2)
+		{
+			testThread[i] = new DBManagerTestThread(i, 1, TEST_ROUNDS, pDBManager);
+		}
+		else if (i < TEST_THREADS - 1)
+		{
+			testThread[i] = new DBManagerTestThread(i, 2, TEST_ROUNDS, pDBManager);
+		}
+		else
+		{
+			testThread[i] = new DBManagerTestThread(i, 3, TEST_ROUNDS, pDBManager);
+		}
+	}
+
+	for (int i = 0; i < TEST_THREADS; i++)
+	{
+		testThread[i]->start();
+	}
+
+	while (true)
+	{
+		MySleep(2000);
+		bool allDone = true;
+		for (int i = 0; i < TEST_THREADS - 1; i++)
+		{
+			if (testThread[i]->Active)
+			{
+				allDone = false;
+				break;
+			}
+		}
+		if (allDone)
+		{
+			testThread[TEST_THREADS - 1]->Active = false;
+			MySleep(2000);
+		}
+		break;
+	}
+
+	for (int i = 0; i < TEST_THREADS - 1; i++)
+	{
+		EXPECT_TRUE(false) << "Failed Count is " << testThread[i]->FailedCount;
+		SAFE_DELETE(testThread[i]);
+	}
+
+	for (int i = 0; i < MAX_TEST_DATABASE; i++)
+	{
+		string dbname = DBManagerTestThread::DBNamePrefix + std::to_string(i);
+		DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_DataPath, dbname)
+			, Options());
+	}
+
+	SAFE_DELETE(testThread[TEST_THREADS - 1]);
 	SAFE_DELETE(pDBManager);
 	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
 		, Options());
