@@ -49,24 +49,22 @@ INT main(INT argc, CHAR* argv[])
 				g_Command_Assert=2 ;
 			}
 
-			if( strcmp(argv[i],"-ignoremessagebox")==0 )
+			if(strcmp(argv[i],"-ignoremessagebox") == 0)
 			{
-				g_Command_IgnoreMessageBox=TRUE ;
+				g_Command_IgnoreMessageBox=TRUE;
 			}
 		}
 	}
 
-	BOOL ret ;
+	BOOL ret;
 
-	//初始化配置文件模块
 	ret = g_Server.InitConfig();
-	Assert(ret) ;
+	Assert(ret);
 
-//时间模块需要最开始的时候设置
-	g_pTimeManager = new TimeManager ;
-	Assert( g_pTimeManager ) ;
-	ret = g_pTimeManager->Init( ) ;
-	Assert(ret) ;
+	g_pTimeManager = new TimeManager;
+	Assert(g_pTimeManager);
+	ret = g_pTimeManager->Init();
+	Assert(ret);
 
 	g_pLog = new Log ;
 	Assert( g_pLog ) ;
@@ -80,7 +78,7 @@ INT main(INT argc, CHAR* argv[])
 		g_pTimeManager->Time2DWORD(),
 		g_pTimeManager->StartTime() ) ;
 
-	ret = g_Server.InitServer( ) ;
+	ret = g_Server.InitServer( );
 	Assert( ret ) ;
 
 #if defined(RUN_UNIT_TESTS)
@@ -88,10 +86,10 @@ INT main(INT argc, CHAR* argv[])
 	return RUN_ALL_TESTS();
 #endif
 
-	ret = g_Server.Loop( ) ;
+	ret = g_Server.Loop();
 	Assert( ret ) ;
 
-	ret = g_Server.ExitServer( ) ;
+	ret = g_Server.ExitServer();
 	Assert( ret ) ;
 
 __LEAVE_FUNCTION
@@ -99,24 +97,22 @@ __LEAVE_FUNCTION
 	return 0;
 }
 
-Server::Server( )
+Server::Server()
 {
 __ENTER_FUNCTION
-
 #if defined(__WINDOWS__)
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	INT err;
-	wVersionRequested = MAKEWORD( 2, 2 );
+	wVersionRequested = MAKEWORD(2, 2);
 	err = WSAStartup( wVersionRequested, &wsaData ); 
 #endif
-
-	m_TimeToQuit.CleanUp() ;
+	m_TimeToQuit.CleanUp();
 
 __LEAVE_FUNCTION
 }
 
-Server::~Server( )
+Server::~Server()
 {
 __ENTER_FUNCTION
 
@@ -132,216 +128,192 @@ __LEAVE_FUNCTION
 BOOL Server::InitConfig()
 {
 __ENTER_FUNCTION
-
-	BOOL ret = FALSE ;
-	ret = g_Config.Init( ) ;
-	Assert( ret ) ;
-	return TRUE ;
-
+	BOOL ret = FALSE;
+	ret = g_Config.Init();
+	Assert(ret);
+	return TRUE;
 __LEAVE_FUNCTION
-
-	return TRUE ;
+	return TRUE;
 }
 //___________________________________
 
-BOOL Server::InitServer( )
+BOOL Server::InitServer()
 {
 __ENTER_FUNCTION
 
-	BOOL ret = FALSE ;
-	Log::SaveLog( SERVER_LOGFILE, "InitServer FD_SETSIZE=%d...", FD_SETSIZE ) ;
+	BOOL ret = FALSE;
+	Log::SaveLog(SERVER_LOGFILE, "InitServer FD_SETSIZE=%d...", FD_SETSIZE);
 
-//分配内存
 	ret = NewStaticServer();
 	Assert(ret);
 
-//初始化各个模块
-	ret = InitStaticServer( ) ;
+	ret = InitStaticServer();
 	Assert(ret);
 
 __LEAVE_FUNCTION
 
-	return TRUE ;
+	return TRUE;
 }
 
-BOOL Server::Loop( )
+BOOL Server::Loop()
 {
 __ENTER_FUNCTION
+	BOOL ret = FALSE;
+	Log::SaveLog(SERVER_LOGFILE, "\r\nLoop...");
 
-	BOOL ret = FALSE ;
+	Log::SaveLog(SERVER_LOGFILE, "g_pThreadManager->Start( )...");
+	ret = g_pThreadManager->Start();
+	Assert(ret);
 
-	Log::SaveLog( SERVER_LOGFILE, "\r\nLoop..." ) ;
+	MySleep(2000);
 
+	Log::SaveLog(SERVER_LOGFILE, "g_pClientManager->Loop( )...");
+	g_pClientManager->start();
 
-	Log::SaveLog( SERVER_LOGFILE, "g_pThreadManager->Start( )..." ) ;
-	ret = g_pThreadManager->Start( ) ;
-	Assert( ret ) ;
-
-	MySleep( 1500 ) ;
-
-	//主线程调度资源分给ClientManager来执行；
-	Log::SaveLog( SERVER_LOGFILE, "g_pClientManager->Loop( )..." ) ;
-	g_pClientManager->start( ) ;
-
-
-	Log::SaveLog( SERVER_LOGFILE, "g_pDaemonThread->Loop( )..." ) ;
-	g_pDaemonThread->Loop( ) ;
+	Log::SaveLog(SERVER_LOGFILE, "g_pDaemonThread->Loop( )...");
+	g_pDaemonThread->Loop();
 
 __LEAVE_FUNCTION
 
-	return TRUE ;
+	return TRUE;
 }
 
-BOOL Server::ExitServer( )
+BOOL Server::ExitServer()
 {
 __ENTER_FUNCTION
 
-	Log::SaveLog( SERVER_LOGFILE, "\r\nExitServer..." ) ;
+	Log::SaveLog(SERVER_LOGFILE, "\r\nExitServer...");
 
-	WaitForAllThreadQuit( ) ;
+	WaitForAllThreadQuit() ;
 
-	Log::SaveLog( SERVER_LOGFILE, "Begin delete..." ) ;
+	Log::SaveLog(SERVER_LOGFILE, "Begin delete...");
 
-	SAFE_DELETE( g_pClientManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pClientManager delete...OK" ) ;
-	SAFE_DELETE( g_pThreadManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pThreadManager delete...OK" ) ;
+	SAFE_DELETE(g_pClientManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pClientManager delete...OK");
+	SAFE_DELETE(g_pThreadManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pThreadManager delete...OK");
 
-	SAFE_DELETE( g_pWorkerManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pWorkerManager delete...OK" ) ;
-	SAFE_DELETE( g_pPlayerPool ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pPlayerPool delete...OK" ) ;
-	SAFE_DELETE( g_pPacketFactoryManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pPacketFactoryManager delete...OK" ) ;
-	SAFE_DELETE( g_pServerManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pServerManager delete...OK" ) ;
-	SAFE_DELETE( g_pMachineManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pMachineManager delete...OK" ) ;
-	SAFE_DELETE( g_pGUIDManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pGUIDManager delete...OK" ) ;
+	SAFE_DELETE(g_pWorkerManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pWorkerManager delete...OK");
+	SAFE_DELETE(g_pPlayerPool);
+	Log::SaveLog(SERVER_LOGFILE, "g_pPlayerPool delete...OK");
+	SAFE_DELETE(g_pPacketFactoryManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pPacketFactoryManager delete...OK");
+	SAFE_DELETE(g_pServerManager ) ;
+	Log::SaveLog(SERVER_LOGFILE, "g_pServerManager delete...OK");
+	SAFE_DELETE(g_pMachineManager ) ;
+	Log::SaveLog(SERVER_LOGFILE, "g_pMachineManager delete...OK");
+	SAFE_DELETE(g_pGUIDManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pGUIDManager delete...OK");
 
-	SAFE_DELETE( g_pPerformanceManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pPerformanceManager delete...OK" ) ;
-	SAFE_DELETE( g_pDaemonThread ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pDaemonThread delete...OK" ) ;
-	SAFE_DELETE( g_pTimeManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pTimeManager delete...OK" ) ;
-	SAFE_DELETE( g_pLog ) ;
-	Log::SaveLog( SERVER_LOGFILE, "g_pLog delete...OK" ) ;
+	SAFE_DELETE(g_pPerformanceManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pPerformanceManager delete...OK");
+	SAFE_DELETE(g_pDaemonThread);
+	Log::SaveLog(SERVER_LOGFILE, "g_pDaemonThread delete...OK");
+	SAFE_DELETE(g_pTimeManager);
+	Log::SaveLog(SERVER_LOGFILE, "g_pTimeManager delete...OK");
+	SAFE_DELETE(g_pLog);
+	Log::SaveLog(SERVER_LOGFILE, "g_pLog delete...OK");
 
 	SAFE_DELETE(tomatodb::g_pDatabaseManager);
 	Log::SaveLog(SERVER_LOGFILE, "g_pDatabaseManager delete...OK");
 __LEAVE_FUNCTION
 
-	return TRUE ;
+	return TRUE;
 }
 
-VOID Server::WaitForAllThreadQuit( )
+VOID Server::WaitForAllThreadQuit()
 {
 __ENTER_FUNCTION
 
-
 #define MAX_WAIT_QUIT 300
 
-	INT iQuit ;
-	for( INT i=0;i<MAX_WAIT_QUIT;i++ )
+	INT iQuit;
+	for(INT i=0; i < MAX_WAIT_QUIT; i++)
 	{
-		iQuit = g_QuitThreadCount ;
-		printf( "Quit Thread:%d", iQuit ) ;
-		MySleep( 1000 ) ;
-		if( iQuit==g_pThreadManager->GetTotalThreads()+1 )
-			break ;
+		iQuit = g_QuitThreadCount;
+		printf("Quit Thread:%d", iQuit);
+		MySleep(1000);
+		if(iQuit == g_pThreadManager->GetTotalThreads() + 1)
+			break;
 	}
 
 __LEAVE_FUNCTION
 }
 
-BOOL Server::NewStaticServer( )
+BOOL Server::NewStaticServer()
 {
 __ENTER_FUNCTION
-	BOOL ret = FALSE ;
-	Log::SaveLog( SERVER_LOGFILE, "\r\nNewStaticServer( )...OK" ) ;
+	BOOL ret = FALSE;
+	Log::SaveLog(SERVER_LOGFILE, "\r\nNewStaticServer( )...OK");
 
-	g_pWorkerManager = new WorkerManager ;
-	Assert( g_pWorkerManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new SceneManager...OK" ) ;
+	g_pWorkerManager = new WorkerManager;
+	Assert(g_pWorkerManager);
+	Log::SaveLog(SERVER_LOGFILE, "new SceneManager...OK");
 
-	//
-	g_pPlayerPool = new PlayerPool ;
-	Assert( g_pPlayerPool ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new PlayerPool...OK" ) ;
+	g_pPlayerPool = new PlayerPool;
+	Assert(g_pPlayerPool);
+	Log::SaveLog( SERVER_LOGFILE, "new PlayerPool...OK" );
 
-	//
-	g_pPacketFactoryManager = new PacketFactoryManager ;
-	Assert( g_pPacketFactoryManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new PacketFactoryManager...OK" ) ;
+	g_pPacketFactoryManager = new PacketFactoryManager;
+	Assert(g_pPacketFactoryManager);
+	Log::SaveLog(SERVER_LOGFILE, "new PacketFactoryManager...OK");
 
-	//
-	g_pServerManager = new ServerManager ;
-	Assert( g_pServerManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new ServerManager...OK" ) ;
+	g_pServerManager = new ServerManager;
+	Assert(g_pServerManager);
+	Log::SaveLog(SERVER_LOGFILE, "new ServerManager...OK");
 
-	//
-	g_pMachineManager = new MachineManager ;
-	Assert( g_pMachineManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new MachineManager...OK" ) ;
+	g_pMachineManager = new MachineManager;
+	Assert(g_pMachineManager);
+	Log::SaveLog( SERVER_LOGFILE, "new MachineManager...OK");
 
-	//
-	g_pGUIDManager = new GUIDManager ;
-	Assert( g_pGUIDManager ) ;
-        Log::SaveLog(SERVER_LOGFILE, "new GUIDManager...OK") ;
+	g_pGUIDManager = new GUIDManager;
+	Assert(g_pGUIDManager);
+        Log::SaveLog(SERVER_LOGFILE, "new GUIDManager...OK");
 
 	g_pDaemonThread = new DaemonThread;
 	Assert(g_pDaemonThread);
-	Log::SaveLog( SERVER_LOGFILE, "new DaemonThread...OK" ) ;
+	Log::SaveLog(SERVER_LOGFILE, "new DaemonThread...OK");
 
-
-	// 数据监控管理器
 	g_pPerformanceManager = new PerformanceManager;
 	Assert(g_pPerformanceManager);
-	Log::SaveLog( SERVER_LOGFILE, "new PerformanceManager...OK" ) ;
+	Log::SaveLog(SERVER_LOGFILE, "new PerformanceManager...OK");
 
+	g_pThreadManager = new ThreadManager;
+	Assert(g_pThreadManager);
+	Log::SaveLog(SERVER_LOGFILE, "new pThreadManager...OK");
 
-	//***注意***
-	//
-	//  以下两个模块放在最后生成
-	//
-	g_pThreadManager = new ThreadManager ;
-	Assert( g_pThreadManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new pThreadManager...OK" ) ;
-
-	//
-	g_pClientManager = new ClientManager ;
-	Assert( g_pClientManager ) ;
-	Log::SaveLog( SERVER_LOGFILE, "new ClientManager...OK" ) ;
+	g_pClientManager = new ClientManager;
+	Assert(g_pClientManager);
+	Log::SaveLog(SERVER_LOGFILE, "new ClientManager...OK");
 
 	tomatodb::g_pDatabaseManager = new tomatodb::DatabaseManager(g_Config);
 	Assert(tomatodb::g_pDatabaseManager);
 	Log::SaveLog(SERVER_LOGFILE, "new g_pDatabaseManager...OK");
-	return TRUE ;
+	return TRUE;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
-VOID Server::Stop( )
+VOID Server::Stop()
 {
 __ENTER_FUNCTION
 
-	if( g_pThreadManager )
+	if(g_pThreadManager)
 	{
-		g_pThreadManager->Stop( )  ;
+		g_pThreadManager->Stop();
 	}
 
-	if( g_pClientManager )
+	if(g_pClientManager)
 	{
-		g_pClientManager->stop( ) ;
+		g_pClientManager->stop();
 	}
 
 	if( g_pDaemonThread )
 	{
-		g_pDaemonThread->Stop( ) ;
+		g_pDaemonThread->Stop();
 	}
 
 __LEAVE_FUNCTION
@@ -356,7 +328,6 @@ __ENTER_FUNCTION
 
 	Log::SaveLog( SERVER_LOGFILE, "\r\nInitStaticServer( )...OK" ) ;
 
-	//________________________________________________________
 	if( g_Config.m_ConfigInfo.m_SystemModel == 0 )
 	{
         nTemp = (g_Config.m_WorkerInfo.m_WorkerCount<10) ? g_Config.m_WorkerInfo.m_WorkerCount : 10;
@@ -365,14 +336,13 @@ __ENTER_FUNCTION
 	{
 		nTemp = MAX_POOL_SIZE;
 	}
-//ShareMemory 最先
 	
 	const _SERVER_DATA*	pCurrentSData =	g_pServerManager->GetCurrentServerInfo();
 	
 	if(pCurrentSData->m_EnableShareMem)
 	{
 		ret = g_HumanSMUPool.Init(/*g_pPlayerPool->GetPlayerPoolMaxCount()*//*________________*/nTemp,pCurrentSData->m_HumanSMKey,SMPT_SERVER);
-		AssertEx(ret,"共享内存初始化错误,请先启动ShareMemory");
+		AssertEx(ret,"ShareMemory error");
 
 		if(g_HumanSMUPool.GetHeadVer()!=0)
 		{
@@ -408,7 +378,6 @@ __ENTER_FUNCTION
 	Assert( ret );
 	Log::SaveLog( SERVER_LOGFILE, "g_pGUIDManager->Init()...OK" ) ;
 
-	//________________________________________________________
 	if( g_Config.m_ConfigInfo.m_SystemModel == 0 )
 	{
 		nTemp = 1000;
@@ -430,20 +399,14 @@ __ENTER_FUNCTION
 	Assert( ret ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_SceneManager->Init()...OK" ) ;
 
-	//平台管理工具，保存和统计系统中各个模块执行效率及运行情况
 	ret = g_pPerformanceManager->Init( );
 	Assert( ret ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pPerformanceManager->Init()...OK" ) ;
 
-	//***注意***
-	//
-	//放在最后初始化的是线程数据
-	//
 	ret = g_pServerManager->Init( ) ;
 	Assert( ret ) ;
 	Log::SaveLog( SERVER_LOGFILE, "g_pServerManager->Init()...OK" ) ;
 
-	//根据配置文件读取需要使用的场景，为每个场景分配一个线程；
 	if( g_Config.m_ConfigInfo.m_SystemModel == 0 )
 	{
         nTemp = (g_Config.m_WorkerInfo.m_WorkerCount<10) ? g_Config.m_WorkerInfo.m_WorkerCount : 10;
@@ -477,59 +440,5 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-
-VOID INTHandler(INT)
-{
-	DumpStack("INT exception:\r\n");
-	g_Server.Stop();
-}
-VOID TERMHandler(INT)
-{
-	DumpStack("TERM exception:\r\n");
-	g_Server.Stop();
-
-}
-VOID ABORTHandler(INT)
-{
-	DumpStack("ABORT exception:\r\n");
-	g_Server.Stop();
-}
-
-VOID ILLHandler(INT)
-{
-	DumpStack("ILL exception:\r\n");
-	g_Server.Stop();
-}
-
-VOID FPEHandler(INT)
-{
-	DumpStack("FPE exception:\r\n");
-	g_Server.Stop();
-}
-
-VOID SEGHandler(INT)
-{
-	DumpStack("SEG exception:\r\n");
-	g_Server.Stop();
-}
-VOID XFSZHandler(INT)
-{
-	DumpStack("XFSZ exception:\r\n");
-	g_Server.Stop();
-}
-
-ServerExceptionHandler::ServerExceptionHandler()
-{
-#ifdef __LINUX__
-	signal(SIGSEGV, SEGHandler);
-	signal(SIGFPE,  FPEHandler);
-	signal(SIGILL,  ILLHandler);
-	signal(SIGINT,  INTHandler);  
-	signal(SIGTERM, TERMHandler); 
-	signal(SIGABRT, ABORTHandler);
-	signal(SIGXFSZ, XFSZHandler);
-#endif
-}
-
-ServerExceptionHandler g_ServerExceptionHandler;
+ServerSystemSignalHandler g_ServerSystemSignalHandler;
 

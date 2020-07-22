@@ -17,7 +17,8 @@ __LEAVE_FUNCTION
 BOOL CSAskLogin::Write( SocketOutputStream& oStream )const
 {
 __ENTER_FUNCTION
-
+	oStream.Write((CHAR*)(szAccount), sizeof(CHAR) * (MAX_ACCOUNT + 1));
+	oStream.Write((CHAR*)(szPassKey), sizeof(CHAR) * (MAX_ACCOUNT + 1));
 	return TRUE ;
 
 __LEAVE_FUNCTION
@@ -25,33 +26,33 @@ __LEAVE_FUNCTION
 	return FALSE ;
 }
 
-const	CHAR* CSAskLogin::GetAccount()	const
+const CHAR* CSAskLogin::GetAccount() const
 {
 	return szAccount;
 }
-VOID			CSAskLogin::SetAccount(CHAR* pAccount)
+VOID CSAskLogin::SetAccount(CHAR* pAccount)
 {
 	Assert(pAccount);
 	strncpy(szAccount, pAccount, MAX_ACCOUNT);
 	szAccount[MAX_ACCOUNT] = 0;
 }
 
-UINT			CSAskLogin::GetVersion() const
+UINT CSAskLogin::GetVersion() const
 {
 	return	uVersion;
 }
 
-VOID			CSAskLogin::SetVersion(UINT version)
+VOID CSAskLogin::SetVersion(UINT version)
 {
 	uVersion = version;
 }
 
-WorkerID_t			CSAskLogin::GetWorkerID() const
+WorkerID_t CSAskLogin::GetWorkerID() const
 {
 	return	m_nWorkerID;
 }
 
-VOID			CSAskLogin::SetWorkerID(WorkerID_t workerID)
+VOID CSAskLogin::SetWorkerID(WorkerID_t workerID)
 {
 	m_nWorkerID = workerID;
 }

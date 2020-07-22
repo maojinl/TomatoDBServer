@@ -22,7 +22,11 @@ BOOL CSAskDBQuery::Read(SocketInputStream& iStream)
 BOOL CSAskDBQuery::Write(SocketOutputStream& oStream)const
 {
 	__ENTER_FUNCTION
-
+		oStream.Write((CHAR*)(&m_QueryType), sizeof(DB_QUERY_TYPE));
+		oStream.Write((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
+		oStream.Write((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
+		oStream.Write((CHAR*)(&m_KeySize), sizeof(BYTE));
+		oStream.Write((CHAR*)(m_Key), sizeof(CHAR) * m_KeySize);
 		return TRUE;
 
 	__LEAVE_FUNCTION

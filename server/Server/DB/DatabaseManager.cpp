@@ -204,7 +204,10 @@ namespace tomatodb
 		database_list.clear();
 		for (int i = 0; i < m_DbCount; i++)
 		{
-			database_list.push_back(m_pDbList[i]->database_name);
+			if (m_pDbList[i]->IsNormal())
+			{
+				database_list.push_back(m_pDbList[i]->database_name);
+			}
 		}
 		return TRUE;
 		__LEAVE_FUNCTION

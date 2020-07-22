@@ -134,7 +134,6 @@ public:
 		return (m_Seed[0] ^ m_Seed[1] ^ m_Seed[2]);
 	}
 	//Returns a double in [0.0, 1.0]
-	//返回0.0~1.0之间的双精度浮点
 	double RandDouble(VOID)
 	{
 		return static_cast<double>(RandUInt())

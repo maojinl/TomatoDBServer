@@ -39,9 +39,8 @@ namespace Packets
 		CHAR* GetPassKey() { return szPassKey; }
 
 	private:
-		//数据
-		CHAR					szAccount[MAX_ACCOUNT + 1];	//用户名称
-		CHAR					szPassKey[MAX_ACCOUNT + 1];	//通行证
+		CHAR					szAccount[MAX_ACCOUNT + 1];
+		CHAR					szPassKey[MAX_ACCOUNT + 1];
 
 		//fields for internal communication
 		UINT					uVersion;

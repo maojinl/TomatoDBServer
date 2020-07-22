@@ -25,7 +25,13 @@ __LEAVE_FUNCTION
 BOOL CSAskDBManipulate::Write( SocketOutputStream& oStream )const
 {
 __ENTER_FUNCTION
-
+	oStream.Write((CHAR*)(&m_ManipulateType), sizeof(DB_MANIPULATE_TYPE));
+	oStream.Write((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
+	oStream.Write((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
+	oStream.Write((CHAR*)(&m_KeySize), sizeof(BYTE));
+	oStream.Write((CHAR*)(m_Key), sizeof(CHAR) * m_KeySize);
+	oStream.Write((CHAR*)(&m_ValueSize), sizeof(UINT));
+	oStream.Write((CHAR*)(m_Value), sizeof(CHAR) * m_ValueSize);
 	return TRUE ;
 
 __LEAVE_FUNCTION

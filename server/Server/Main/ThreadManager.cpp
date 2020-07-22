@@ -115,34 +115,30 @@ BOOL ThreadManager::Start( )
 {
 __ENTER_FUNCTION
 
-	BOOL ret ;
+	BOOL ret;
 
-	m_pServerThread->start() ;
+	m_pServerThread->start();
 
-	MySleep( 500 ) ;
+	MySleep(500);
 
-	ret = m_pThreadPool->Start( ) ;
+	ret = m_pThreadPool->Start();
 
-	return ret ;
+	return ret;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
 BOOL ThreadManager::Stop( )
 {
 __ENTER_FUNCTION
-
-	if( m_pServerThread )
+	if(m_pServerThread)
 	{
-		m_pServerThread->stop( ) ;
+		m_pServerThread->stop();
 	}
-
-	return m_pThreadPool->Stop( ) ;
-
+	return m_pThreadPool->Stop();
 __LEAVE_FUNCTION
-
 	return FALSE ;
 }
 

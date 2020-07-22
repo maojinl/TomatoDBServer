@@ -19,7 +19,9 @@ __LEAVE_FUNCTION
 BOOL CSAskDBDefinition::Write( SocketOutputStream& oStream ) const
 {
 __ENTER_FUNCTION
-
+	oStream.Write((CHAR*)(&m_OperationType), sizeof(DB_OPERATION_TYPE));
+	oStream.Write((CHAR*)(&m_DatabaseNameSize), sizeof(BYTE));
+	oStream.Write((CHAR*)(m_DatabaseName), sizeof(CHAR) * m_DatabaseNameSize);
 	return TRUE ;
 
 __LEAVE_FUNCTION

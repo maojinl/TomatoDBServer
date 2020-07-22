@@ -1,14 +1,7 @@
-
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
 #include "Type.h"
-
-
-
-
-//游戏入口模块
-//所有子模块都是通过此模块来初始化和执行
 
 class Server
 {
@@ -16,55 +9,108 @@ public :
 	Server( ) ;
 	~Server( ) ;
 
-	//初始化配置
-	//___________________________________
 	BOOL	InitConfig();
 
-	//初始化
 	BOOL	InitServer( ) ;
-	//主循环，此主循环最终会交给ClientManager模块来使用其执行资源
 	BOOL	Loop( ) ;
-	//退出
 	BOOL	ExitServer( ) ;
 
-	//分配数据
-	//为每个模块分配内存
 	BOOL	NewStaticServer( ) ;
-	//初始化各个模块
 	BOOL	InitStaticServer( ) ;
 
-	//停止模块执行，当调用此接口后，会将所有拥有线程的模块设置为不活动状态
-	//当各个线程的循环调用下一此循环操作后就会退出
 	VOID	Stop( ) ;
 
-	//等待所有其他线程都退出后此函数才返回
-	//此函数是一个阻塞函数，如果有其他线程没有退出，此函数会一直挂起
 	VOID	WaitForAllThreadQuit( ) ;
 
 
 public :
-	CMyTimer	m_TimeToQuit ;
-
-
+	CMyTimer m_TimeToQuit ;
 };
 
 extern Server g_Server ;
 
-class ServerExceptionHandler
+
+
+class ServerSystemSignalHandler
 {
 public:
-	ServerExceptionHandler();
-	//VOID INTHandler(INT);
-	//VOID TERMHandler(INT);
-	//VOID ABORTHandler(INT);
-	//VOID ILLHandler(INT);
-	//VOID FPEHandler(INT);
-	//VOID SEGHandler(INT);
-	//VOID XFSZHandler(INT);
+#ifdef __LINUX__
+	#include <signal.h>
+	static VOID INTHandler(INT)
+	{
+		DumpStack("INT exception:\r\n");
+		g_Server.Stop();
+	}
+
+	static VOID TERMHandler(INT)
+	{
+		DumpStack("TERM exception:\r\n");
+		g_Server.Stop();
+	}
+
+	static VOID ABORTHandler(INT)
+	{
+		DumpStack("ABORT exception:\r\n");
+		g_Server.Stop();
+	}
+
+	static VOID ILLHandler(INT)
+	{
+		DumpStack("ILL exception:\r\n");
+		g_Server.Stop();
+	}
+
+	static VOID FPEHandler(INT)
+	{
+		DumpStack("FPE exception:\r\n");
+		g_Server.Stop();
+	}
+
+	static VOID SEGHandler(INT)
+	{
+		DumpStack("SEG exception:\r\n");
+		g_Server.Stop();
+	}
+	static VOID XFSZHandler(INT)
+	{
+		DumpStack("XFSZ exception:\r\n");
+		g_Server.Stop();
+	}
+
+	ServerSystemSignalHandler() {
+		signal(SIGSEGV, SEGHandler);
+		signal(SIGFPE, FPEHandler);
+		signal(SIGILL, ILLHandler);
+		signal(SIGINT, INTHandler);
+		signal(SIGTERM, TERMHandler);
+		signal(SIGABRT, ABORTHandler);
+		signal(SIGXFSZ, XFSZHandler);
+	};
+#elif __WINDOWS__ 
+	static BOOL CtrlHandler(DWORD fdwctrltype)
+	{
+		switch (fdwctrltype)
+		{
+			// handle the ctrl-c signal.
+			case CTRL_C_EVENT:
+			case CTRL_CLOSE_EVENT:
+			case CTRL_BREAK_EVENT:
+			case CTRL_LOGOFF_EVENT:
+			case CTRL_SHUTDOWN_EVENT:
+				g_Server.Stop();
+				return TRUE;
+			default:
+				return TRUE;
+		};
+	};
+
+	ServerSystemSignalHandler() {
+		bool ret = SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, true);
+		Assert(ret);
+	};
+#endif
 };
 
-extern ServerExceptionHandler g_ServerExceptionHandler;
-
-
+extern ServerSystemSignalHandler g_ServerSystemSignalHandler;
 
 #endif
