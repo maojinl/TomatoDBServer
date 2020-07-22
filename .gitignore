@@ -32,7 +32,7 @@
 *.app
 
 # Folders
-server/build/
-server/x64/
+x64/
+build/
 .vs/
 
