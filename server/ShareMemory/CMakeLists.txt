@@ -24,7 +24,6 @@ set(Common
     "../../Common/GameDefine.h"
     "../../Common/GameUtil.cpp"
     "../../Common/GameUtil.h"
-    "../../Common/KeyDog.h"
     "../../Common/Rand.cpp"
     "../../Common/Rand.h"
     "../../Common/ShareMemAPI.cpp"

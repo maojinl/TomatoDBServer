@@ -2,12 +2,12 @@
 #include "gtest/gtest.h"
 #include "DatabaseManager.h"
 #include "unittestutils.h"
-
+	
 using namespace tomatodb;
 #define TEST_THREADS 10
-#define MAX_TEST_DATABASE 10
+#define MAX_TEST_DATABASE 20
 #define MAX_TEST_KEY 10000
-#define TEST_ROUNDS 10000
+#define TEST_ROUNDS 1000000
 
 class DBManagerTestThread : public Thread
 {
@@ -55,7 +55,7 @@ public:
 
 	void CreateOrDeleteDB()
 	{
-		bool ret;
+		bool ret = false;
 		for (int i = 0; i < TestRound; i++)
 		{
 			int idx = rand.GetRand(0, MAX_TEST_DATABASE - 1);
@@ -93,7 +93,7 @@ public:
 		string dbname;
 		string key;
 		string value = "value";
-		bool ret;
+		bool ret = false;
 		for (int i = 0; i < TestRound; i++)
 		{
 			pDBMan->GetDatabasesList(dblist);
@@ -131,7 +131,7 @@ public:
 		string dbname;
 		string key;
 		string value = "value";
-		bool ret;
+		bool ret = false;
 		for (int i = 0; i < TestRound; i++)
 		{
 			pDBMan->GetDatabasesList(dblist);

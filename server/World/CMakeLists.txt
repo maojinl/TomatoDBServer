@@ -32,7 +32,6 @@ set(Common
     "../../Common/Chain.h"
     "../../Common/GameUtil.cpp"
     "../../Common/GameUtil.h"
-    "../../Common/OResultDef.h"
     "../../Common/PacketDefine.h"
     "../../Common/PacketFactory.h"
     "../../Common/PacketFactoryManager.cpp"

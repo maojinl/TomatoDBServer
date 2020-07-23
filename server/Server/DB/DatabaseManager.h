@@ -10,6 +10,7 @@
 #include "DatabaseObject.h"
 #include "DatabaseOptions.h"
 #include "DBThreadObjectsPool.h"
+#include "ReadWriteLock.h"
 
 namespace tomatodb
 {
@@ -31,6 +32,7 @@ namespace tomatodb
 		BOOL HeartBeat();
 	private:
 		MyLock m_Lock;
+		ReadWriteLock m_DbListLock;
 		DatabaseObject* m_pDbList[MAX_DATABASE_SIZE];
 		list<DatabaseObject*> m_pDbRecycleList;
 		AdminDB* m_pAdmin;

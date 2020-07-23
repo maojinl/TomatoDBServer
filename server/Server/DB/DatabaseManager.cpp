@@ -29,11 +29,13 @@ namespace tomatodb
 			UpdateRecycleDBList();
 		}
 
-		m_DbIndexer.clear();
 		for (int i = 0; i < m_DbCount; i++)
 		{
+			SAFE_DELETE(m_pDbList[i]->pDb);
 			SAFE_DELETE(m_pDbList[i]);
 		}
+
+		m_DbIndexer.clear();
 
 		AdminDB::ReleaseInstance();
 		DBThreadObjectsPool::ReleaseInstance();
@@ -127,7 +129,7 @@ namespace tomatodb
 				if (!s.ok()) {
 					m_pAdmin->DeleteDatabase(database_name);
 					Log::SaveLog(SERVER_LOGFILE, "ERROR: Create database in admin db. Message: %s", s.ToString().c_str());
-					return FALSE;
+					return TRUE;
 				}
 				m_DbIndexer[database_name] = m_DbCount;
 				m_DbCount++;
@@ -204,6 +206,7 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		database_list.clear();
+		m_DbListLock.ReadLock();
 		for (int i = 0; i < m_DbCount; i++)
 		{
 			if (m_pDbList[i]->IsNormal())
@@ -211,6 +214,7 @@ namespace tomatodb
 				database_list.push_back(m_pDbList[i]->database_name);
 			}
 		}
+		m_DbListLock.ReadUnlock();
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
@@ -249,10 +253,7 @@ namespace tomatodb
 	{
 		if (m_pAdmin->DeleteDatabase(pDbObj->database_name))
 		{
-			if (pDbObj->pDb != nullptr) {
-				delete pDbObj->pDb;
-			}
-
+			SAFE_DELETE(pDbObj->pDb);
 			Status s = DestroyDB(pDbObj->database_path_name, dbOptions.openOptions);
 			if (!s.ok()) {
 				m_pAdmin->CreateDatabase(pDbObj->database_name);
@@ -263,11 +264,13 @@ namespace tomatodb
 			auto ite = m_DbIndexer.find(pDbObj->database_name);
 			if (ite != m_DbIndexer.end() && m_pDbList[ite->second]->IsDeletePending())
 			{
+				m_DbListLock.WriteLock();
 				m_DbCount--;
 				m_pDbList[ite->second] = m_pDbList[m_DbCount];
 				m_DbIndexer[m_pDbList[m_DbCount]->database_name] = ite->second;
 				m_pDbList[m_DbCount] = nullptr;
 				m_DbIndexer.erase(ite);
+				m_DbListLock.WriteUnlock();
 			}
 			return TRUE;
 		}
