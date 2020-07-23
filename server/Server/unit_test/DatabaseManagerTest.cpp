@@ -62,15 +62,21 @@ public:
 			string dbname = DBNamePrefix + std::to_string(idx);
 			if (DBNameIndex[idx])
 			{
-				ret = pDBMan->DeleteDatabase(dbname);
+				if (idx != 0)
+				{
+					ret = pDBMan->DeleteDatabase(dbname);
+				}
 			}
 			else
 			{
 				ret = pDBMan->CreateDatabase(dbname);
 			}
-			pLock->Lock();
-			DBNameIndex[idx] = !DBNameIndex[idx];
-			pLock->Unlock();
+			if (ret)
+			{
+				pLock->Lock();
+				DBNameIndex[idx] = !DBNameIndex[idx];
+				pLock->Unlock();
+			}
 
 			if (!ret)
 			{
@@ -91,22 +97,29 @@ public:
 		for (int i = 0; i < TestRound; i++)
 		{
 			pDBMan->GetDatabasesList(dblist);
-			int n = rand.GetRand(0, dblist.size() - 1);
-			dbname = dblist[n];
-			n = rand.GetRand(0, MAX_TEST_KEY);
-			key = std::to_string(n);
-			n = rand.GetRand(0, 4);
-			if (n == 0)
+			if (!dblist.empty())
 			{
-				ret = pDBMan->DeleteFromDB(dbname, key, Id);
+				int n = rand.GetRand(0, dblist.size() - 1);
+				dbname = dblist[n];
+				n = rand.GetRand(0, MAX_TEST_KEY);
+				key = std::to_string(n);
+				n = rand.GetRand(0, 4);
+				if (n == 0)
+				{
+					ret = pDBMan->DeleteFromDB(dbname, key, Id);
+				}
+				else
+				{
+					ret = pDBMan->InsertIntoDB(dbname, key, value, Id);
+				}
+				if (!ret)
+				{
+					FailedCount++;
+				}
 			}
 			else
 			{
-				ret = pDBMan->InsertIntoDB(dbname, key, value, Id);
-			}
-			if (!ret)
-			{
-				FailedCount++;
+				i--;
 			}
 		}
 		return;
@@ -123,13 +136,20 @@ public:
 		{
 			pDBMan->GetDatabasesList(dblist);
 			int n = rand.GetRand(0, dblist.size() - 1);
-			dbname = dblist[n];
-			n = rand.GetRand(0, MAX_TEST_KEY);
-			key = std::to_string(n);
-			ret = pDBMan->GetFromDB(dbname, key, &value);
-			if (!ret)
+			if (!dblist.empty())
 			{
-				FailedCount++;
+				dbname = dblist[n];
+				n = rand.GetRand(0, MAX_TEST_KEY);
+				key = std::to_string(n);
+				ret = pDBMan->GetFromDB(dbname, key, &value);
+				if (!ret)
+				{
+					FailedCount++;
+				}
+			}
+			else
+			{
+				i--;
 			}
 		}
 		return;
@@ -139,7 +159,7 @@ public:
 	{
 		while (Active)
 		{
-			MySleep(1000);
+			MySleep(10);
 			pDBMan->Tick();
 		}
 		Active = false;
@@ -158,6 +178,7 @@ public:
 	{
 		UpdateUnitTestPath(g_Config);
 		AdminDB::ReleaseInstance();
+		g_Config.m_WorkerInfo.m_WorkerCount = TEST_THREADS;
 	}
 };
 
@@ -273,25 +294,24 @@ TEST_F(DatabaseManagerTest, MultiThread) {
 		{
 			testThread[TEST_THREADS - 1]->Active = false;
 			MySleep(2000);
+			break;
 		}
-		break;
 	}
 
 	for (int i = 0; i < TEST_THREADS - 1; i++)
 	{
-		EXPECT_TRUE(false) << "Failed Count is " << testThread[i]->FailedCount;
+		//EXPECT_TRUE(false) << "Failed Count is " << testThread[i]->FailedCount;
 		SAFE_DELETE(testThread[i]);
 	}
+	SAFE_DELETE(testThread[TEST_THREADS - 1]);
+	SAFE_DELETE(pDBManager);
 
 	for (int i = 0; i < MAX_TEST_DATABASE; i++)
 	{
 		string dbname = DBManagerTestThread::DBNamePrefix + std::to_string(i);
 		DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_DataPath, dbname)
 			, Options());
-	}
-
-	SAFE_DELETE(testThread[TEST_THREADS - 1]);
-	SAFE_DELETE(pDBManager);
+	}	
 	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)
 		, Options());
 }

@@ -24,15 +24,17 @@ namespace tomatodb
 	DatabaseManager::~DatabaseManager()
 	{
 		__ENTER_FUNCTION
+		while (!m_pDbRecycleList.empty())
+		{
+			UpdateRecycleDBList();
+		}
+
 		m_DbIndexer.clear();
 		for (int i = 0; i < m_DbCount; i++)
 		{
 			SAFE_DELETE(m_pDbList[i]);
 		}
-		while (!m_pDbRecycleList.empty())
-		{
-			UpdateRecycleDBList();
-		}
+
 		AdminDB::ReleaseInstance();
 		DBThreadObjectsPool::ReleaseInstance();
 		__LEAVE_FUNCTION
