@@ -29,10 +29,11 @@ namespace tomatodb
 			pDb(nullptr),
 			refs(0),
 			dblock(),
-			status(DatabaseStatusNormal)
-		{
+			status(DatabaseStatusNormal) {
 		};
-		~DatabaseObject(){};
+		~DatabaseObject() {
+			CloseDB();
+		};
 		BOOL ReadyToDestroy()
 		{
 			return refs == 0;
@@ -57,6 +58,22 @@ namespace tomatodb
 		BOOL IsDeletePending()
 		{
 			return status == DatabaseStatusDeletePending;
+		}
+
+		Status OpenDB(const Options& options)
+		{
+			return leveldb::DB::Open(options, database_path_name, &pDb);
+		}
+
+		void CloseDB()
+		{
+			SAFE_DELETE(pDb);
+		}
+
+		Status DestroyDB(const Options& options)
+		{
+			CloseDB();
+			return leveldb::DestroyDB(database_path_name, options);
 		}
 
 		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch)

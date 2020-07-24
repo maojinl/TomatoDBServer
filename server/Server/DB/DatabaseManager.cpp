@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 
-#include <filesystem>
 #include "DatabaseManager.h"
 #include "Log.h"
 
@@ -27,14 +26,13 @@ namespace tomatodb
 		while (!m_pDbRecycleList.empty())
 		{
 			UpdateRecycleDBList();
+			MySleep(1000);
 		}
 
 		for (int i = 0; i < m_DbCount; i++)
 		{
-			SAFE_DELETE(m_pDbList[i]->pDb);
 			SAFE_DELETE(m_pDbList[i]);
 		}
-
 		m_DbIndexer.clear();
 
 		AdminDB::ReleaseInstance();
@@ -45,7 +43,6 @@ namespace tomatodb
 	VOID DatabaseManager::CleanUp()
 	{
 		__ENTER_FUNCTION
-
 		__LEAVE_FUNCTION
 	}
 
@@ -66,8 +63,7 @@ namespace tomatodb
 		{
 			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dbList[i]);
 			m_pDbList[i] = new DatabaseObject(dbList[i], dbPathName);
-			m_pDbList[i]->pDb = nullptr;
-			Status s = DB::Open(dbOptions.openOptions, m_pDbList[i]->database_path_name, &(m_pDbList[i]->pDb));
+			Status s = m_pDbList[i]->OpenDB(dbOptions.createOptions);
 			m_DbIndexer[dbList[i]] = i;
 			m_DbCount++;
 		}
@@ -223,13 +219,10 @@ namespace tomatodb
 	BOOL DatabaseManager::HeartBeat()
 	{
 		__ENTER_FUNCTION
-
-			UpdateRecycleDBList();
-			return TRUE;
-
+		UpdateRecycleDBList();
+		return TRUE;
 		__LEAVE_FUNCTION
-
-			return FALSE;
+		return FALSE;
 	}
 
 	VOID DatabaseManager::UpdateRecycleDBList()
@@ -253,11 +246,10 @@ namespace tomatodb
 	{
 		if (m_pAdmin->DeleteDatabase(pDbObj->database_name))
 		{
-			SAFE_DELETE(pDbObj->pDb);
-			Status s = DestroyDB(pDbObj->database_path_name, dbOptions.openOptions);
+			Status s = pDbObj->DestroyDB(dbOptions.openOptions);
 			if (!s.ok()) {
 				m_pAdmin->CreateDatabase(pDbObj->database_name);
-				Log::SaveLog(SERVER_LOGFILE, "ERROR: Delete db from admin db. Message: %s", s.ToString().c_str());
+				Log::SaveLog(SERVER_LOGFILE, "ERROR: DeleteDatabaseCore. Message: %s", s.ToString().c_str());
 				return FALSE;
 			}
 
@@ -273,6 +265,10 @@ namespace tomatodb
 				m_DbListLock.WriteUnlock();
 			}
 			return TRUE;
+		}
+		else {
+			Log::SaveLog(SERVER_LOGFILE, "ERROR: Delete Database from Admin DB error!");
+			return FALSE;
 		}
 	}
 }
