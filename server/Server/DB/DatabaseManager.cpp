@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 
-#include <filesystem>
 #include "DatabaseManager.h"
 #include "Log.h"
 
@@ -27,13 +26,14 @@ namespace tomatodb
 		while (!m_pDbRecycleList.empty())
 		{
 			UpdateRecycleDBList();
+			MySleep(1000);
 		}
 
-		m_DbIndexer.clear();
 		for (int i = 0; i < m_DbCount; i++)
 		{
 			SAFE_DELETE(m_pDbList[i]);
 		}
+		m_DbIndexer.clear();
 
 		AdminDB::ReleaseInstance();
 		DBThreadObjectsPool::ReleaseInstance();
@@ -43,7 +43,6 @@ namespace tomatodb
 	VOID DatabaseManager::CleanUp()
 	{
 		__ENTER_FUNCTION
-
 		__LEAVE_FUNCTION
 	}
 
