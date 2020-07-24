@@ -64,8 +64,7 @@ namespace tomatodb
 		{
 			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dbList[i]);
 			m_pDbList[i] = new DatabaseObject(dbList[i], dbPathName);
-			m_pDbList[i]->pDb = nullptr;
-			Status s = DB::Open(dbOptions.openOptions, m_pDbList[i]->database_path_name, &(m_pDbList[i]->pDb));
+			Status s = m_pDbList[i]->OpenDB(dbOptions.createOptions);
 			m_DbIndexer[dbList[i]] = i;
 			m_DbCount++;
 		}
@@ -219,13 +218,10 @@ namespace tomatodb
 	BOOL DatabaseManager::HeartBeat()
 	{
 		__ENTER_FUNCTION
-
-			UpdateRecycleDBList();
-			return TRUE;
-
+		UpdateRecycleDBList();
+		return TRUE;
 		__LEAVE_FUNCTION
-
-			return FALSE;
+		return FALSE;
 	}
 
 	VOID DatabaseManager::UpdateRecycleDBList()
@@ -249,14 +245,10 @@ namespace tomatodb
 	{
 		if (m_pAdmin->DeleteDatabase(pDbObj->database_name))
 		{
-			if (pDbObj->pDb != nullptr) {
-				delete pDbObj->pDb;
-			}
-
-			Status s = DestroyDB(pDbObj->database_path_name, dbOptions.openOptions);
+			Status s = pDbObj->DestroyDB(dbOptions.openOptions);
 			if (!s.ok()) {
 				m_pAdmin->CreateDatabase(pDbObj->database_name);
-				Log::SaveLog(SERVER_LOGFILE, "ERROR: Delete db from admin db. Message: %s", s.ToString().c_str());
+				Log::SaveLog(SERVER_LOGFILE, "ERROR: DeleteDatabaseCore. Message: %s", s.ToString().c_str());
 				return FALSE;
 			}
 
@@ -270,6 +262,10 @@ namespace tomatodb
 				m_DbIndexer.erase(ite);
 			}
 			return TRUE;
+		}
+		else {
+			Log::SaveLog(SERVER_LOGFILE, "ERROR: Delete Database from Admin DB error!");
+			return FALSE;
 		}
 	}
 }

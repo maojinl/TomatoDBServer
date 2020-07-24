@@ -30,12 +30,12 @@ namespace tomatodb
 			writeOptions(),
 			openOptions(),
 			createOptions(),
-			userDBPath(config.m_ConfigInfo.m_DataPath)
-		{
+			userDBPath(config.m_ConfigInfo.m_DataPath) {
 			adminDBPathName = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME);
 			createOptions.create_if_missing = true;
 		};
-		~DatabaseOptions() {};
+		~DatabaseOptions() {
+		};
 
 	};
 }
