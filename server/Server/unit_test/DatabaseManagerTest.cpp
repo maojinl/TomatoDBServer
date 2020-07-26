@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include <iostream>
+
 #include "gtest/gtest.h"
 #include "DatabaseManager.h"
 #include "unittestutils.h"
@@ -7,7 +10,7 @@ using namespace tomatodb;
 #define TEST_THREADS 10
 #define MAX_TEST_DATABASE 20
 #define MAX_TEST_KEY 10000
-#define TEST_ROUNDS 1000000
+#define TEST_ROUNDS 10000
 
 class DBManagerTestThread : public Thread
 {
@@ -58,11 +61,12 @@ public:
 		bool ret = false;
 		for (int i = 0; i < TestRound; i++)
 		{
+			
 			int idx = rand.GetRand(0, MAX_TEST_DATABASE - 1);
 			string dbname = DBNamePrefix + std::to_string(idx);
 			if (DBNameIndex[idx])
 			{
-				if (idx != 0)
+				if (idx > 3)
 				{
 					ret = pDBMan->DeleteDatabase(dbname);
 				}
@@ -71,12 +75,10 @@ public:
 			{
 				ret = pDBMan->CreateDatabase(dbname);
 			}
-			if (ret)
-			{
-				pLock->Lock();
-				DBNameIndex[idx] = !DBNameIndex[idx];
-				pLock->Unlock();
-			}
+
+			pLock->Lock();
+			DBNameIndex[idx] = !DBNameIndex[idx];
+			pLock->Unlock();
 
 			if (!ret)
 			{
@@ -255,7 +257,7 @@ TEST_F(DatabaseManagerTest, MultiThread) {
 	DBManagerTestThread* testThread[TEST_THREADS];
 	for (int i = 0; i < TEST_THREADS; i++)
 	{
-		if (i < TEST_THREADS / 3)
+		if (i < TEST_THREADS / 5)
 		{
 			testThread[i] = new DBManagerTestThread(i, 0, TEST_ROUNDS, pDBManager);
 		}
@@ -301,6 +303,7 @@ TEST_F(DatabaseManagerTest, MultiThread) {
 	for (int i = 0; i < TEST_THREADS - 1; i++)
 	{
 		//EXPECT_TRUE(false) << "Failed Count is " << testThread[i]->FailedCount;
+		std::cout << "Thread "<< i << "Failed Count is "<< testThread[i]->FailedCount << std::endl;
 		SAFE_DELETE(testThread[i]);
 	}
 	SAFE_DELETE(testThread[TEST_THREADS - 1]);

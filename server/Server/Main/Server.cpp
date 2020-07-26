@@ -26,7 +26,7 @@
 
 Server g_Server;
 
-//#define RUN_UNIT_TESTS
+#define RUN_UNIT_TESTS
 
 INT main(INT argc, CHAR* argv[])
 {

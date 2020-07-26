@@ -120,13 +120,15 @@ namespace tomatodb
 			string fullDbName = EnvFileAPI::GetPathName(dbOptions.userDBPath, database_name);
 			if (m_pAdmin->CreateDatabase(database_name))
 			{
-				m_pDbList[m_DbCount] = new DatabaseObject(database_name, fullDbName);
-				Status s = DB::Open(dbOptions.createOptions, fullDbName, &(m_pDbList[m_DbCount]->pDb));
+				DatabaseObject* pDbObj = new DatabaseObject(database_name, fullDbName);
+				Status s = DB::Open(dbOptions.createOptions, fullDbName, &(pDbObj->pDb));
 				if (!s.ok()) {
 					m_pAdmin->DeleteDatabase(database_name);
+					pDbObj->DestroyDB(dbOptions.openOptions);
 					Log::SaveLog(SERVER_LOGFILE, "ERROR: Create database in admin db. Message: %s", s.ToString().c_str());
 					return TRUE;
 				}
+				m_pDbList[m_DbCount] = pDbObj;
 				m_DbIndexer[database_name] = m_DbCount;
 				m_DbCount++;
 				return TRUE;
@@ -150,7 +152,6 @@ namespace tomatodb
 			}
 			return TRUE;
 		}
-		return FALSE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}

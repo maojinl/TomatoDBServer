@@ -35,7 +35,7 @@ public :
 	VOID	Unlock( ){ pthread_mutex_unlock(&m_Mutex); } ;
 };
 #endif
-//自动加锁解锁器
+
 class AutoLock_T
 {
 public:
