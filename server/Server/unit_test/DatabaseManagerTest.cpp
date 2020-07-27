@@ -10,7 +10,7 @@ using namespace tomatodb;
 #define TEST_THREADS 10
 #define MAX_TEST_DATABASE 20
 #define MAX_TEST_KEY 10000
-#define TEST_ROUNDS 10000
+#define TEST_ROUNDS 1000
 
 class DBManagerTestThread : public Thread
 {
@@ -132,7 +132,7 @@ public:
 		vector<string> dblist;
 		string dbname;
 		string key;
-		string value = "value";
+		string value = "";
 		bool ret = false;
 		for (int i = 0; i < TestRound; i++)
 		{

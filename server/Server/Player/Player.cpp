@@ -181,7 +181,7 @@ __ENTER_FUNCTION
 			if( packetID >= (PacketID_t)PACKET_MAX )
 			{//无效的消息类型
 				g_pPacketFactoryManager->RemovePacket( pPacket ) ;
-			    g_pLog->FastSaveLog( LOG_FILE_1, "Johnny ERROR(>PACKET_MAX) Packid is %d%!! " ,packetID) ;
+			    g_pLog->FastSaveLog( LOG_FILE_1, "ERROR(>PACKET_MAX) Packid is %d%!! " ,packetID) ;
 				return FALSE ;
 			}			
 
@@ -190,7 +190,7 @@ __ENTER_FUNCTION
 
 				if( m_pSocketInputStream->Length()<packetSize +PACKET_HEADER_SIZE)
 				{//消息没有接收全
-                    g_pLog->FastSaveLog( LOG_FILE_1, "Johnny ERROR (Size) Packid is %d%!! " ,packetID) ;
+                    g_pLog->FastSaveLog( LOG_FILE_1, "ERROR (Size) Packid is %d%!! " ,packetID) ;
 					break;
 				}
 
@@ -249,7 +249,7 @@ __ENTER_FUNCTION
 				ret = m_pSocketInputStream->ReadPacket( pPacket ) ;
 				if( ret==FALSE )
 				{//读取消息内容错误
-					g_pLog->FastSaveLog( LOG_FILE_1, "Johnny ERROR (Contex) Packid is %d%!! " ,packetID) ;
+					g_pLog->FastSaveLog( LOG_FILE_1, "ERROR (Contex) Packid is %d%!! " ,packetID) ;
 					g_pPacketFactoryManager->RemovePacket( pPacket ) ;
 					return FALSE ;
 				}
@@ -265,7 +265,7 @@ __ENTER_FUNCTION
 					_MY_TRY
 					{
 						//Johnny
-						g_pLog->FastSaveLog( LOG_FILE_1, "Johnny R Packid is %d%!! " ,packetID) ;
+						g_pLog->FastSaveLog( LOG_FILE_1, "R Packid is %d%!! " ,packetID) ;
 						LONGLONG	lStartTime = g_pTimeManager->GetAccurateTime();
 						uret = pPacket->Execute( this ) ;
 						LONGLONG	lEndTime   = g_pTimeManager->GetAccurateTime();
@@ -278,7 +278,7 @@ __ENTER_FUNCTION
 					}
 					if( uret==PACKET_EXE_ERROR )
 					{//出现异常错误，断开此玩家连接
-						g_pLog->FastSaveLog( LOG_FILE_1, "Johnny ERROR (Execute) Packid is %d%!! " ,packetID) ;
+						g_pLog->FastSaveLog( LOG_FILE_1, "ERROR (Execute) Packid is %d%!! " ,packetID) ;
 
 						if( pPacket ) 
 							g_pPacketFactoryManager->RemovePacket( pPacket ) ;
@@ -303,7 +303,7 @@ __ENTER_FUNCTION
 					}
 					else if( uret == PACKET_EXE_NOTREMOVE_ERROR )
 					{
-						g_pLog->FastSaveLog( LOG_FILE_1, "Johnny ERROR(Execute -- not remove) Packid is %d%!! " ,packetID) ;
+						g_pLog->FastSaveLog( LOG_FILE_1, "ERROR(Execute -- not remove) Packid is %d%!! " ,packetID) ;
 						return FALSE ;
 					}
 					else

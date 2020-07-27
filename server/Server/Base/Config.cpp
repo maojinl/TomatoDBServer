@@ -283,9 +283,6 @@ __ENTER_FUNCTION
 		//enum SERVER_TYPE
 		m_ServerInfo.m_pServer[i].m_Type = (UINT)(ini.ReadInt( szSection, "Type" )) ;
 		m_ServerInfo.m_pServer[i].m_HumanSMKey	=	(SM_KEY)(ini.ReadInt(szSection,"HumanSMKey"));
-		m_ServerInfo.m_pServer[i].m_PlayShopSMKey = (SM_KEY)(ini.ReadInt(szSection,"PlayShopSMKey"));
-		m_ServerInfo.m_pServer[i].m_ItemSerialKey = (SM_KEY)(ini.ReadInt(szSection,"ItemSerialKey"));
-
         //≈≈––∞Òœ‡πÿ
 		//m_ServerInfo.m_pServer[i].m_RangeDataSMKey  = (SM_KEY)(ini.ReadInt(szSection,"RangeDataSMKey"));
 
