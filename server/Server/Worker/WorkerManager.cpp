@@ -14,7 +14,7 @@ WorkerManager* g_pWorkerManager=nullptr ;
 //	WorkerManager
 //
 /////////////////////////////////////////////////////////////////////////////////
-WorkerManager::WorkerManager( )
+WorkerManager::WorkerManager() : m_Count(0), m_NextWorkerID(0)
 {
 __ENTER_FUNCTION
 
@@ -23,8 +23,6 @@ __ENTER_FUNCTION
 		m_pWorker[i]=nullptr ;
 		m_aWorkerPlayerCount[i]=0 ;
 	}
-	m_Count = 0 ;
-
 __LEAVE_FUNCTION
 }
 
@@ -39,6 +37,20 @@ __ENTER_FUNCTION
 	m_Count = 0 ;
 
 __LEAVE_FUNCTION
+}
+
+WorkerID_t WorkerManager::GetNextWorkerID()
+{
+	__ENTER_FUNCTION
+
+	if ((UINT)m_NextWorkerID >= m_Count)
+	{
+		m_NextWorkerID = m_NextWorkerID % m_Count;
+	}
+	WorkerID_t ret = m_NextWorkerID++;
+	return ret;
+
+	__LEAVE_FUNCTION
 }
 
 Worker* WorkerManager::GetWorker(WorkerID_t WorkerID)

@@ -25,8 +25,8 @@ UINT CSAskLoginHandler::Execute(CSAskLogin* pPacket, Player* pPlayer )
 		//check thread
 		Assert( MyGetCurrentThreadID()==g_pIncomingPlayerManager->m_ThreadID ) ;
 
-		WorkerID_t WorkerID = 1;
-		Worker* pWorker = g_pWorkerManager->GetWorker(WorkerID) ;
+		WorkerID_t WorkerID = g_pWorkerManager->GetNextWorkerID();
+		Worker* pWorker = g_pWorkerManager->GetWorker(WorkerID);
 
 		PlayerID_t PlayerID = pGamePlayer->PlayerID() ;
 
