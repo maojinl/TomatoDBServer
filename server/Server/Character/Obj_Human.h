@@ -1,9 +1,3 @@
-//	Obj_Human.h
-//
-//	功能：玩家在SERVER上的实现类
-//	修改记录：
-//////////////////////////////////////////////////////
-
 #ifndef __HUMAN_H__
 #define __HUMAN_H__
 
@@ -51,9 +45,6 @@ public:
 
 class Obj_Human : public User
 {
-//===========================================
-// Obj公有接口继承
-//===========================================
 public:
 	Obj_Human();
 	virtual ~Obj_Human() {};
@@ -64,9 +55,6 @@ protected:
     char m_Title[MAX_CHARACTER_TITLE] = "title";
     INT m_Level = 0;
 
-//===========================================
-// 属性
-//===========================================
 public:  
 	virtual GUID_t			GetGUID(VOID) const { return 0; };
 
@@ -92,7 +80,6 @@ public:
 // Other
 //===========================================
 public:
-	// 比较二级密码
 	BOOL ComparePasswd( const CHAR* szPasswd ) {
 		return (strcmp(szPasswd, __GetPassword()) == 0);
 	}

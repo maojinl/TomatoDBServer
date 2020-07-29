@@ -7,7 +7,7 @@
 #include "MachineManager.h"
 
 
-WorkerManager* g_pWorkerManager=nullptr ;
+WorkerManager* g_pWorkerManager=nullptr;
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -18,10 +18,10 @@ WorkerManager::WorkerManager() : m_Count(0), m_NextWorkerID(0)
 {
 __ENTER_FUNCTION
 
-	for( INT i=0; i < MAX_WORKER; i++ )
+	for(INT i=0; i < MAX_WORKER; i++)
 	{
-		m_pWorker[i]=nullptr ;
-		m_aWorkerPlayerCount[i]=0 ;
+		m_pWorker[i]=nullptr;
+		m_aWorkerPlayerCount[i]=0;
 	}
 __LEAVE_FUNCTION
 }
@@ -29,27 +29,25 @@ __LEAVE_FUNCTION
 WorkerManager::~WorkerManager( )
 {
 __ENTER_FUNCTION
-
 	for( INT i=0; i< MAX_WORKER; i++ )
 	{
-		SAFE_DELETE(m_pWorker[i]) ;
+		SAFE_DELETE(m_pWorker[i]);
 	}
-	m_Count = 0 ;
+	m_Count = 0;
 
 __LEAVE_FUNCTION
 }
 
 WorkerID_t WorkerManager::GetNextWorkerID()
 {
+	//Round Robin load balance for workers.
 	__ENTER_FUNCTION
-
 	if ((UINT)m_NextWorkerID >= m_Count)
 	{
 		m_NextWorkerID = m_NextWorkerID % m_Count;
 	}
 	WorkerID_t ret = m_NextWorkerID++;
 	return ret;
-
 	__LEAVE_FUNCTION
 }
 
@@ -59,168 +57,165 @@ __ENTER_FUNCTION
 
 	if( (UINT)WorkerID >=MAX_WORKER )
 	{
-		return nullptr ;
+		return nullptr;
 	}
 
-	return m_pWorker[WorkerID] ;
+	return m_pWorker[WorkerID];
 
 __LEAVE_FUNCTION
 
-	return nullptr ;
+	return nullptr;
 }
 
 _WORKER_DATA* WorkerManager::GetWorkerInfo(WorkerID_t WorkerID)
 {
 __ENTER_FUNCTION
 
-	Assert(WorkerID != INVALID_ID && WorkerID < MAX_WORKER ) ;
+	Assert(WorkerID != INVALID_ID && WorkerID < MAX_WORKER );
 
-	INT iIndex = g_Config.m_WorkerInfo.m_HashWorker[WorkerID] ;
+	INT iIndex = g_Config.m_WorkerInfo.m_HashWorker[WorkerID];
 
-	return &(g_Config.m_WorkerInfo.m_pWorker[iIndex]) ;
+	return &(g_Config.m_WorkerInfo.m_pWorker[iIndex]);
 
 __LEAVE_FUNCTION
 
-	return nullptr ;
+	return nullptr;
 }
 
 
-BOOL WorkerManager::Init( UINT MaxWorkerCount )
+BOOL WorkerManager::Init(UINT MaxWorkerCount)
 {
 __ENTER_FUNCTION
 
-	BOOL ret ;
+	BOOL ret;
 
-	UINT count = MaxWorkerCount ;
+	UINT count = MaxWorkerCount;
 
-	Assert( count<=MAX_WORKER ) ;
+	Assert(count <= MAX_WORKER);
 
-	for( UINT i=0; i<count; i++ )
+	for(UINT i=0; i<count; i++)
 	{
-		WorkerID_t WorkerID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID) ;
-		Assert(WorkerID < MAX_WORKER) ;
+		WorkerID_t WorkerID = (WorkerID_t)(g_Config.m_WorkerInfo.m_pWorker[i].m_WorkerID);
+		Assert(WorkerID < MAX_WORKER);
 
-		UINT ServerID = g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID ;
-		if( ServerID != g_Config.m_ConfigInfo.m_ServerID )
+		UINT ServerID = g_Config.m_WorkerInfo.m_pWorker[i].m_ServerID;
+		if(ServerID != g_Config.m_ConfigInfo.m_ServerID)
 		{
 			//not in current server
-			continue ;
+			continue;
 		}
 
-		Worker* pWorker = new Worker(WorkerID) ;
-		Assert( pWorker ) ;
+		Worker* pWorker = new Worker(WorkerID);
+		Assert(pWorker);
 
-		pWorker->SetWorkerType( g_Config.m_WorkerInfo.m_pWorker[i].m_Type ) ;
+		pWorker->SetWorkerType(g_Config.m_WorkerInfo.m_pWorker[i].m_Type);
 
-		switch( pWorker->GetWorkerType() )
+		switch(pWorker->GetWorkerType())
 		{
-		case WORKER_TYPE_DB_LOGIC://游戏逻辑场景
+		case WORKER_TYPE_DB_LOGIC:
 			{
-				//read scn data
+				//read worker data
 				//pWorker->SetLoadData( g_Config.m_WorkerInfo.m_pWorker[i].m_szFileName, load ) ;
 				//ret = pWorker->Load( &load ) ;
 				//Assert( ret ) ;
-				//启动时候创建的场景直接进入运行模式
-				//普通游戏场景没有OnWorkerInit事件
-				pWorker->SetWorkerStatus( WORKER_STATUS_RUNNING ) ;
+				pWorker->SetWorkerStatus(WORKER_STATUS_RUNNING);
 			}
-			break ;
+			break;
 		default:
 			{
-				Assert(FALSE) ;
+				Assert(FALSE);
 			}
 			break; 
 		};
 
-
-		ret = this->AddWorker( pWorker ) ;
-		Assert( ret ) ;
+		ret = this->AddWorker(pWorker);
+		Assert(ret);
 	}
-	return TRUE ;
+	return TRUE;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
-BOOL WorkerManager::AddWorker( Worker* pWorker)
+BOOL WorkerManager::AddWorker(Worker* pWorker)
 {
 __ENTER_FUNCTION
 
-	Assert( pWorker ) ;
-	if( pWorker==nullptr )
-		return FALSE ;
+	Assert(pWorker);
+	if(pWorker == nullptr)
+		return FALSE;
 
-	WorkerID_t WorkerID = pWorker->WorkerID() ;
-	Assert( WorkerID < MAX_WORKER ) ;
+	WorkerID_t WorkerID = pWorker->WorkerID();
+	Assert(WorkerID < MAX_WORKER);
 	
-	Assert( m_pWorker[WorkerID]==nullptr ) ;
-	m_pWorker[WorkerID] = pWorker ;
+	Assert(m_pWorker[WorkerID] == nullptr);
+	m_pWorker[WorkerID] = pWorker;
 
-	m_Count ++ ;
-	Assert( m_Count<MAX_WORKER ) ;
+	m_Count++;
+	Assert(m_Count < MAX_WORKER);
 
-	return TRUE ;
+	return TRUE;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
-BOOL WorkerManager::DelWorker( WorkerID_t WorkerID )
+BOOL WorkerManager::DelWorker(WorkerID_t WorkerID)
 {
 __ENTER_FUNCTION
 
-	Assert( WorkerID < MAX_WORKER ) ;
-	Assert( m_pWorker[WorkerID] ) ;
-	if( m_pWorker[WorkerID] ) 
-		return FALSE ;
+	Assert(WorkerID < MAX_WORKER);
+	Assert(m_pWorker[WorkerID]);
+	if(m_pWorker[WorkerID]) 
+		return FALSE;
 
-	m_pWorker[WorkerID] = nullptr ;
-	m_Count -- ;
+	m_pWorker[WorkerID] = nullptr;
+	m_Count--;
 
-	return TRUE ;
+	return TRUE;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
 BOOL WorkerManager::IsInCurServer( WorkerID_t WorkerID )
 {
 __ENTER_FUNCTION
 
-	_WORKER_DATA* pData = GetWorkerInfo(WorkerID) ;
-	Assert( pData ) ;
+	_WORKER_DATA* pData = GetWorkerInfo(WorkerID);
+	Assert(pData);
 
-	if( g_pServerManager->GetServerID()==pData->m_ServerID )
-		return TRUE ;
+	if(g_pServerManager->GetServerID() == pData->m_ServerID)
+		return TRUE;
 
-	return FALSE ;
+	return FALSE;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
-BOOL WorkerManager::IsInCurMachine( WorkerID_t WorkerID )
+BOOL WorkerManager::IsInCurMachine(WorkerID_t WorkerID)
 {
 __ENTER_FUNCTION
 
-    _WORKER_DATA* pData = GetWorkerInfo( WorkerID ) ;
-	Assert( pData ) ;
+    _WORKER_DATA* pData = GetWorkerInfo(WorkerID);
+	Assert(pData);
 
-	_SERVER_DATA* pServerData = g_pServerManager->FindServerInfo(pData->m_ServerID) ;
-	Assert( pServerData ) ;
+	_SERVER_DATA* pServerData = g_pServerManager->FindServerInfo(pData->m_ServerID);
+	Assert(pServerData);
 
-	if( g_pMachineManager->GetMachineID() == pServerData->m_MachineID )
-		return TRUE ;
+	if(g_pMachineManager->GetMachineID() == pServerData->m_MachineID)
+		return TRUE;
 
-	return FALSE ;
+	return FALSE;
 
 __LEAVE_FUNCTION
 
-	return FALSE ;
+	return FALSE;
 }
 
 BOOL WorkerManager::BroadCast_Worker(Packet* pMsg) {
