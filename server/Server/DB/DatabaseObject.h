@@ -5,6 +5,8 @@
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
 
+using namespace leveldb;
+
 namespace tomatodb
 {
 	enum DatabaseStatus	{
@@ -18,7 +20,7 @@ namespace tomatodb
 		friend class DatabaseManager;
 		string database_name;
 		string database_path_name;
-		leveldb::DB* pDb;
+		TmtDBImpl* pDb;
 		int refs;
 		MyLock dblock;
 		DatabaseStatus status;
@@ -60,9 +62,14 @@ namespace tomatodb
 			return status == DatabaseStatusDeletePending;
 		}
 
-		Status OpenDB(const Options& options)
+		Status CreateDB(const DatabaseOptions& dbOptions)
 		{
-			return leveldb::DB::Open(options, database_path_name, &pDb);
+			return TmtDBImpl::Open(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
+		}
+
+		Status OpenDB(const DatabaseOptions& dbOptions)
+		{
+			return TmtDBImpl::Open(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
 		}
 
 		void CloseDB()
@@ -76,19 +83,19 @@ namespace tomatodb
 			return leveldb::DestroyDB(database_path_name, options);
 		}
 
-		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch)
+		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch, int tID)
 		{
 			wBatch.Clear();
 			wBatch.Put(key, val);
-			pDb->Write(wOpts, &wBatch);
+			pDb->WriteEx(wOpts, &wBatch, tID);
 			return TRUE;
 		}
 
-		BOOL DeleteFromDB(const WriteOptions& wOpts, const string& key, WriteBatch& wBatch)
+		BOOL DeleteFromDB(const WriteOptions& wOpts, const string& key, WriteBatch& wBatch, int tID)
 		{
 			wBatch.Clear();
 			wBatch.Delete(key);
-			pDb->Write(wOpts, &wBatch);
+			pDb->WriteEx(wOpts, &wBatch, tID);
 			return TRUE;
 		}
 

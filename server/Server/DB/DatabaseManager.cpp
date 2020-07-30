@@ -63,7 +63,7 @@ namespace tomatodb
 		{
 			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dbList[i]);
 			m_pDbList[i] = new DatabaseObject(dbList[i], dbPathName);
-			Status s = m_pDbList[i]->OpenDB(dbOptions.createOptions);
+			Status s = m_pDbList[i]->OpenDB(dbOptions);
 			m_DbIndexer[dbList[i]] = i;
 			m_DbCount++;
 		}
@@ -121,7 +121,7 @@ namespace tomatodb
 			if (m_pAdmin->CreateDatabase(database_name))
 			{
 				DatabaseObject* pDbObj = new DatabaseObject(database_name, fullDbName);
-				Status s = DB::Open(dbOptions.createOptions, fullDbName, &(pDbObj->pDb));
+				Status s = pDbObj->CreateDB(dbOptions);
 				if (!s.ok()) {
 					m_pAdmin->DeleteDatabase(database_name);
 					pDbObj->DestroyDB(dbOptions.openOptions);

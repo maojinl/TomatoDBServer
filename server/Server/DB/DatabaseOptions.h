@@ -21,6 +21,7 @@ namespace tomatodb
 		Options createOptions;
 		string adminDBPathName;
 		string userDBPath;
+		int ThreadsCount;
 		//admin db name
 		static const string ADMIN_DATABASE_NAME;
 		//end const defines
@@ -30,7 +31,8 @@ namespace tomatodb
 			writeOptions(),
 			openOptions(),
 			createOptions(),
-			userDBPath(config.m_ConfigInfo.m_DataPath) {
+			userDBPath(config.m_ConfigInfo.m_DataPath),
+			ThreadsCount(config.m_WorkerInfo.m_WorkerCount) {
 			adminDBPathName = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME);
 			createOptions.create_if_missing = true;
 		};
