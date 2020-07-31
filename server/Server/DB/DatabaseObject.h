@@ -2,8 +2,10 @@
 #define __DATABASEOBJECT_H__
 
 #include "Type.h"
+#include "DatabaseOptions.h"
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
+
 
 using namespace leveldb;
 
@@ -20,7 +22,7 @@ namespace tomatodb
 		friend class DatabaseManager;
 		string database_name;
 		string database_path_name;
-		TmtDBImpl* pDb;
+		DB* pDb;
 		int refs;
 		MyLock dblock;
 		DatabaseStatus status;
@@ -64,12 +66,14 @@ namespace tomatodb
 
 		Status CreateDB(const DatabaseOptions& dbOptions)
 		{
-			return TmtDBImpl::Open(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
+			return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
+			//return DB::Open(dbOptions.createOptions, database_path_name, &pDb);
 		}
 
 		Status OpenDB(const DatabaseOptions& dbOptions)
 		{
-			return TmtDBImpl::Open(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
+			return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
+			//return DB::Open(dbOptions.openOptions, database_path_name, &pDb);
 		}
 
 		void CloseDB()

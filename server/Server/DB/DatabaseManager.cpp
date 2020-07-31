@@ -162,7 +162,7 @@ namespace tomatodb
 		DatabaseObject* dbObj = RefDatabaseHandler(database_name);
 		if (dbObj != nullptr)
 		{
-			dbObj->InsertIntoDB(dbOptions.writeOptions, key, val, threadObjectsPool->Get(threadIdx));
+			dbObj->InsertIntoDB(dbOptions.writeOptions, key, val, threadObjectsPool->Get(threadIdx), threadIdx);
 			UnrefDatabaseHandler(dbObj);
 			return TRUE;
 		}
@@ -176,7 +176,7 @@ namespace tomatodb
 		DatabaseObject* dbObj = RefDatabaseHandler(database_name);
 		if (dbObj != nullptr)
 		{
-			dbObj->DeleteFromDB(dbOptions.writeOptions, key, threadObjectsPool->Get(threadIdx));
+			dbObj->DeleteFromDB(dbOptions.writeOptions, key, threadObjectsPool->Get(threadIdx), threadIdx);
 			UnrefDatabaseHandler(dbObj);
 			return TRUE;
 		}

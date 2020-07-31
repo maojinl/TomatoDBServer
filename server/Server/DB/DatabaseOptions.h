@@ -33,7 +33,8 @@ namespace tomatodb
 			createOptions(),
 			userDBPath(config.m_ConfigInfo.m_DataPath),
 			ThreadsCount(config.m_WorkerInfo.m_WorkerCount) {
-			adminDBPathName = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME);
+			adminDBPathName = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_AdminDBPath, 
+				DatabaseOptions::ADMIN_DATABASE_NAME);
 			createOptions.create_if_missing = true;
 		};
 		~DatabaseOptions() {
