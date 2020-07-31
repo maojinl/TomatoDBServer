@@ -72,16 +72,6 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL DatabaseManager::Tick()
-	{
-		__ENTER_FUNCTION
-
-		UpdateRecycleDBList();
-		return TRUE;
-		__LEAVE_FUNCTION
-		return FALSE;
-	}
-
 	DatabaseObject* DatabaseManager::RefDatabaseHandler(string database_name)
 	{
 		__ENTER_FUNCTION

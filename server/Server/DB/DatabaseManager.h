@@ -22,7 +22,6 @@ namespace tomatodb
 
 		VOID CleanUp();
 		BOOL Init();
-		BOOL Tick();
 		BOOL CreateDatabase(const string& database_name);
 		BOOL DeleteDatabase(const string& database_name);
 		BOOL InsertIntoDB(const string& database_name, const string& key, const string& val, UINT threadIdx);

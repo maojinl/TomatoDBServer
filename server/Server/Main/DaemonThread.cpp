@@ -39,7 +39,7 @@ __ENTER_FUNCTION
 		UINT uTime = g_pTimeManager->CurrentTime();
 		if( !m_WorkingTime.IsSetTimer() )
 		{
-			m_WorkingTime.BeginTimer( 1000, uTime ) ;
+			m_WorkingTime.BeginTimer( 500, uTime ) ;
 			m_FlushLogTimer.BeginTimer( 5000, uTime ) ;
 		}
 		if( !m_WorkingTime.CountingTimer(uTime) )

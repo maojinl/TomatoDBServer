@@ -162,7 +162,7 @@ public:
 		while (Active)
 		{
 			MySleep(10);
-			pDBMan->Tick();
+			pDBMan->HeartBeat();
 		}
 		Active = false;
 	};
