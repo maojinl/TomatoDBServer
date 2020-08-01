@@ -16,7 +16,7 @@ UINT CSAskDBDefinitionHandler::Execute(CSAskDBDefinition* pPacket, Player* pPlay
 {
 	__ENTER_FUNCTION
 
-	GamePlayer* pGamePlayer = (GamePlayer*)pPlayer ;
+	GamePlayer* pGamePlayer = (GamePlayer*)pPlayer;
     Obj_Human* pHuman = pGamePlayer->GetHuman();
 	Assert(pGamePlayer);
 

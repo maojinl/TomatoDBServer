@@ -264,10 +264,9 @@ __ENTER_FUNCTION
 					UINT uret ;
 					_MY_TRY
 					{
-						//Johnny
 						g_pLog->FastSaveLog( LOG_FILE_1, "R Packid is %d%!! " ,packetID) ;
 						LONGLONG	lStartTime = g_pTimeManager->GetAccurateTime();
-						uret = pPacket->Execute( this ) ;
+						uret = pPacket->ExecutePacket( this ) ;
 						LONGLONG	lEndTime   = g_pTimeManager->GetAccurateTime();
 						g_pLog->FastSaveLog( LOG_FILE_14, "%d\t%u\r\n",packetID,(LONGLONG)(((lEndTime-lStartTime)/(double)g_pTimeManager->GetCpuFrequency())*1000*1000));
 					}

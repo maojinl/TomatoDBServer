@@ -19,16 +19,17 @@ namespace Packets
 		virtual PacketID_t		GetPacketID() const { return PACKET_SC_RETDBMANIPULATE; }
 		virtual UINT			GetPacketSize() const
 		{
-			return	sizeof(ASKDBOPERATION_RESULT);
+			return sizeof(DB_MANIPULATE_TYPE)
+				+ sizeof(ASKDBOPERATION_RESULT);
 		}
 
 	public:
-		const					DB_OPERATION_TYPE GetOperationType() const;
-		VOID					SetOperationType(DB_OPERATION_TYPE opType);
+		const					DB_MANIPULATE_TYPE GetManipulateType() const;
+		VOID					SetManipulateType(DB_MANIPULATE_TYPE manType);
 		ASKDBOPERATION_RESULT	GetResult() const;
 		VOID					SetResult(ASKDBOPERATION_RESULT result);
 	private:
-		DB_OPERATION_TYPE		m_OperationType;
+		DB_MANIPULATE_TYPE		m_ManipulateType;
 		ASKDBOPERATION_RESULT	Result;
 	};
 
@@ -39,7 +40,8 @@ namespace Packets
 		PacketID_t	GetPacketID()const { return PACKET_SC_RETDBMANIPULATE; }
 		UINT		GetPacketMaxSize() const
 		{
-			return	sizeof(ASKDBOPERATION_RESULT);
+			return sizeof(DB_MANIPULATE_TYPE)
+				+ sizeof(ASKDBOPERATION_RESULT);
 		}
 	};
 

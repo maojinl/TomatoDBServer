@@ -5,6 +5,7 @@
 BOOL SCRetDBManipulate::Read(SocketInputStream& iStream)
 {
 	__ENTER_FUNCTION
+	iStream.Read((CHAR*)(&m_ManipulateType), sizeof(DB_MANIPULATE_TYPE));
 	iStream.Read((CHAR*)(&Result), sizeof(ASKDBOPERATION_RESULT));
 	return TRUE;
 	__LEAVE_FUNCTION
@@ -14,6 +15,7 @@ BOOL SCRetDBManipulate::Read(SocketInputStream& iStream)
 BOOL SCRetDBManipulate::Write(SocketOutputStream& oStream) const
 {
 	__ENTER_FUNCTION
+	oStream.Write((CHAR*)(&m_ManipulateType), sizeof(DB_MANIPULATE_TYPE));
 	oStream.Write((CHAR*)(&Result), sizeof(ASKDBOPERATION_RESULT));
 	return TRUE;
 	__LEAVE_FUNCTION
@@ -31,13 +33,13 @@ UINT SCRetDBManipulate::Execute(Player* pPlayer)
 	return FALSE;
 }
 
-const DB_OPERATION_TYPE SCRetDBManipulate::GetOperationType() const
+const DB_MANIPULATE_TYPE SCRetDBManipulate::GetManipulateType() const
 {
-	return m_OperationType;
+	return m_ManipulateType;
 }
-VOID SCRetDBManipulate::SetOperationType(DB_OPERATION_TYPE opType)
+VOID SCRetDBManipulate::SetManipulateType(DB_MANIPULATE_TYPE manType)
 {
-	m_OperationType = opType;
+	m_ManipulateType = manType;
 }
 
 ASKDBOPERATION_RESULT SCRetDBManipulate::GetResult() const

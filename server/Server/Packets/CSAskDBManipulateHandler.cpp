@@ -61,6 +61,7 @@ UINT CSAskDBManipulateHandler::Execute(CSAskDBManipulate* pPacket, Player* pPlay
 		}
 
 		SCRetDBManipulate msg0;
+		msg0.SetManipulateType(manType);
 		if (ret)
 		{
 			msg0.SetResult(ASK_DB_OPERATION_R_SUCCESS);

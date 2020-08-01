@@ -73,20 +73,21 @@ public :
 	UINT            m_ProcessTime;
 
 public :
-	Packet() ;
-	virtual ~Packet( ) ;
+	Packet();
 
-	virtual VOID	CleanUp( ){} ;
+	virtual ~Packet();
+
+	virtual VOID	CleanUp( ){};
 
 	virtual BOOL	Read( SocketInputStream& iStream ) = 0 ;
 	
 	virtual BOOL	Write( SocketOutputStream& oStream ) const = 0;
 	
-	//返回值为：PACKET_EXE 中的内容；
-	//PACKET_EXE_ERROR 表示出现严重错误，当前连接需要被强制断开
-	//PACKET_EXE_BREAK 表示返回后剩下的消息将不在当前处理循环里处理
-	//PACKET_EXE_CONTINUE 表示继续在当前循环里执行剩下的消息
-	//PACKET_EXE_NOTREMOVE 表示继续在当前循环里执行剩下的消息,但是不回收当前消息
+	//return value: PACKET_EXE
+	//PACKET_EXE_ERROR error in handler;
+	//PACKET_EXE_BREAK return but the packet is forwarded to other thread to handle.
+	//PACKET_EXE_CONTINUE packet handled but it will be continuing handled in this thread
+	//PACKET_EXE_NOTREMOVE packet handled but it will be continuing handled in this thread without being removed
 	virtual UINT		Execute( Player* pPlayer ) = 0 ;
 	
 	virtual	PacketID_t	GetPacketID( ) const = 0 ;
@@ -106,6 +107,8 @@ public :
 
 	UINT                GetProcessTime() const {return m_ProcessTime;} ;
 	VOID			    SetProcessTime( UINT ProcessTime ) { m_ProcessTime = ProcessTime; };
+
+	UINT				ExecutePacket(Player* pPlayer);
 };
 
 
