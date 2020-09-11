@@ -1,3 +1,0 @@
-[submodule "server/engine"]
-	path = server/engine
-	url = https://github.com/maojinl/TomatoDB.git
