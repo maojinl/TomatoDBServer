@@ -14,6 +14,8 @@ set(Base
     "Base/File.cpp"
     "Base/File.h"
     "Base/FileDef.h"
+    "Base/IDTable.cpp"
+    "Base/IDTable.h"
     "Base/Ini.cpp"
     "Base/Ini.h"
     "Base/Log.cpp"

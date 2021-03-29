@@ -2,7 +2,6 @@
 #define __WORKERMANAGER_H__
 
 #include "Type.h"
-#include "IDTable.h"
 #include "Config.h"
 #include "Worker.h"
 
