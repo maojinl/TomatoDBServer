@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 #include <assert.h>
-#include "TLBB_DBC.h"
+#include "DBC.h"
 #include <exception>
 
 namespace DBC

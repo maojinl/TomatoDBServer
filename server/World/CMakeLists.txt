@@ -42,8 +42,8 @@ set(Common
 source_group("Common" FILES ${Common})
 
 set(Common__Database
-    "../../Common/DataBase/TLBB_DBC.cpp"
-    "../../Common/DataBase/TLBB_DBC.h"
+    "../../Common/DataBase/DBC.cpp"
+    "../../Common/DataBase/DBC.h"
 )
 source_group("Common\\Database" FILES ${Common__Database})
 

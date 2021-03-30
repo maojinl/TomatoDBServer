@@ -4,7 +4,7 @@
 #include "Ini.h"
 #include "Log.h"
 #include "FileDef.h"
-#include "DataBase/TLBB_DBC.h"
+#include "DataBase/DBC.h"
 using namespace DBC;
 Config g_Config ;
 
