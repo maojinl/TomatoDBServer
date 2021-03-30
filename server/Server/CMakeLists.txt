@@ -203,6 +203,8 @@ source_group("DB" FILES ${DB})
 set(DBLink
     "DBLink/DBLinkManager.cpp"
     "DBLink/DBLinkManager.h"
+    "DBLink/DBLinkObject.cpp"
+    "DBLink/DBLinkObject.h"
 )
 source_group("DBLink" FILES ${DBLink})
 

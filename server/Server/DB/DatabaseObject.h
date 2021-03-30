@@ -49,7 +49,7 @@ namespace tomatodb
 		};
 
 		void Unref() {
-			//assert(refs_ >= 1);
+			assert(refs >= 1);
 			AutoLock_T l(dblock);
 			--refs;
 		};

@@ -1,5 +1,5 @@
-#ifndef __DBLINKMANAGER_H__
-#define __DBLINKMANAGER_H__
+#ifndef __DLINK_OBJECT_H__
+#define __DLINK_OBJECT_H__
 
 #include <unordered_map>
 
@@ -14,11 +14,15 @@
 
 namespace tomatodb
 {
-	class DBLinkManager
+	class DBLinkObject
 	{
+	private:
+		string tableName;
+		string linkedTableName;
+		DB* pDb;
 	public:
-		DBLinkManager(const Config& config);
-		~DBLinkManager();
+		DBLinkObject(const Config& config, string tableName1, string tableName2);
+		~DBLinkObject();
 
 		VOID CleanUp();
 		BOOL Init();
