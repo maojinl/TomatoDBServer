@@ -204,6 +204,12 @@ set(DB
 )
 source_group("DB" FILES ${DB})
 
+set(DBLink
+    "DBLink/DBLinkManager.cpp"
+    "DBLink/DBLinkManager.h"
+)
+source_group("DBLink" FILES ${DBLink})
+
 set(StdAfx
     "stdafx.cpp"
     "stdafx.h"
@@ -251,6 +257,7 @@ if (TOMATODB_BUILD_TESTS)
         ${SMU}
         ${Worker}
         ${DB}
+        ${DBLink}
         ${StdAfx}
         ${tinyxml}
         ${unittest}
@@ -275,6 +282,7 @@ else (TOMATODB_BUILD_TESTS)
         ${SMU}
         ${Worker}
         ${DB}
+        ${DBLink}
         ${StdAfx}
         ${tinyxml}
     )
