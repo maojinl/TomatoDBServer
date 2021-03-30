@@ -25,7 +25,7 @@ namespace tomatodb
 		~DBLinkObject();
 
 		VOID CleanUp();
-		BOOL Init();
+		BOOL Init(const Options& options);
 
 	};
 

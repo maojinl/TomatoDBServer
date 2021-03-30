@@ -193,6 +193,7 @@ set(DB
     "DB/DataBaseManager.cpp"
     "DB/DataBaseManager.h"
     "DB/DataBaseObject.h"
+    "DB/DataBaseObject.cpp"
     "DB/DataBaseOptions.h"
     "DB/DataBaseOptions.cpp"
     "DB/DBThreadObjectsPool.h"

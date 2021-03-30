@@ -5,6 +5,7 @@
 #include "DatabaseOptions.h"
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
+#include "GameUtil.h"
 
 
 using namespace leveldb;
@@ -38,80 +39,29 @@ namespace tomatodb
 		~DatabaseObject() {
 			CloseDB();
 		};
-		BOOL ReadyToDestroy()
-		{
-			return refs == 0;
-		};
+		BOOL ReadyToDestroy();
 
-		void Ref() { 
-			AutoLock_T l(dblock); 
-			++refs; 
-		};
+		void Ref();
 
-		void Unref() {
-			assert(refs >= 1);
-			AutoLock_T l(dblock);
-			--refs;
-		};
+		void Unref();
 
-		BOOL IsNormal()
-		{
-			return status == DatabaseStatusNormal;
-		}
+		BOOL IsNormal();
 
-		BOOL IsDeletePending()
-		{
-			return status == DatabaseStatusDeletePending;
-		}
+		BOOL IsDeletePending();
 
-		Status CreateDB(const DatabaseOptions& dbOptions)
-		{
-			return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
-			//return DB::Open(dbOptions.createOptions, database_path_name, &pDb);
-		}
+		Status CreateDB(const DatabaseOptions& dbOptions);
 
-		Status OpenDB(const DatabaseOptions& dbOptions)
-		{
-			return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
-			//return DB::Open(dbOptions.openOptions, database_path_name, &pDb);
-		}
+		Status OpenDB(const DatabaseOptions& dbOptions);
 
-		void CloseDB()
-		{
-			SAFE_DELETE(pDb);
-		}
+		void CloseDB();
 
-		Status DestroyDB(const Options& options)
-		{
-			CloseDB();
-			return leveldb::DestroyDB(database_path_name, options);
-		}
+		Status DestroyDB(const Options& options);
 
-		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch, int tID)
-		{
-			wBatch.Clear();
-			wBatch.Put(key, val);
-			pDb->WriteEx(wOpts, &wBatch, tID);
-			return TRUE;
-		}
+		BOOL InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch, int tID);
 
-		BOOL DeleteFromDB(const WriteOptions& wOpts, const string& key, WriteBatch& wBatch, int tID)
-		{
-			wBatch.Clear();
-			wBatch.Delete(key);
-			pDb->WriteEx(wOpts, &wBatch, tID);
-			return TRUE;
-		}
+		BOOL DeleteFromDB(const WriteOptions& wOpts, const string& key, WriteBatch& wBatch, int tID);
 
-		BOOL GetFromDB(const ReadOptions& rOpts, const string& key, string* val)
-		{
-			Status s = pDb->Get(rOpts, key, val);
-			if (s.IsNotFound())
-			{
-				return FALSE;
-			}
-			return TRUE;
-		}
+		BOOL GetFromDB(const ReadOptions& rOpts, const string& key, string* val);
 	};
 }
 #endif

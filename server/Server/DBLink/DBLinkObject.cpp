@@ -22,9 +22,11 @@ namespace tomatodb
 		__LEAVE_FUNCTION
 	}
 
-	BOOL DBLinkObject::Init()
+	BOOL DBLinkObject::Init(const Options& options)
 	{
 		__ENTER_FUNCTION
+		//string db_path_name = tableName + options.
+			//pDb = DB::Open(dbOptions.openOptions, database_path_name, &pDb);
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
