@@ -140,7 +140,7 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL AdminDB::GetLinksList(const string dbname, vector<string>& link_list)
+	BOOL AdminDB::GetLinksList(const string& dbname, vector<string>& link_list)
 	{
 		__ENTER_FUNCTION
 		std::string links_string;
@@ -151,7 +151,7 @@ namespace tomatodb
 			nlohmann::json dblink = ite.value();
 			if (dbname == dblink.at(DATABASE_KEY_IN_LINK))
 			{
-				nlohmann::json link = link.at(LINK_KEY_IN_LINK);
+				nlohmann::json link = dblink.at(LINKS_KEY_IN_LINK);
 				for (string rhs_db : link)
 				{
 					link_list.push_back(rhs_db);
@@ -161,5 +161,29 @@ namespace tomatodb
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
+	}
+
+	BOOL AdminDB::AddLink(const string& dbname, const string &rhs_dbname)
+	{
+		__ENTER_FUNCTION
+		std::string links_string;
+		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &links_string);
+		nlohmann::json j = nlohmann::json::parse(links_string);
+		bool appended = false;
+		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
+		{
+			nlohmann::json dblink = ite.value();
+			if (dbname == dblink.at(DATABASE_KEY_IN_LINK))
+			{
+				nlohmann::json link = dblink.at(LINKS_KEY_IN_LINK);
+				link.push_back(rhs_dbname);
+
+				appended = true;
+
+			}
+		}
+		return TRUE;
+		__LEAVE_FUNCTION
+			return FALSE;
 	}
 }

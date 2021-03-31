@@ -28,7 +28,8 @@ namespace tomatodb
 		BOOL Init(string dbname);
 		BOOL CreateDatabase(const string& database_name);
 		BOOL DeleteDatabase(const string& database_name);
-		BOOL GetLinksList(const string dbname, vector<string>& link_list);
+		BOOL GetLinksList(const string& dbname, vector<string>& link_list);
+		BOOL AddLink(const string& dbname, const string& rhs_dbname);
 
 		static AdminDB* GetInstance() {
 			//must be called firstly in main thread
