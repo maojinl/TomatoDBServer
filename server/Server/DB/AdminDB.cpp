@@ -156,9 +156,10 @@ namespace tomatodb
 				{
 					link_list.push_back(rhs_db);
 				}
+			}
 		}
 		return TRUE;
 		__LEAVE_FUNCTION
-			return FALSE;
+		return FALSE;
 	}
 }
