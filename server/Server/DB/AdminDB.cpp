@@ -9,6 +9,9 @@
 namespace tomatodb
 {
 	const string AdminDB::DATABASE_NAME_KEY = "DATABASE_NAME_KEY";
+	const string AdminDB::DATABASE_LINK_KEY = "DATABASE_LINK_KEY";
+	const string AdminDB::DATABASE_KEY_IN_LINK = "Database";
+	const string AdminDB::LINKS_KEY_IN_LINK = "Links";
 	AdminDB* AdminDB::m_pAdminDBObj;
 
 	AdminDB::AdminDB()
@@ -69,6 +72,7 @@ namespace tomatodb
 		nlohmann::json j_array = nlohmann::json::array();
 		string jstr = j_array.dump();
 		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
+		m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, jstr);
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
@@ -134,5 +138,27 @@ namespace tomatodb
 		return FALSE;
 		__LEAVE_FUNCTION
 		return FALSE;
+	}
+
+	BOOL AdminDB::GetLinksList(const string dbname, vector<string>& link_list)
+	{
+		__ENTER_FUNCTION
+		std::string links_string;
+		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &links_string);
+		nlohmann::json j = nlohmann::json::parse(links_string);
+		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
+		{
+			nlohmann::json dblink = ite.value();
+			if (dbname == dblink.at(DATABASE_KEY_IN_LINK))
+			{
+				nlohmann::json link = link.at(LINK_KEY_IN_LINK);
+				for (string rhs_db : link)
+				{
+					link_list.push_back(rhs_db);
+				}
+		}
+		return TRUE;
+		__LEAVE_FUNCTION
+			return FALSE;
 	}
 }

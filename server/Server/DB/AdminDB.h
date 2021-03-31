@@ -20,12 +20,15 @@ namespace tomatodb
 		//const defines
 		//Keys in admin db
 		static const string DATABASE_NAME_KEY;
-
+		static const string DATABASE_LINK_KEY;
+		static const string DATABASE_KEY_IN_LINK;
+		static const string LINK_KEY_IN_LINK;
 		~AdminDB();
 		VOID CleanUp();
 		BOOL Init(string dbname);
 		BOOL CreateDatabase(const string& database_name);
 		BOOL DeleteDatabase(const string& database_name);
+		BOOL GetLinksList(const string dbname, vector<string>& link_list);
 
 		static AdminDB* GetInstance() {
 			//must be called firstly in main thread

@@ -116,7 +116,7 @@ namespace tomatodb
 					m_pAdmin->DeleteDatabase(database_name);
 					pDbObj->DestroyDB(dbOptions.openOptions);
 					Log::SaveLog(SERVER_LOGFILE, "ERROR: Create database in admin db. Message: %s", s.ToString().c_str());
-					return TRUE;
+					return FALSE;
 				}
 				m_pDbList[m_DbCount] = pDbObj;
 				m_DbIndexer[database_name] = m_DbCount;

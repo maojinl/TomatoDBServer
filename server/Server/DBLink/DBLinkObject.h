@@ -6,7 +6,6 @@
 #include "Type.h"
 #include "leveldb/db.h"
 #include "GameUtil.h"
-#include "AdminDB.h"
 #include "DatabaseObject.h"
 #include "DatabaseOptions.h"
 #include "DBThreadObjectsPool.h"
@@ -20,13 +19,18 @@ namespace tomatodb
 		string tableName;
 		string linkedTableName;
 		DB* pDb;
+		ReadOptions readOptions;
+		WriteOptions writeOptions;
+		Options openOptions;
+		Options createOptions;
 	public:
 		DBLinkObject(const Config& config, string tableName1, string tableName2);
 		~DBLinkObject();
 
 		VOID CleanUp();
-		BOOL Init(const Options& options);
-
+		BOOL Init(const DatabaseOptions& options);
+		BOOL CreateLink(const DatabaseOptions& options);
+		BOOL DeleteLink(const DatabaseOptions& dbOptions);
 	};
 
 }
