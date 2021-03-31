@@ -22,7 +22,7 @@ namespace tomatodb
 		static const string DATABASE_NAME_KEY;
 		static const string DATABASE_LINK_KEY;
 		static const string DATABASE_KEY_IN_LINK;
-		static const string LINK_KEY_IN_LINK;
+		static const string LINKS_KEY_IN_LINK;
 		~AdminDB();
 		VOID CleanUp();
 		BOOL Init(string dbname);
