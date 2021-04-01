@@ -223,7 +223,9 @@ source_group("tinyxml" FILES ${tinyxml})
 
 set(unittest
     "unit_test/unittestutils.h"
+    "unit_test/unittestutils.cpp"
     "unit_test/DatabaseManagerTest.cpp"
+    "unit_test/DBLinkTest.cpp"
 )
 source_group("unittest" FILES ${unittest})
 

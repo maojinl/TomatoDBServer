@@ -1,25 +1,6 @@
-#include "stdafx.h"
-#include "leveldb\env.h"
+#ifndef __UNIT_TEST_UTILS_H__
+#define __UNIT_TEST_UTILS_H__
 
-void UpdateUnitTestPath(Config& config)
-{
-	char* admindb = "./unittestdata";
-	int sz = std::strlen(admindb);
-	std::strncpy(config.m_ConfigInfo.m_AdminDBPath, admindb, sz);
-	config.m_ConfigInfo.m_AdminDBPath[sz] = '\0';
+void UpdateUnitTestPath(Config& config);
 
-	char* userdb = "./unittestdata/data";
-	sz = std::strlen(userdb);
-	std::strncpy(config.m_ConfigInfo.m_DataPath, userdb, sz);
-	config.m_ConfigInfo.m_AdminDBPath[sz] = '\0';
-	leveldb::Env* env = leveldb::Env::Default();
-	if (!env->FileExists(admindb))
-	{
-		env->CreateDir(admindb);
-	}
-	if (!env->FileExists(userdb))
-	{
-		env->CreateDir(userdb);
-	}
-	return;
-}
+#endif

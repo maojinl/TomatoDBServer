@@ -144,15 +144,15 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		std::string links_string;
-		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &links_string);
+		m_pDb->Get(ReadOptions(), DATABASE_LINK_KEY, &links_string);
 		nlohmann::json j = nlohmann::json::parse(links_string);
 		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
 		{
-			nlohmann::json dblink = ite.value();
-			if (dbname == dblink.at(DATABASE_KEY_IN_LINK))
+			nlohmann::json dblinks = ite.value();
+			if (dbname == dblinks.at(DATABASE_KEY_IN_LINK))
 			{
-				nlohmann::json link = dblink.at(LINKS_KEY_IN_LINK);
-				for (string rhs_db : link)
+				nlohmann::json links = dblinks.at(LINKS_KEY_IN_LINK);
+				for (string rhs_db : links)
 				{
 					link_list.push_back(rhs_db);
 				}
@@ -167,23 +167,31 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		std::string links_string;
-		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &links_string);
+		m_pDb->Get(ReadOptions(), DATABASE_LINK_KEY, &links_string);
 		nlohmann::json j = nlohmann::json::parse(links_string);
 		bool appended = false;
-		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
+		for (int i = 0; i < j.size(); i++)
 		{
-			nlohmann::json dblink = ite.value();
-			if (dbname == dblink.at(DATABASE_KEY_IN_LINK))
+			if (dbname == j[i].at(DATABASE_KEY_IN_LINK))
 			{
-				nlohmann::json link = dblink.at(LINKS_KEY_IN_LINK);
-				link.push_back(rhs_dbname);
-
+				j[i].at(LINKS_KEY_IN_LINK).push_back(rhs_dbname);
 				appended = true;
-
+				string jstr = j.dump();
+				m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, jstr);
+				break;
 			}
+		}
+		if (!appended)
+		{
+			nlohmann::json links = nlohmann::json::array();
+			links.push_back(rhs_dbname);
+			nlohmann::json jDblinks{ { DATABASE_KEY_IN_LINK, dbname}, {LINKS_KEY_IN_LINK, links} };
+			j.push_back(jDblinks);
+			string jstr = j.dump();
+			m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, jstr);
 		}
 		return TRUE;
 		__LEAVE_FUNCTION
-			return FALSE;
+		return FALSE;
 	}
 }
