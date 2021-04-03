@@ -51,6 +51,8 @@ set(Common__Common
     "../../Common/ResultDefine.h"
     "../../Common/ShareMemAPI.cpp"
     "../../Common/ShareMemAPI.h"
+    "../../Common/StringArrayTable.cpp"
+    "../../Common/StringArrayTable.h"
     "../../Common/Type.h"
 )
 source_group("Common\\Common" FILES ${Common__Common})
