@@ -16,10 +16,12 @@ private:
 	stack<int> currLayerStart;
 	int currLayer;
 	int cursor;
+	VOID StringArrayTable::ReInitialize();
 public:
 	StringArrayTable(int l, int bufSize);
 	virtual ~StringArrayTable();
 	VOID InitWithData(int len, char* p);
+	bool InitWithArrays(const vector<string>& keys, vector<string>& dataArray);
 	bool GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray);
 };
 
