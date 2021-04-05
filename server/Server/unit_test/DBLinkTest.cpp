@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "DatabaseManager.h"
+#include "StringArrayTable.h"
 #include "unittestutils.h"
 	
 using namespace tomatodb;
@@ -27,6 +28,11 @@ public:
 			, Options());
 	}
 };
+
+TEST_F(DBLinkTest, InitStringArrayTable) {
+	
+}
+
 
 TEST_F(DBLinkTest, AddLinks) {
 	pDBManager = new DatabaseManager(g_Config);

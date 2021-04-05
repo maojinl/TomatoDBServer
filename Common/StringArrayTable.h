@@ -21,7 +21,8 @@ public:
 	StringArrayTable(int l, int bufSize);
 	virtual ~StringArrayTable();
 	VOID InitWithData(int len, char* p);
-	bool InitWithArrays(const vector<string>& keys, vector<string>& dataArray);
+	bool InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2, const vector<vector<vector<string>>>* const keys3 = nullptr);
+	void InitLayerAndBuffer(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	bool GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray);
 };
 
