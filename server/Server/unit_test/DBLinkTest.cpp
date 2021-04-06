@@ -12,7 +12,7 @@ using namespace tomatodb;
 
 class DBLinkTest : public testing::Test {
 public:
-	DatabaseManager* pDBManager;
+	DatabaseManager* pDBManager = nullptr;
 	string testdb1 = "testdb1";
 	string testdb2 = "testdb2";
 	DBLinkTest()
@@ -30,7 +30,11 @@ public:
 };
 
 TEST_F(DBLinkTest, InitStringArrayTable) {
-	
+	vector<string> vs1{"testdb1", "testdb2", "testdb3"};
+	StringArrayTable sat;
+	sat.InitWithArrays(&vs1);
+	ASSERT_EQ(1, sat.GetLayer());
+	ASSERT_EQ(164, sat.GetLength());
 }
 
 

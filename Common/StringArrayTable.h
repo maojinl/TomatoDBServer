@@ -18,12 +18,24 @@ private:
 	int cursor;
 	VOID StringArrayTable::ReInitialize();
 public:
-	StringArrayTable(int l, int bufSize);
+	StringArrayTable(int bufSize = 128);
 	virtual ~StringArrayTable();
 	VOID InitWithData(int len, char* p);
-	bool InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2, const vector<vector<vector<string>>>* const keys3 = nullptr);
+	bool InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	void InitLayerAndBuffer(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	bool GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray);
+	int GetLength()
+	{
+		return length;
+	}
+	int GetLayer()
+	{
+		return layer;
+	}
+	char* GetData()
+	{
+		return data;
+	}
 };
 
 #endif

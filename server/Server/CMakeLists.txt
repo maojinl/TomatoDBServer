@@ -327,7 +327,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/../../Common/DataBase;"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/include;"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/third_party/json/single_include/nlohmann;"
-	"${CMAKE_CURRENT_SOURCE_DIR}/../engine/util;"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../engine;"
 )
 
 ################################################################################

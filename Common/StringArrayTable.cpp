@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
 #include "StringArrayTable.h"
-#include "coding.h"
+#include "util/coding.h"
 
-StringArrayTable::StringArrayTable(int l, int bufSize):
-	layer(l), bufferSize(bufSize), data(nullptr), length(0), currLayer(0), cursor(0)
+StringArrayTable::StringArrayTable(int bufSize):
+	layer(0), bufferSize(bufSize), data(nullptr), length(0), currLayer(0), cursor(0)
 {
 }
 
@@ -17,7 +17,7 @@ VOID StringArrayTable::InitWithData(int len, char* p)
 	layer = leveldb::DecodeFixed32(&data[cursor]);
 }
 
-void StringArrayTable::InitLayerAndBuffer(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr)
+void StringArrayTable::InitLayerAndBuffer(const vector<string>* const keys1, const vector<vector<string>>* const keys2, const vector<vector<vector<string>>>* const keys3)
 {
 	SAFE_DELETE_ARRAY(data);
 	ReInitialize();
@@ -25,7 +25,7 @@ void StringArrayTable::InitLayerAndBuffer(const vector<string>* const keys1, con
 	length += 4; //add layer
 	length += 4; //add num
 	length += 4; //node size in layer 1;
-	length += keys2->size(); //add name size
+	length += keys1->size(); //add name size
 	if (keys2 != nullptr)
 	{
 		length += 4 * keys2->size(); //add num
@@ -52,11 +52,11 @@ void StringArrayTable::InitLayerAndBuffer(const vector<string>* const keys1, con
 		length += (*keys1)[i].size();
 	}
 	length += bufferSize;
-	data = new char[length + bufferSize];
+	data = new char[length];
 
 }
 
-bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr)
+bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2, const vector<vector<vector<string>>>* const keys3)
 {
 	InitLayerAndBuffer(keys1, keys2, keys3);
 	stack<int> nodeSize;
@@ -124,12 +124,12 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 			leveldb::EncodeFixed32(&data[currLayerStart.top()], nodeSize.top());
 			currLayerStart.pop();
 		}
-		int currentSize = nodeSize.top();
-		nodeSize.pop();
-		nodeSize.top() += currentSize;
-		leveldb::EncodeFixed32(&data[currLayerStart.top()], nodeSize.top());
-		currLayerStart.pop();
 	}
+	nodeSize.top() = cursor - currLayerStart.top();
+	leveldb::EncodeFixed32(&data[currLayerStart.top()], nodeSize.top());
+	currLayerStart.pop();
+	nodeSize.pop();
+	return true;
 }
 
 VOID StringArrayTable::ReInitialize()
