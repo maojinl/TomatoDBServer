@@ -107,7 +107,6 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 
 					for (int k = 0; k < (*keys3)[i][j].size(); k++)
 					{
-						currLayerStart.push(cursor);
 						nameSize = (*keys3)[i][j][k].size();
 						data[cursor++] = nameSize;
 						memcpy(&data[cursor], (*keys3)[i][j][k].c_str(), nameSize);

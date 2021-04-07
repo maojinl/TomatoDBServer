@@ -113,7 +113,7 @@ TEST_F(DBLinkTest, StringArrayTable_3Layers) {
 	ASSERT_EQ(3, sat2.GetLayer());
 
 	sat2.GetArrayAtKeys(keysToFind, result);
-	ASSERT_EQ(4, result.size());
+	ASSERT_EQ(5, result.size());
 	keysToFind.clear();
 	result.clear();
 	keysToFind.push_back("testdb3");
