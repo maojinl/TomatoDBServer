@@ -6,7 +6,6 @@
 #include "Type.h"
 #include "Player.h"
 #include "Socket.h"
-#include "IDTable.h"
 
 
 //管理一群玩家功能的基本模块,一般为每个场景创建一个PlayerManager

@@ -22,39 +22,37 @@ void StringArrayTable::InitLayerAndBuffer(const vector<string>* const keys1, con
 	SAFE_DELETE_ARRAY(data);
 	ReInitialize();
 	layer = 1;
-	length ++; //add layer
+	length++; //add layer
 	length += 4; //add num
 	length += 4; //node size in layer 1;
-	length += keys1->size(); //add name size
-	if (keys2 != nullptr)
-	{
-		length += 4 * keys2->size(); //add num
-		length += 4 * keys2->size(); //add node size
-		length += keys2->size(); //add name size
-		layer++;
-		for (int i = 0; i < keys2->size(); i++)
-		{
-			length += (*keys2)[i].size();
-		}
-		if (keys3 != nullptr)
-		{
-			for (int i = 0; i < keys2->size(); i++)
-			{
-				length += 4; //node size in layer 2;
-				length += 4 * keys3->size(); //add num
-				length += keys3->size(); //add name size
-				for (int i = 0; i < keys3->size(); i++)
-				{
-					length += (*keys3)[i].size();
-				}
-			}
-			layer++;
-		}
-	}
+	length += keys1->size(); //add name size bit
 	for (int i = 0; i < keys1->size(); i++)
 	{
 		length += (*keys1)[i].size();
+		if (keys2 != nullptr)
+		{
+			layer = 2;
+			length += 4; //add num
+			length += 4; //add node size
+			length += (*keys2)[i].size(); //add name size bit
+			for (int j = 0; j < (*keys2)[i].size(); j++)
+			{
+				length += (*keys2)[i][j].size();
+				if (keys3 != nullptr)
+				{
+					layer = 3;
+					length += 4; //add num
+					length += 4; //add node size
+					length += (*keys3)[i][j].size(); //add name size bit
+					for (int k = 0; k < (*keys3)[i][j].size(); k++)
+					{
+						length += (*keys3)[i][j][k].size();
+					}
+				}
+			}
+		}
 	}
+
 	length += bufferSize;
 	data = new char[length];
 }
@@ -63,7 +61,8 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 {
 	InitLayerAndBuffer(keys1, keys2, keys3);
 	stack<int> nodeSize;
-	
+	int nameSize;
+
 	data[cursor] = layer;
 	cursor ++;
 	currLayerStart.push(cursor);
@@ -74,7 +73,7 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 	cursor += 4;
 	for (int i = 0; i < keys1->size(); i++)
 	{
-		int nameSize = (*keys1)[i].size();
+		nameSize = (*keys1)[i].size();
 		data[cursor++] = nameSize;
 		memcpy(&data[cursor], (*keys1)[i].c_str(), nameSize);
 		cursor += nameSize;
@@ -87,15 +86,13 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 			nodeSize.push(0);
 			//skip for node size pos
 			cursor += 4;
-			nodeSize.top() = cursor - currLayerStart.top();
+			
 
 			for (int j = 0; j < (*keys2)[i].size(); j++)
 			{
-				leveldb::EncodeFixed32(&data[cursor], (*keys2)[i].size());
-				cursor += 4;
-				nameSize = (*keys1)[i].size();
+				nameSize = (*keys2)[i][j].size();
 				data[cursor++] = nameSize;
-				memcpy(&data[cursor], (*keys1)[i].c_str(), nameSize);
+				memcpy(&data[cursor], (*keys2)[i][j].c_str(), nameSize);
 				cursor += nameSize;
 				if (keys3 != nullptr)
 				{
@@ -111,30 +108,25 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 					for (int k = 0; k < (*keys3)[i][j].size(); k++)
 					{
 						currLayerStart.push(cursor);
-						nameSize = (*keys1)[i].size();
+						nameSize = (*keys3)[i][j][k].size();
 						data[cursor++] = nameSize;
-						memcpy(&data[cursor], (*keys1)[i].c_str(), nameSize);
+						memcpy(&data[cursor], (*keys3)[i][j][k].c_str(), nameSize);
 						cursor += nameSize;
 						nodeSize.top() = cursor - currLayerStart.top();
 					}
-					int currentSize = nodeSize.top();
-					nodeSize.pop();
-					nodeSize.top() += currentSize;
-					leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], nodeSize.top());
+					int currentSize = cursor - currLayerStart.top();
+					leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currentSize);
 					currLayerStart.pop();
 				}
 			}
-			int currentSize = nodeSize.top();
-			nodeSize.pop();
-			nodeSize.top() += currentSize;
-			leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], nodeSize.top());
+			int currentSize = cursor - currLayerStart.top();
+			leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currentSize);
 			currLayerStart.pop();
 		}
 	}
-	nodeSize.top() = cursor - currLayerStart.top();
-	leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], nodeSize.top());
+	int currentSize = cursor - currLayerStart.top();
+	leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currentSize);
 	currLayerStart.pop();
-	nodeSize.pop();
 	return true;
 }
 
@@ -178,12 +170,12 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 		{
 			found = false;
 			for (int i = 0; i < num; i++)
-			{
-				uint32_t currNodeStart = cursor;
+			{	
 				uint8_t nameSize = data[cursor++];
 				string s(&data[cursor], nameSize);
 				cursor += nameSize;
-				if (s == keys[layer])
+				uint32_t currNodeStart = cursor;
+				if (s == keys[currLayer - 1])
 				{
 					currLayerStart.push(currentLayerStart);
 					currLayer++;
@@ -194,7 +186,7 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 				{
 					cursor += 4; //skip num
 					currNodeSize = leveldb::DecodeFixed32(&data[cursor]);
-					cursor += currNodeStart + currNodeSize;
+					cursor = currNodeStart + currNodeSize;
 				}
 			}
 			if (!found)
