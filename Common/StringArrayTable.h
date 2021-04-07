@@ -9,7 +9,7 @@
 class StringArrayTable
 {
 private:
-	int layer;
+	unsigned char layer;
 	int bufferSize;
 	int length;
 	char* data;
@@ -28,7 +28,7 @@ public:
 	{
 		return length;
 	}
-	int GetLayer()
+	unsigned char GetLayer()
 	{
 		return layer;
 	}
