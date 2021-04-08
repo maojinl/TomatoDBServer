@@ -53,8 +53,7 @@ void StringArrayTable::InitLayerAndBuffer(const vector<string>* const keys1, con
 		}
 	}
 
-	length += bufferSize;
-	data = new char[length];
+	data = new char[length + bufferSize];
 }
 
 bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2, const vector<vector<vector<string>>>* const keys3)
@@ -131,9 +130,65 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 
 VOID StringArrayTable::ReInitialize()
 {
-	currLayerStart.empty();
+	while (!currLayerStart.empty())
+	{
+		currLayerStart.pop();
+	}
 	cursor = 0;
 	currLayer = 1;
+}
+
+bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite)
+{
+	if (CurrentNodeFound())
+	{
+		int currNodeSize = leveldb::DecodeFixed32(&data[currLayerStart.top() + 4]);
+		int writeSize = dataToWrite.size() + 8; //add num pos and node size pos
+		for (int i = 0; i < dataToWrite.size(); i++)
+		{
+			writeSize += dataToWrite[i].size();
+		}
+		int diff = writeSize - currNodeSize;
+		if (diff > bufferSize)
+		{
+			return false;
+		}
+		int nextNodeStart = currLayerStart.top() + currNodeSize;
+		
+		if (nextNodeStart < length && diff != 0)
+		{
+			int nextNodeNewPos = nextNodeStart + diff;
+			int remainningLength = length - bufferSize - nextNodeStart;
+			memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
+			length += diff;
+			bufferSize -= diff;
+		}
+		cursor = currLayerStart.top();
+		leveldb::EncodeFixed32(&data[cursor], dataToWrite.size());
+		cursor += 4;
+		leveldb::EncodeFixed32(&data[cursor], writeSize);
+		cursor += 4;
+		int nameSize;
+		for (int i = 0; i < dataToWrite.size(); i++)
+		{
+			nameSize = dataToWrite[i].size();
+			data[cursor++] = nameSize;
+			memcpy(&data[cursor], dataToWrite[i].c_str(), nameSize);
+			cursor += nameSize;
+		}
+		if (diff != 0)
+		{
+			currLayerStart.pop();
+			while (!currLayerStart.empty())
+			{
+				currNodeSize = leveldb::DecodeFixed32(&data[currLayerStart.top() + 4]);
+				leveldb::EncodeFixed32(&data[cursor], currNodeSize + diff);
+			}
+		}
+		ReInitialize();
+		return true;
+	}
+	return false;
 }
 
 bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray)
@@ -190,6 +245,7 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 			}
 			if (!found)
 			{
+				ReInitialize();
 				return false;
 			}
 		}

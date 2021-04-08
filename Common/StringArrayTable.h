@@ -24,6 +24,12 @@ public:
 	bool InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	void InitLayerAndBuffer(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	bool GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray);
+	bool WriteArrayAtCurrentNode(const vector<string>& dataToWrite);
+	bool CurrentNodeFound()
+	{
+		return currLayerStart.size() > 0;
+	}
+
 	int GetLength()
 	{
 		return length;
