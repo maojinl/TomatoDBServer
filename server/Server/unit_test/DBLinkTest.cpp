@@ -126,7 +126,58 @@ TEST_F(DBLinkTest, WriteStringArrayTable_1Layer) {
 	result.clear();
 	sat.GetArrayAtKeys(keysToFind, result);
 	ASSERT_EQ(3, result.size());
+
+	vsWrite.push_back("testdb7");
+	sat.WriteArrayAtCurrentNode(vsWrite);
+	result.clear();
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(4, result.size());
+
+	ASSERT_EQ(41, sat.GetLength());
 }
+
+TEST_F(DBLinkTest, WriteStringArrayTable_2Layer) {
+	StringArrayTable sat;
+	sat.InitWithArrays(&vs1, &vvs1);
+
+	vector<string> keysToFind {"testdb2"};
+	vector<string> result;
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(2, result.size());
+
+	vector<string> vsWrite{ "testdb4", "testdb5", "testdb6", "testdb5", "testdb6" };
+	sat.WriteArrayAtCurrentNode(vsWrite);
+	result.clear();
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(5, result.size());
+
+	keysToFind.clear();
+	keysToFind.push_back("testdb3");
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(4, result.size());
+}
+
+TEST_F(DBLinkTest, WriteStringArrayTable_3Layer) {
+	StringArrayTable sat;
+	sat.InitWithArrays(&vs1, &vvs1, &vvvs1);
+
+	vector<string> keysToFind{ "testdb1", "testdb1_2" };
+	vector<string> result;
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(2, result.size());
+
+	vector<string> vsWrite{ "testdb4", "testdb5", "testdb6", "testdb7", "testdb8" };
+	sat.WriteArrayAtCurrentNode(vsWrite);
+	result.clear();
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(5, result.size());
+
+	keysToFind.clear();
+	keysToFind.push_back("testdb3");
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(4, result.size());
+}
+
 
 
 TEST_F(DBLinkTest, AddLinks) {

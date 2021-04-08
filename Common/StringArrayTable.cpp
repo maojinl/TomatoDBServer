@@ -160,9 +160,10 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 			int nextNodeNewPos = nextNodeStart + diff;
 			int remainningLength = length - bufferSize - nextNodeStart;
 			memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
-			length += diff;
-			bufferSize -= diff;
 		}
+		length += diff;
+		bufferSize -= diff;
+
 		cursor = currLayerStart.top();
 		leveldb::EncodeFixed32(&data[cursor], dataToWrite.size());
 		cursor += 4;
