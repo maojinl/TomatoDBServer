@@ -86,7 +86,6 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 			//skip for node size pos
 			cursor += 4;
 			
-
 			for (int j = 0; j < (*keys2)[i].size(); j++)
 			{
 				nameSize = (*keys2)[i][j].size();
@@ -138,6 +137,30 @@ VOID StringArrayTable::ReInitialize()
 	currLayer = 1;
 }
 
+bool StringArrayTable::Append(const StringArrayTable& sat)
+{
+	int addingLen = sat.GetLength();
+	if (addingLen > bufferSize)
+	{
+		return false;
+	}
+	if (layer != sat.GetLayer())
+	{
+		return false;
+	}
+
+	int startPosAdding = 1 + 4 + 4; //skip layer, num, size
+	addingLen -= startPosAdding;
+
+	memcpy(&data[length], &sat.GetData()[startPosAdding], addingLen);
+	int currNum = leveldb::DecodeFixed32(&data[1]) + leveldb::DecodeFixed32(&sat.GetData()[1]);
+	int currSize = leveldb::DecodeFixed32(&data[5]) + leveldb::DecodeFixed32(&sat.GetData()[5]);
+	leveldb::EncodeFixed32(&data[1], currNum);
+	leveldb::EncodeFixed32(&data[5], currSize);
+	AddLength(addingLen);
+	return true;
+}
+
 bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite)
 {
 	if (CurrentNodeFound())
@@ -161,8 +184,7 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 			int remainningLength = length - bufferSize - nextNodeStart;
 			memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
 		}
-		length += diff;
-		bufferSize -= diff;
+		AddLength(diff);
 
 		cursor = currLayerStart.top();
 		leveldb::EncodeFixed32(&data[cursor], dataToWrite.size());

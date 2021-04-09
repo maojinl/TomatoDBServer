@@ -6,6 +6,8 @@
 #include "DatabaseManager.h"
 #include "StringArrayTable.h"
 #include "unittestutils.h"
+
+#include "util/coding.h"
 	
 using namespace tomatodb;
 
@@ -178,7 +180,21 @@ TEST_F(DBLinkTest, WriteStringArrayTable_3Layer) {
 	ASSERT_EQ(4, result.size());
 }
 
+TEST_F(DBLinkTest, AppendStringArrayTable_1Layer) {
+	StringArrayTable sat;
+	sat.InitWithArrays(&vs1);
+	ASSERT_EQ(1, sat.GetLayer());
+	ASSERT_EQ(33, sat.GetLength());
+	vector<string> dataToAppend {"test4", "test5", "test6" };
 
+	StringArrayTable sat2;
+	sat2.InitWithArrays(&dataToAppend);
+	sat.Append(sat2);
+	ASSERT_EQ(1, sat.GetLayer());
+	ASSERT_EQ(51, sat.GetLength());
+	ASSERT_EQ(1, leveldb::DecodeFixed32(&sat.GetData()[1]));
+	ASSERT_EQ(50, leveldb::DecodeFixed32(&sat.GetData()[5]));
+}
 
 TEST_F(DBLinkTest, AddLinks) {
 	pDBManager = new DatabaseManager(g_Config);
