@@ -154,7 +154,7 @@ bool StringArrayTable::Append(const StringArrayTable& sat)
 
 	memcpy(&data[length], &sat.GetData()[startPosAdding], addingLen);
 	int currNum = leveldb::DecodeFixed32(&data[1]) + leveldb::DecodeFixed32(&sat.GetData()[1]);
-	int currSize = leveldb::DecodeFixed32(&data[5]) + leveldb::DecodeFixed32(&sat.GetData()[5]);
+	int currSize = leveldb::DecodeFixed32(&data[5]) + leveldb::DecodeFixed32(&sat.GetData()[5]) - 8; //skip num pos and size pos
 	leveldb::EncodeFixed32(&data[1], currNum);
 	leveldb::EncodeFixed32(&data[5], currSize);
 	AddLength(addingLen);
@@ -181,7 +181,7 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 		if (nextNodeStart < length && diff != 0)
 		{
 			int nextNodeNewPos = nextNodeStart + diff;
-			int remainningLength = length - bufferSize - nextNodeStart;
+			int remainningLength = length - nextNodeStart;
 			memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
 		}
 		AddLength(diff);
@@ -199,13 +199,15 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 			memcpy(&data[cursor], dataToWrite[i].c_str(), nameSize);
 			cursor += nameSize;
 		}
+
 		if (diff != 0)
 		{
 			currLayerStart.pop();
 			while (!currLayerStart.empty())
 			{
 				currNodeSize = leveldb::DecodeFixed32(&data[currLayerStart.top() + 4]);
-				leveldb::EncodeFixed32(&data[cursor], currNodeSize + diff);
+				leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currNodeSize + diff);
+				currLayerStart.pop();
 			}
 		}
 		ReInitialize();
@@ -223,11 +225,10 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 	uint32_t currNodeSize;
 	bool found = false;
 	cursor++; //skip layer
+	currLayerStart.push(cursor);
 
 	do
 	{
-		currentLayerStart = cursor;
-		currLayerStart.push(currentLayerStart);
 		num = leveldb::DecodeFixed32(&data[cursor]);
 		cursor += 4;
 		currNodeSize = leveldb::DecodeFixed32(&data[cursor]);
@@ -254,7 +255,7 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 				uint32_t currNodeStart = cursor;
 				if (s == keys[currLayer - 1])
 				{
-					currLayerStart.push(currentLayerStart);
+					currLayerStart.push(cursor);
 					currLayer++;
 					found = true;
 					break;

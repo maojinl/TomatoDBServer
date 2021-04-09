@@ -154,6 +154,7 @@ TEST_F(DBLinkTest, WriteStringArrayTable_2Layer) {
 	ASSERT_EQ(5, result.size());
 
 	keysToFind.clear();
+	result.clear();
 	keysToFind.push_back("testdb3");
 	sat.GetArrayAtKeys(keysToFind, result);
 	ASSERT_EQ(4, result.size());
@@ -163,10 +164,10 @@ TEST_F(DBLinkTest, WriteStringArrayTable_3Layer) {
 	StringArrayTable sat;
 	sat.InitWithArrays(&vs1, &vvs1, &vvvs1);
 
-	vector<string> keysToFind{ "testdb1", "testdb1_2" };
+	vector<string> keysToFind{ "testdb3", "testdb3_2" };
 	vector<string> result;
 	sat.GetArrayAtKeys(keysToFind, result);
-	ASSERT_EQ(2, result.size());
+	ASSERT_EQ(4, result.size());
 
 	vector<string> vsWrite{ "testdb4", "testdb5", "testdb6", "testdb7", "testdb8" };
 	sat.WriteArrayAtCurrentNode(vsWrite);
@@ -175,9 +176,11 @@ TEST_F(DBLinkTest, WriteStringArrayTable_3Layer) {
 	ASSERT_EQ(5, result.size());
 
 	keysToFind.clear();
+	result.clear();
 	keysToFind.push_back("testdb3");
+	keysToFind.push_back("testdb3_4");
 	sat.GetArrayAtKeys(keysToFind, result);
-	ASSERT_EQ(4, result.size());
+	ASSERT_EQ(2, result.size());
 }
 
 TEST_F(DBLinkTest, AppendStringArrayTable_1Layer) {
@@ -192,7 +195,7 @@ TEST_F(DBLinkTest, AppendStringArrayTable_1Layer) {
 	sat.Append(sat2);
 	ASSERT_EQ(1, sat.GetLayer());
 	ASSERT_EQ(51, sat.GetLength());
-	ASSERT_EQ(1, leveldb::DecodeFixed32(&sat.GetData()[1]));
+	ASSERT_EQ(6, leveldb::DecodeFixed32(&sat.GetData()[1]));
 	ASSERT_EQ(50, leveldb::DecodeFixed32(&sat.GetData()[5]));
 }
 

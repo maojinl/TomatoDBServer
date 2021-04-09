@@ -192,6 +192,8 @@ source_group("Worker" FILES ${Worker})
 set(DB
 	"DB/AdminDB.cpp"
     "DB/AdminDB.h"
+    "DB/AdminDBWriter.cpp"
+    "DB/AdminDBWriter.h"
     "DB/DataBaseManager.cpp"
     "DB/DataBaseManager.h"
     "DB/DataBaseObject.h"
