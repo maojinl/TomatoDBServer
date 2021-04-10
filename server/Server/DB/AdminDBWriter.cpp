@@ -21,7 +21,7 @@ namespace tomatodb
 		{
 			if (dbname == database_name)
 			{
-				return FALSE;
+				return false;
 			}
 		}
 		nlohmann::json jDb(database_name);
@@ -29,6 +29,39 @@ namespace tomatodb
 		dblist = j.dump();
 		return true;
 	}
+
+	bool JsonAdminDBWriter::RemoveDBIntoList(string& dblist, const string& database_name)
+	{
+		nlohmann::json j = nlohmann::json::parse(dblist);
+		for (int i = 0; i < j.size(); i++)
+		{
+			if (j[i] == database_name)
+			{
+				j.erase(i);
+				string jstr = j.dump();
+				m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool JsonAdminDBWriter::RemoveLinkFromList(string& dblist, const string& database_name)
+	{
+		nlohmann::json j = nlohmann::json::parse(dblist);
+		for (std::string dbname : j)
+		{
+			if (dbname == database_name)
+			{
+				return false;
+			}
+		}
+		nlohmann::json jDb(database_name);
+		j.push_back(jDb);
+		dblist = j.dump();
+		return true;
+	}
+
 
 	void JsonAdminDBWriter::ReadDBList(const string& data, vector<string>& valueList)
 	{
