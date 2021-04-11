@@ -18,11 +18,22 @@ namespace tomatodb
 		:m_pDb(nullptr)
 	{
 		__ENTER_FUNCTION
-
+		m_pWriter = new JsonAdminDBWriter();
 		CleanUp();
 
 		__LEAVE_FUNCTION
 	}
+
+	AdminDB::AdminDB(IAdminDBWriter* p)
+		:m_pDb(nullptr)
+	{
+		__ENTER_FUNCTION
+		m_pWriter = p;
+		CleanUp();
+
+		__LEAVE_FUNCTION
+	}
+
 
 	AdminDB::~AdminDB()
 	{
@@ -69,10 +80,10 @@ namespace tomatodb
 	BOOL AdminDB::InitializeAdminDB()
 	{ 
 		__ENTER_FUNCTION
-		nlohmann::json j_array = nlohmann::json::array();
-		string jstr = j_array.dump();
-		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
-		m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, jstr);
+		string dblist = m_pWriter->NewDBList();
+		string linklist = m_pWriter->NewLinkList();
+		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, dblist);
+		m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, linklist);
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
@@ -83,11 +94,7 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		nlohmann::json j = nlohmann::json::parse(databases_string);
-		for (const std::string dbname : j)
-		{
-			database_list.push_back(dbname);
-		}
+		m_pWriter->ReadDBList(databases_string, database_list);
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
@@ -98,19 +105,14 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		nlohmann::json j = nlohmann::json::parse(databases_string);
-		for (std::string dbname : j)
+		if (m_pWriter->AddDBIntoList(databases_string, database_name))
 		{
-			if (dbname == database_name)
-			{
-				return FALSE;
-			}
+			m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, databases_string);
 		}
-		nlohmann::json jDb(database_name);
-		j.push_back(jDb);
-
-		string jstr = j.dump();
-		m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
+		else
+		{
+			return FALSE;
+		}
 
 		return TRUE;
 		__LEAVE_FUNCTION
@@ -123,19 +125,15 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string databases_string;
 		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		nlohmann::json j = nlohmann::json::parse(databases_string);
-		nlohmann::json jDb(database_name);
-		for (int i = 0; i < j.size(); i++)
+		if (m_pWriter->RemoveDBFromList(databases_string, database_name))
 		{
-			if (j[i] == database_name)
-			{
-				j.erase(i);
-				string jstr = j.dump();
-				m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
-				return TRUE;
-			}
+			m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, databases_string);
 		}
-		return FALSE;
+		else
+		{
+			return FALSE;
+		}
+		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
@@ -145,53 +143,49 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		std::string links_string;
 		m_pDb->Get(ReadOptions(), DATABASE_LINK_KEY, &links_string);
-		nlohmann::json j = nlohmann::json::parse(links_string);
-		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
-		{
-			nlohmann::json dblinks = ite.value();
-			if (dbname == dblinks.at(DATABASE_KEY_IN_LINK))
-			{
-				nlohmann::json links = dblinks.at(LINKS_KEY_IN_LINK);
-				for (string rhs_db : links)
-				{
-					link_list.push_back(rhs_db);
-				}
-			}
-		}
+		m_pWriter->ReadLinkList(links_string, dbname, link_list);
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
 
-	BOOL AdminDB::AddLink(const string& dbname, const string &rhs_dbname)
+	BOOL AdminDB::AddLink(const string& dbname, const string& rhs_dbname)
 	{
 		__ENTER_FUNCTION
 		std::string links_string;
 		m_pDb->Get(ReadOptions(), DATABASE_LINK_KEY, &links_string);
-		nlohmann::json j = nlohmann::json::parse(links_string);
-		bool appended = false;
-		for (int i = 0; i < j.size(); i++)
+		
+		if (m_pWriter->AddLinkIntoList(links_string, dbname, rhs_dbname))
 		{
-			if (dbname == j[i].at(DATABASE_KEY_IN_LINK))
-			{
-				j[i].at(LINKS_KEY_IN_LINK).push_back(rhs_dbname);
-				appended = true;
-				string jstr = j.dump();
-				m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, jstr);
-				break;
-			}
+			m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, links_string);
+			return TRUE;
 		}
-		if (!appended)
+		else
 		{
-			nlohmann::json links = nlohmann::json::array();
-			links.push_back(rhs_dbname);
-			nlohmann::json jDblinks{ { DATABASE_KEY_IN_LINK, dbname}, {LINKS_KEY_IN_LINK, links} };
-			j.push_back(jDblinks);
-			string jstr = j.dump();
-			m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, jstr);
+			return FALSE;
 		}
-		return TRUE;
+
 		__LEAVE_FUNCTION
 		return FALSE;
+	}
+
+	BOOL AdminDB::RemoveLink(const string& dbname, const string& rhs_dbname)
+	{
+		__ENTER_FUNCTION
+			std::string links_string;
+		m_pDb->Get(ReadOptions(), DATABASE_LINK_KEY, &links_string);
+
+		if (m_pWriter->RemoveLinkFromList(links_string, dbname, rhs_dbname))
+		{
+			m_pDb->Put(WriteOptions(), DATABASE_LINK_KEY, links_string);
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+
+		__LEAVE_FUNCTION
+			return FALSE;
 	}
 }

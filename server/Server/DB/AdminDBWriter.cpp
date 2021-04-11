@@ -11,7 +11,7 @@ namespace tomatodb
 	string JsonAdminDBWriter::NewDBList()
 	{
 		nlohmann::json j_array = nlohmann::json::array();
-		string jstr = j_array.dump();
+		return j_array.dump();
 	}
 
 	bool JsonAdminDBWriter::AddDBIntoList(string& dblist, const string& database_name)
@@ -30,7 +30,7 @@ namespace tomatodb
 		return true;
 	}
 
-	bool JsonAdminDBWriter::RemoveDBIntoList(string& dblist, const string& database_name)
+	bool JsonAdminDBWriter::RemoveDBFromList(string& dblist, const string& database_name)
 	{
 		nlohmann::json j = nlohmann::json::parse(dblist);
 		for (int i = 0; i < j.size(); i++)
@@ -38,28 +38,35 @@ namespace tomatodb
 			if (j[i] == database_name)
 			{
 				j.erase(i);
-				string jstr = j.dump();
-				m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, jstr);
+				dblist = j.dump();
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool JsonAdminDBWriter::RemoveLinkFromList(string& dblist, const string& database_name)
+	bool JsonAdminDBWriter::RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname)
 	{
-		nlohmann::json j = nlohmann::json::parse(dblist);
-		for (std::string dbname : j)
+		nlohmann::json j = nlohmann::json::parse(dblinkList);
+		bool appended = false;
+		for (int i = 0; i < j.size(); i++)
 		{
-			if (dbname == database_name)
+			if (dbname == j[i].at(DATABASE_KEY_IN_LINK))
 			{
-				return false;
+				if (j[i].at(LINKS_KEY_IN_LINK).size() > 1)
+				{
+					j[i].at(LINKS_KEY_IN_LINK).erase(dbname);
+				}
+				else
+				{
+					j.erase(i);
+				}
+
+				dblinkList = j.dump();
+				return true;
 			}
 		}
-		nlohmann::json jDb(database_name);
-		j.push_back(jDb);
-		dblist = j.dump();
-		return true;
+		return false;
 	}
 
 
@@ -75,10 +82,27 @@ namespace tomatodb
 	string JsonAdminDBWriter::NewLinkList()
 	{
 		nlohmann::json j_array = nlohmann::json::array();
-		string jstr = j_array.dump();
+		return j_array.dump();
 	}
 
-	bool JsonAdminDBWriter::AddLinkIntoList(string& dblinkList, string& dbname, const vector<string>& link_list)
+	void JsonAdminDBWriter::ReadLinkList(const string& data, const string& dbname, vector<string>& link_list)
+	{
+		nlohmann::json j = nlohmann::json::parse(data);
+		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
+		{
+			nlohmann::json dblinks = ite.value();
+			if (dbname == dblinks.at(DATABASE_KEY_IN_LINK))
+			{
+				nlohmann::json links = dblinks.at(LINKS_KEY_IN_LINK);
+				for (string rhs_db : links)
+				{
+					link_list.push_back(rhs_db);
+				}
+			}
+		}
+	}
+
+	bool JsonAdminDBWriter::AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname)
 	{
 		nlohmann::json j = nlohmann::json::parse(dblinkList);
 		bool appended = false;
@@ -86,7 +110,7 @@ namespace tomatodb
 		{
 			if (dbname == j[i].at(DATABASE_KEY_IN_LINK))
 			{
-				j[i].at(LINKS_KEY_IN_LINK).push_back(dbname);
+				j[i].at(LINKS_KEY_IN_LINK).push_back(rhs_dbname);
 				appended = true;
 				dblinkList = j.dump();
 				break;
@@ -95,10 +119,11 @@ namespace tomatodb
 		if (!appended)
 		{
 			nlohmann::json links = nlohmann::json::array();
-			links.push_back(dbname);
+			links.push_back(rhs_dbname);
 			nlohmann::json jDblinks{ { DATABASE_KEY_IN_LINK, dbname}, {LINKS_KEY_IN_LINK, links} };
 			j.push_back(jDblinks);
 			dblinkList = j.dump();
 		}
+		return true;
 	}
 }

@@ -12,11 +12,14 @@ namespace tomatodb
 		virtual string NewDBList() = 0;
 		virtual bool AddDBIntoList(string& dblist, const string& dbname) = 0;
 		virtual void ReadDBList(const string& dblist, vector<string>& db_list) = 0;
-		virtual string NewLinkList(const vector<string>& dbList) = 0;
-		virtual string ReadOneLayerStruct(const string& data, const string& key, vector<string>& valueList) = 0;
+		virtual string NewLinkList() = 0;
+		virtual void ReadLinkList(const string& data, const string& dbname, vector<string>& link_list) = 0;
+		virtual bool AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname) = 0;
+		virtual bool RemoveDBFromList(string& dblist, const string& database_name) = 0;
+		virtual bool RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname) = 0;
 	};
 
-	class JsonAdminDBWriter : IAdminDBWriter
+	class JsonAdminDBWriter : public IAdminDBWriter
 	{
 	private:
 		static const string DATABASE_KEY_IN_LINK;
@@ -26,7 +29,10 @@ namespace tomatodb
 		virtual bool AddDBIntoList(string& dblist, const string& database_name);
 		virtual void ReadDBList(const string& data, vector<string>& db_list);
 		virtual string NewLinkList();
-		virtual bool AddLinkIntoList(string& dblinkList, string& dbname, const vector<string>& link_list);
+		virtual void ReadLinkList(const string& data, const string& dbname, vector<string>& link_list);
+		virtual bool AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname);
+		virtual bool RemoveDBFromList(string& dblist, const string& database_name);
+		virtual bool RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname);
 	};
 } 
 #endif

@@ -2,6 +2,7 @@
 #define __ADMINDB_H__
 
 #include "Type.h"
+#include "AdminDBWriter.h"
 #include "leveldb/db.h"
 
 using namespace leveldb;
@@ -12,10 +13,12 @@ namespace tomatodb
 	private:
 		friend class DatabaseManager;
 		AdminDB();
+		AdminDB(IAdminDBWriter* p);
 		static AdminDB* m_pAdminDBObj;
 		DB* m_pDb;
 		BOOL InitializeAdminDB();
 		BOOL GetDatabasesList(vector<string>& databases_list);
+		IAdminDBWriter* m_pWriter;
 	public:
 		//const defines
 		//Keys in admin db
@@ -30,7 +33,7 @@ namespace tomatodb
 		BOOL DeleteDatabase(const string& database_name);
 		BOOL GetLinksList(const string& dbname, vector<string>& link_list);
 		BOOL AddLink(const string& dbname, const string& rhs_dbname);
-
+		BOOL RemoveLink(const string& dbname, const string& rhs_dbname);
 		static AdminDB* GetInstance() {
 			//must be called firstly in main thread
 			if (m_pAdminDBObj == nullptr) {
