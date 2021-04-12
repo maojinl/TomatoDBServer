@@ -19,7 +19,7 @@ private:
 public:
 	StringArrayTable(int bufSize = 1024);
 	virtual ~StringArrayTable();
-	VOID InitWithData(int len, char* p);
+	VOID InitWithData(int len, const char* p);
 	bool InitWithArrays(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	void InitLayerAndBuffer(const vector<string>* const keys1, const vector<vector<string>>* const keys2 = nullptr, const vector<vector<vector<string>>>* const keys3 = nullptr);
 	bool GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray);
@@ -46,6 +46,22 @@ public:
 	char* const GetData() const
 	{
 		return data;
+	}
+
+	void InitEmptyStruct(unsigned char nlayer)
+	{
+		layer = nlayer;
+		length = 1 + 4 + 4;
+		data = new char[length + bufferSize];
+		data[0] = layer;
+		leveldb::EncodeFixed32(&data[1], 0);
+		leveldb::EncodeFixed32(&data[5], length - 1);
+	}
+
+	string dump()
+	{
+		string s(data, length);
+		return s;
 	}
 };
 

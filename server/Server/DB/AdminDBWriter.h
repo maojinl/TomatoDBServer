@@ -3,6 +3,7 @@
 
 #include "Type.h"
 #include "json.hpp"
+#include "StringArrayTable.h"
 
 namespace tomatodb
 {
@@ -24,6 +25,20 @@ namespace tomatodb
 	private:
 		static const string DATABASE_KEY_IN_LINK;
 		static const string LINKS_KEY_IN_LINK;
+	public:
+		virtual string NewDBList();
+		virtual bool AddDBIntoList(string& dblist, const string& database_name);
+		virtual void ReadDBList(const string& data, vector<string>& db_list);
+		virtual string NewLinkList();
+		virtual void ReadLinkList(const string& data, const string& dbname, vector<string>& link_list);
+		virtual bool AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname);
+		virtual bool RemoveDBFromList(string& dblist, const string& database_name);
+		virtual bool RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname);
+	};
+
+
+	class ArrayTableAdminDBWriter : public IAdminDBWriter
+	{
 	public:
 		virtual string NewDBList();
 		virtual bool AddDBIntoList(string& dblist, const string& database_name);

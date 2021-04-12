@@ -126,4 +126,148 @@ namespace tomatodb
 		}
 		return true;
 	}
+
+	string ArrayTableAdminDBWriter::NewDBList()
+	{
+		StringArrayTable sat;
+		sat.InitEmptyStruct(1);
+		return sat.dump();
+	}
+
+	bool ArrayTableAdminDBWriter::AddDBIntoList(string& dblist, const string& database_name)
+	{
+		StringArrayTable sat;
+		sat.InitWithData(dblist.size(), &dblist[0]);
+		StringArrayTable sat2;
+		vector<string> vs{ database_name };
+		sat.InitWithArrays(&vs);
+		sat.Append(sat2);
+		dblist = sat.dump();
+		return true;
+	}
+
+	bool ArrayTableAdminDBWriter::RemoveDBFromList(string& dblist, const string& database_name)
+	{
+		StringArrayTable sat;
+		sat.InitWithData(dblist.size(), &dblist[0]);
+		vector<string> vs, vs2;
+		if (sat.GetArrayAtKeys(vs, vs2))
+		{
+			for (int i = 0; i < vs2.size(); i++)
+			{
+				if (vs2[i] == database_name)
+				{
+					if (i < vs2.size())
+					{
+						vs2[i] = vs2[vs2.size() - 1];
+					}
+					vs2.pop_back();
+					sat.WriteArrayAtCurrentNode(vs2);
+					dblist = sat.dump();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	void ArrayTableAdminDBWriter::ReadDBList(const string& data, vector<string>& valueList)
+	{
+		StringArrayTable sat;
+		sat.InitWithData(data.size(), &data[0]);
+		vector<string> vs, vs2;
+		if (sat.GetArrayAtKeys(vs, vs2))
+		{
+			for (int i = 0; i < vs2.size(); i++)
+			{
+				valueList.push_back(vs[i]);
+			}
+		}
+		return;
+	}
+
+	string ArrayTableAdminDBWriter::NewLinkList()
+	{
+		StringArrayTable sat;
+		sat.InitEmptyStruct(1);
+		return sat.dump();
+	}
+
+	void JsonAdminDBWriter::ReadLinkList(const string& data, const string& dbname, vector<string>& link_list)
+	{
+		StringArrayTable sat;
+		sat.InitWithData(data.size(), &data[0]);
+		vector<string> vs{ dbname };
+		vector<string> vs2;
+		if (sat.GetArrayAtKeys(vs, vs2))
+		{
+			for (int i = 0; i < vs2.size(); i++)
+			{
+				link_list.push_back(vs[i]);
+			}
+		}
+		return;
+	}
+
+	bool JsonAdminDBWriter::AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname)
+	{
+		StringArrayTable sat;
+		sat.InitWithData(dblinkList.size(), &dblinkList[0]);
+		vector<string> vs{ dbname };
+		vector<string> vs2;
+
+		if (sat.GetArrayAtKeys(vs, vs2))
+		{
+			for (int i = 0; i < vs2.size(); i++)
+			{
+				if (dbname == vs2[i])
+				{
+					return false;
+				}
+			}
+			vs2.push_back(rhs_dbname);
+			sat.WriteArrayAtCurrentNode(vs2);
+		}
+		else
+		{
+			vs2.push_back(rhs_dbname);
+			StringArrayTable sat2;
+			vector<vector<string>> vvs;
+			vvs.push_back(vs2);
+			if (sat2.InitWithArrays(&vs, &vvs))
+			{
+				sat.Append(sat2);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		dblinkList = sat.dump();
+		return true;
+	}
+
+	bool JsonAdminDBWriter::RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname)
+	{
+		nlohmann::json j = nlohmann::json::parse(dblinkList);
+		bool appended = false;
+		for (int i = 0; i < j.size(); i++)
+		{
+			if (dbname == j[i].at(DATABASE_KEY_IN_LINK))
+			{
+				if (j[i].at(LINKS_KEY_IN_LINK).size() > 1)
+				{
+					j[i].at(LINKS_KEY_IN_LINK).erase(dbname);
+				}
+				else
+				{
+					j.erase(i);
+				}
+
+				dblinkList = j.dump();
+				return true;
+			}
+		}
+		return false;
+	}
 }

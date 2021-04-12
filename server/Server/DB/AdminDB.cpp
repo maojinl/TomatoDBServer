@@ -10,8 +10,6 @@ namespace tomatodb
 {
 	const string AdminDB::DATABASE_NAME_KEY = "DATABASE_NAME_KEY";
 	const string AdminDB::DATABASE_LINK_KEY = "DATABASE_LINK_KEY";
-	const string AdminDB::DATABASE_KEY_IN_LINK = "Database";
-	const string AdminDB::LINKS_KEY_IN_LINK = "Links";
 	AdminDB* AdminDB::m_pAdminDBObj;
 
 	AdminDB::AdminDB()

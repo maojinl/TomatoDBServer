@@ -8,7 +8,7 @@ StringArrayTable::StringArrayTable(int bufSize):
 {
 }
 
-VOID StringArrayTable::InitWithData(int len, char* p)
+VOID StringArrayTable::InitWithData(int len, const char* p)
 {
 	length = len;
 	data = new char[length + bufferSize];
