@@ -81,8 +81,15 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		std::string databases_string;
-		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		m_pWriter->ReadDBList(databases_string, database_list);
+		Status s = m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
+		if (s.ok())
+		{
+			m_pWriter->ReadDBList(databases_string, database_list);
+		}
+		else
+		{
+			return FALSE;
+		}
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;
@@ -92,10 +99,17 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		std::string databases_string;
-		m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
-		if (m_pWriter->AddDBIntoList(databases_string, database_name))
+		Status s = m_pDb->Get(ReadOptions(), DATABASE_NAME_KEY, &databases_string);
+		if (s.ok())
 		{
-			m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, databases_string);
+			if (m_pWriter->AddDBIntoList(databases_string, database_name))
+			{
+				m_pDb->Put(WriteOptions(), DATABASE_NAME_KEY, databases_string);
+			}
+			else
+			{
+				return FALSE;
+			}
 		}
 		else
 		{

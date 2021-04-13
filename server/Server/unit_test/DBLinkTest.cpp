@@ -194,9 +194,17 @@ TEST_F(DBLinkTest, WriteEmtyStringArrayTable_3Layer) {
 
 	vector<string> vsWrite{};
 	sat.WriteArrayAtCurrentNode(vsWrite);
+
 	result.clear();
 	sat.GetArrayAtKeys(keysToFind, result);
 	ASSERT_EQ(0, result.size());
+
+	keysToFind.pop_back();
+	keysToFind.push_back("testdb2_1");
+	result.clear();
+	sat.GetArrayAtKeys(keysToFind, result);
+	ASSERT_EQ(5, result.size());
+	sat.WriteArrayAtCurrentNode(vsWrite);
 
 	keysToFind.clear();
 	result.clear();
@@ -217,7 +225,7 @@ TEST_F(DBLinkTest, WriteEmtyStringArrayTable_3Layer) {
 	keysToFind.push_back("testdb2");
 	keysToFind.push_back("testdb2_1");
 	sat.GetArrayAtKeys(keysToFind, result);
-	ASSERT_EQ(5, result.size());
+	ASSERT_EQ(0, result.size());
 }
 
 TEST_F(DBLinkTest, AppendStringArrayTable_1Layer) {
@@ -254,7 +262,7 @@ TEST_F(DBLinkTest, JsonWriterTest) {
 	JsonAdminDBWriter writer;
 	int runCount = 0;
 	string dataStr = writer.NewLinkList();
-	while (runCount < 10)
+	while (runCount < 100)
 	{
 		runCount++;
 		for (int i = 0; i < 10; i++)
@@ -315,7 +323,7 @@ TEST_F(DBLinkTest, ArrayTableWriterTest) {
 	ArrayTableAdminDBWriter writer;
 	int runCount = 0;
 	string dataStr = writer.NewLinkList();
-	while (runCount < 10)
+	while (runCount < 100)
 	{
 		runCount++;
 		for (int i = 0; i < 10; i++)
@@ -330,7 +338,7 @@ TEST_F(DBLinkTest, ArrayTableWriterTest) {
 		for (int i = 0; i < 10; i++)
 		{
 			string dbname = "testdb_" + std::to_string(i);
-			for (int j = 0; j < 19; j++)
+			for (int j = 0; j < 20; j++)
 			{
 				string linkname = dbname + "_" + std::to_string(j);
 				writer.RemoveLinkFromList(dataStr, dbname, linkname);
@@ -340,7 +348,7 @@ TEST_F(DBLinkTest, ArrayTableWriterTest) {
 		for (int i = 0; i < 10; i++)
 		{
 			string dbname = "testdb_" + std::to_string(i);
-			for (int j = 0; j < 19; j++)
+			for (int j = 0; j < 20; j++)
 			{
 				string linkname = dbname + "_" + std::to_string(j);
 				writer.AddLinkIntoList(dataStr, dbname, linkname);
@@ -349,7 +357,7 @@ TEST_F(DBLinkTest, ArrayTableWriterTest) {
 		for (int i = 9; i >= 0; i--)
 		{
 			string dbname = "testdb_" + std::to_string(i);
-			for (int j = 18; j >= 0; j--)
+			for (int j = 19; j >= 0; j--)
 			{
 				string linkname = dbname + "_" + std::to_string(j);
 				writer.RemoveLinkFromList(dataStr, dbname, linkname);
@@ -359,7 +367,7 @@ TEST_F(DBLinkTest, ArrayTableWriterTest) {
 	for (int i = 0; i < 10; i++)
 	{
 		string dbname = "testdb_" + std::to_string(i);
-		for (int j = 0; j < 19; j++)
+		for (int j = 0; j < 20; j++)
 		{
 			string linkname = dbname + "_" + std::to_string(j);
 			writer.AddLinkIntoList(dataStr, dbname, linkname);
@@ -369,5 +377,5 @@ TEST_F(DBLinkTest, ArrayTableWriterTest) {
 	vector<string> vs;
 	writer.ReadLinkList(dataStr, "testdb_5", vs);
 	ASSERT_EQ(20, vs.size());
-	ASSERT_EQ("testdb_5_4", vs[5]);
+	ASSERT_EQ("testdb_5_5", vs[5]);
 }

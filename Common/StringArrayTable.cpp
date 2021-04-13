@@ -64,21 +64,23 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 
 	data[cursor] = layer;
 	cursor ++;
-	currLayerStart.push(cursor);
+	currNodeStart.push(cursor);
 	leveldb::EncodeFixed32(&data[cursor], (*keys1).size());
 	cursor += 4;
 	nodeSize.push(0);
 	//skip for node size pos
 	cursor += 4;
+	int currStart;
 	for (int i = 0; i < keys1->size(); i++)
 	{
+		currStart = cursor;
 		nameSize = (*keys1)[i].size();
 		data[cursor++] = nameSize;
 		memcpy(&data[cursor], (*keys1)[i].c_str(), nameSize);
 		cursor += nameSize;
 		if (keys2 != nullptr)
 		{
-			currLayerStart.push(cursor);
+			currNodeStart.push(currStart);
 			leveldb::EncodeFixed32(&data[cursor], (*keys2)[i].size());
 			cursor += 4;
 
@@ -88,20 +90,21 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 			
 			for (int j = 0; j < (*keys2)[i].size(); j++)
 			{
+				currStart = cursor;
 				nameSize = (*keys2)[i][j].size();
 				data[cursor++] = nameSize;
 				memcpy(&data[cursor], (*keys2)[i][j].c_str(), nameSize);
 				cursor += nameSize;
 				if (keys3 != nullptr)
 				{
-					currLayerStart.push(cursor);
+					currNodeStart.push(currStart);
 					leveldb::EncodeFixed32(&data[cursor], (*keys3)[i][j].size());
 					cursor += 4;
 
 					nodeSize.push(0);
 					//skip for node size pos
 					cursor += 4;
-					nodeSize.top() = cursor - currLayerStart.top();
+					nodeSize.top() = cursor - currNodeStart.top();
 
 					for (int k = 0; k < (*keys3)[i][j].size(); k++)
 					{
@@ -109,29 +112,29 @@ bool StringArrayTable::InitWithArrays(const vector<string>* const keys1, const v
 						data[cursor++] = nameSize;
 						memcpy(&data[cursor], (*keys3)[i][j][k].c_str(), nameSize);
 						cursor += nameSize;
-						nodeSize.top() = cursor - currLayerStart.top();
+						nodeSize.top() = cursor - currNodeStart.top();
 					}
-					int currentSize = cursor - currLayerStart.top();
-					leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currentSize);
-					currLayerStart.pop();
+					int currentSize = cursor - currNodeStart.top();
+					leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], currentSize);
+					currNodeStart.pop();
 				}
 			}
-			int currentSize = cursor - currLayerStart.top();
-			leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currentSize);
-			currLayerStart.pop();
+			int currentSize = cursor - currNodeStart.top();
+			leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], currentSize);
+			currNodeStart.pop();
 		}
 	}
-	int currentSize = cursor - currLayerStart.top();
-	leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currentSize);
-	currLayerStart.pop();
+	int currentSize = cursor - currNodeStart.top();
+	leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], currentSize);
+	currNodeStart.pop();
 	return true;
 }
 
 VOID StringArrayTable::ReInitialize()
 {
-	while (!currLayerStart.empty())
+	while (!currNodeStart.empty())
 	{
-		currLayerStart.pop();
+		currNodeStart.pop();
 	}
 	cursor = 0;
 	currLayer = 1;
@@ -165,8 +168,13 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 {
 	if (CurrentNodeFound())
 	{
-		int currNodeSize = leveldb::DecodeFixed32(&data[currLayerStart.top() + 4]);
+		int currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
 		int writeSize = dataToWrite.size() + 8; //add num pos and node size pos
+		if (currNodeStart.top() > 1)
+		{
+			char nameSize = data[currNodeStart.top()];
+			writeSize += 1 + nameSize;
+		}
 		for (int i = 0; i < dataToWrite.size(); i++)
 		{
 			writeSize += dataToWrite[i].size();
@@ -178,7 +186,7 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 		}
 		int nextNodeNewPos = 0;
 		int remainningLength = 0;
-		int nextNodeStart = currLayerStart.top() + currNodeSize;
+		int nextNodeStart = currNodeStart.top() + currNodeSize;
 		
 		if (nextNodeStart < length && diff != 0)
 		{
@@ -188,11 +196,9 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 		}
 		AddLength(diff);
 
-		cursor = currLayerStart.top();
-		leveldb::EncodeFixed32(&data[cursor], dataToWrite.size());
-		cursor += 4;
-		leveldb::EncodeFixed32(&data[cursor], writeSize);
-		cursor += 4;
+		leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], dataToWrite.size());
+		leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], writeSize);
+		cursor = GetCurrentNodeSizePos(currNodeStart.top()) + 4;
 		int nameSize;
 		for (int i = 0; i < dataToWrite.size(); i++)
 		{
@@ -206,14 +212,14 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 		{
 			while (true)
 			{
-				int currNum = leveldb::DecodeFixed32(&data[currLayerStart.top()]);
+				int currNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
 				int numDiff = 0;
 				if (currNum == 0)
 				{
-					if (currLayerStart.size() > 1)
+					if (currNodeStart.size() > 1)
 					{
-						currNodeSize = leveldb::DecodeFixed32(&data[currLayerStart.top() + 4]);
-						nextNodeStart = currLayerStart.top() + currNodeSize;
+						currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+						nextNodeStart = currNodeStart.top() + currNodeSize;
 						int extraDiff = -currNodeSize;
 						if (nextNodeStart < length)
 						{
@@ -227,21 +233,21 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 					}
 					else
 					{
-						leveldb::EncodeFixed32(&data[currLayerStart.top()], 0);
-						leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], 8);
+						leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], 0);
+						leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], 8);
 					}
 				}			
 
-				currLayerStart.pop();
-				if (!currLayerStart.empty())
+				currNodeStart.pop();
+				if (!currNodeStart.empty())
 				{
 					if (numDiff != 0)
 					{
-						currNum = leveldb::DecodeFixed32(&data[currLayerStart.top()]);
-						leveldb::EncodeFixed32(&data[currLayerStart.top()], currNum + numDiff);
+						currNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
+						leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], currNum + numDiff);
 					}
-					currNodeSize = leveldb::DecodeFixed32(&data[currLayerStart.top() + 4]);
-					leveldb::EncodeFixed32(&data[currLayerStart.top() + 4], currNodeSize + diff);
+					currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+					leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], currNodeSize + diff);
 				}
 				else
 				{
@@ -264,13 +270,13 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 	uint32_t currNodeSize;
 	bool found = false;
 	cursor++; //skip layer
-	currLayerStart.push(cursor);
+	currNodeStart.push(cursor);
 
 	do
 	{
-		num = leveldb::DecodeFixed32(&data[cursor]);
+		num = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
 		cursor += 4;
-		currNodeSize = leveldb::DecodeFixed32(&data[cursor]);
+		currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
 		cursor += 4;
 		if (currLayer == layer)
 		{
@@ -285,25 +291,23 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 		}
 		else
 		{
-			found = false;
 			for (int i = 0; i < num; i++)
 			{	
+				int currStart = cursor;
 				uint8_t nameSize = data[cursor++];
 				string s(&data[cursor], nameSize);
 				cursor += nameSize;
-				uint32_t currNodeStart = cursor;
 				if (s == keys[currLayer - 1])
 				{
-					currLayerStart.push(cursor);
+					currNodeStart.push(currStart);
 					currLayer++;
 					found = true;
 					break;
 				}
 				else
 				{
-					cursor += 4; //skip num
-					currNodeSize = leveldb::DecodeFixed32(&data[cursor]);
-					cursor = currNodeStart + currNodeSize;
+					currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currStart)]);
+					cursor = currStart + currNodeSize;
 				}
 			}
 			if (!found)

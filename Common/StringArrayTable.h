@@ -12,10 +12,42 @@ private:
 	int bufferSize;
 	int length;
 	char* data;
-	stack<int> currLayerStart;
+	stack<int> currNodeStart;
 	int currLayer;
 	int cursor;
 	VOID StringArrayTable::ReInitialize();
+	uint GetCurrentNodeNumPos(uint nodeStart) const
+	{
+		uint cur;
+		if (nodeStart > 1)
+		{
+			cur = nodeStart + 1;
+			char nameSize = data[nodeStart];
+			cur += nameSize;
+		}
+		else
+		{
+			cur = 1;
+		}
+		return cur;
+	}
+
+	uint GetCurrentNodeSizePos(uint nodeStart) const
+	{
+		uint cur;
+		if (nodeStart > 1)
+		{ 
+			cur = nodeStart + 1;
+			char nameSize = data[nodeStart];
+			cur += nameSize + 4;
+		}
+		else
+		{
+			cur = 5;
+		}
+		return cur;
+	}
+
 public:
 	StringArrayTable(int bufSize = 1024);
 	virtual ~StringArrayTable();
@@ -34,7 +66,7 @@ public:
 	}
 	bool CurrentNodeFound() const
 	{
-		return currLayerStart.size() > 0;
+		return currNodeStart.size() > 0;
 	}
 
 	int GetLength() const
