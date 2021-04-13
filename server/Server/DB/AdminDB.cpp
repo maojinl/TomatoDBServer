@@ -16,17 +16,7 @@ namespace tomatodb
 		:m_pDb(nullptr)
 	{
 		__ENTER_FUNCTION
-		m_pWriter = new JsonAdminDBWriter();
-		CleanUp();
-
-		__LEAVE_FUNCTION
-	}
-
-	AdminDB::AdminDB(IAdminDBWriter* p)
-		:m_pDb(nullptr)
-	{
-		__ENTER_FUNCTION
-		m_pWriter = p;
+		m_pWriter = new ArrayTableAdminDBWriter();
 		CleanUp();
 
 		__LEAVE_FUNCTION
@@ -185,5 +175,11 @@ namespace tomatodb
 
 		__LEAVE_FUNCTION
 			return FALSE;
+	}
+
+	VOID AdminDB::SetDBWriter(IAdminDBWriter* pWriter)
+	{
+		SAFE_DELETE(m_pWriter);
+		m_pWriter = pWriter;
 	}
 }

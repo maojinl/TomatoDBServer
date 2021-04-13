@@ -25,6 +25,8 @@ public:
 	bool GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray);
 	bool WriteArrayAtCurrentNode(const vector<string>& dataToWrite);
 	bool Append(const StringArrayTable& sat);
+	void InitEmptyStruct(unsigned char nlayer);
+
 	void AddLength(int diff)
 	{
 		length += diff;
@@ -46,16 +48,6 @@ public:
 	char* const GetData() const
 	{
 		return data;
-	}
-
-	void InitEmptyStruct(unsigned char nlayer)
-	{
-		layer = nlayer;
-		length = 1 + 4 + 4;
-		data = new char[length + bufferSize];
-		data[0] = layer;
-		leveldb::EncodeFixed32(&data[1], 0);
-		leveldb::EncodeFixed32(&data[5], length - 1);
 	}
 
 	string dump()

@@ -55,7 +55,13 @@ namespace tomatodb
 			{
 				if (j[i].at(LINKS_KEY_IN_LINK).size() > 1)
 				{
-					j[i].at(LINKS_KEY_IN_LINK).erase(dbname);
+					for (int k = 0; k < j[i].at(LINKS_KEY_IN_LINK).size(); k++)
+					{
+						if (j[i].at(LINKS_KEY_IN_LINK)[k] == rhs_dbname)
+						{
+							j[i].at(LINKS_KEY_IN_LINK).erase(k);
+						}
+					}
 				}
 				else
 				{
@@ -175,41 +181,30 @@ namespace tomatodb
 	{
 		StringArrayTable sat;
 		sat.InitWithData(data.size(), &data[0]);
-		vector<string> vs, vs2;
-		if (sat.GetArrayAtKeys(vs, vs2))
-		{
-			for (int i = 0; i < vs2.size(); i++)
-			{
-				valueList.push_back(vs[i]);
-			}
-		}
+		vector<string> vs;
+		sat.GetArrayAtKeys(vs, valueList);
 		return;
 	}
 
 	string ArrayTableAdminDBWriter::NewLinkList()
 	{
 		StringArrayTable sat;
-		sat.InitEmptyStruct(1);
+		sat.InitEmptyStruct(2);
 		return sat.dump();
 	}
 
-	void JsonAdminDBWriter::ReadLinkList(const string& data, const string& dbname, vector<string>& link_list)
+	void ArrayTableAdminDBWriter::ReadLinkList(const string& data, const string& dbname, vector<string>& link_list)
 	{
 		StringArrayTable sat;
 		sat.InitWithData(data.size(), &data[0]);
 		vector<string> vs{ dbname };
-		vector<string> vs2;
-		if (sat.GetArrayAtKeys(vs, vs2))
+		if (sat.GetArrayAtKeys(vs, link_list))
 		{
-			for (int i = 0; i < vs2.size(); i++)
-			{
-				link_list.push_back(vs[i]);
-			}
 		}
 		return;
 	}
 
-	bool JsonAdminDBWriter::AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname)
+	bool ArrayTableAdminDBWriter::AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname)
 	{
 		StringArrayTable sat;
 		sat.InitWithData(dblinkList.size(), &dblinkList[0]);
@@ -220,7 +215,7 @@ namespace tomatodb
 		{
 			for (int i = 0; i < vs2.size(); i++)
 			{
-				if (dbname == vs2[i])
+				if (rhs_dbname == vs2[i])
 				{
 					return false;
 				}
@@ -247,25 +242,28 @@ namespace tomatodb
 		return true;
 	}
 
-	bool JsonAdminDBWriter::RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname)
+	bool ArrayTableAdminDBWriter::RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname)
 	{
-		nlohmann::json j = nlohmann::json::parse(dblinkList);
-		bool appended = false;
-		for (int i = 0; i < j.size(); i++)
-		{
-			if (dbname == j[i].at(DATABASE_KEY_IN_LINK))
-			{
-				if (j[i].at(LINKS_KEY_IN_LINK).size() > 1)
-				{
-					j[i].at(LINKS_KEY_IN_LINK).erase(dbname);
-				}
-				else
-				{
-					j.erase(i);
-				}
+		StringArrayTable sat;
+		sat.InitWithData(dblinkList.size(), &dblinkList[0]);
+		vector<string> vs{ dbname };
+		vector<string> vs2;
 
-				dblinkList = j.dump();
-				return true;
+		if (sat.GetArrayAtKeys(vs, vs2))
+		{
+			for (int i = 0; i < vs2.size(); i++)
+			{
+				if (rhs_dbname == vs2[i])
+				{
+					if (i < vs2.size())
+					{
+						vs2[i] = vs2[vs2.size() - 1];
+						vs2.pop_back();
+						sat.WriteArrayAtCurrentNode(vs2);
+						dblinkList = sat.dump();
+						return true;
+					}
+				}
 			}
 		}
 		return false;

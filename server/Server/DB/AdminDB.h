@@ -13,7 +13,6 @@ namespace tomatodb
 	private:
 		friend class DatabaseManager;
 		AdminDB();
-		AdminDB(IAdminDBWriter* p);
 		static AdminDB* m_pAdminDBObj;
 		DB* m_pDb;
 		BOOL InitializeAdminDB();
@@ -24,8 +23,6 @@ namespace tomatodb
 		//Keys in admin db
 		static const string DATABASE_NAME_KEY;
 		static const string DATABASE_LINK_KEY;
-		static const string DATABASE_KEY_IN_LINK;
-		static const string LINKS_KEY_IN_LINK;
 		~AdminDB();
 		VOID CleanUp();
 		BOOL Init(string dbname);
@@ -34,6 +31,7 @@ namespace tomatodb
 		BOOL GetLinksList(const string& dbname, vector<string>& link_list);
 		BOOL AddLink(const string& dbname, const string& rhs_dbname);
 		BOOL RemoveLink(const string& dbname, const string& rhs_dbname);
+		VOID SetDBWriter(IAdminDBWriter* pWriter);
 		static AdminDB* GetInstance() {
 			//must be called firstly in main thread
 			if (m_pAdminDBObj == nullptr) {
