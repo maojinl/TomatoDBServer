@@ -31,6 +31,7 @@ namespace tomatodb
 		BOOL Init(const DatabaseOptions& options);
 		BOOL CreateLink(const DatabaseOptions& options);
 		BOOL DeleteLink(const DatabaseOptions& dbOptions);
+		BOOL UpdateKeysIntoLinks(const string& id1, const vector<string>& id2_list);
 	};
 
 }
