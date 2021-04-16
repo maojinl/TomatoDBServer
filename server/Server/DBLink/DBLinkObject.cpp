@@ -96,4 +96,9 @@ namespace tomatodb
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
+
+	BOOL DBLinkObject::UpdateKeyAndLinks(const string& id1, const vector<string>& id2_list, const vector<string>& exLinks)
+	{
+
+	}
 }

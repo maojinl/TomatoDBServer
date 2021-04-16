@@ -23,6 +23,7 @@ namespace tomatodb
 		WriteOptions writeOptions;
 		Options openOptions;
 		Options createOptions;
+		BOOL UpdateKeyAndLinks(const string& id1, const vector<string>& id2_list, const vector<string>& exLinks);
 	public:
 		DBLinkObject(const Config& config, string tableName1, string tableName2);
 		~DBLinkObject();
