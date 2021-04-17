@@ -15,7 +15,10 @@ private:
 	stack<int> currNodeStart;
 	int currLayer;
 	int cursor;
-	VOID StringArrayTable::ReInitialize();
+	void ReInitialize();
+	void MoveTheNodesAfterCurrent(int currNodeSize, int moveSize);
+	void UpdateParentsSize(int currNodeSize, int moveSize);
+	bool GetArrayAtKeys(const vector<string>& keys, vector<string>* pArray = nullptr);
 	uint GetCurrentNodeNumPos(uint nodeStart) const
 	{
 		uint cur;
@@ -58,7 +61,8 @@ public:
 	bool WriteArrayAtCurrentNode(const vector<string>& dataToWrite);
 	bool Append(const StringArrayTable& sat);
 	void InitEmptyStruct(unsigned char nlayer);
-
+	bool DeleteArrayAtCurrentNode();
+	bool FindNodeAtKeys(const vector<string>& keys);
 	void AddLength(int diff)
 	{
 		length += diff;

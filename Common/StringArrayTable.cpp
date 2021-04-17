@@ -164,12 +164,58 @@ bool StringArrayTable::Append(const StringArrayTable& sat)
 	return true;
 }
 
+bool StringArrayTable::DeleteArrayAtCurrentNode()
+{
+	if (CurrentNodeFound())
+	{
+		if (currNodeStart.size() == 1 && currNodeStart.top() == 1)
+		{
+			InitEmptyStruct(layer);
+		}
+		else
+		{
+			int currNodeSize;
+			if (currLayer <= layer)
+			{
+				currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+			}
+			else
+			{
+				currNodeSize = (uint8_t)data[currNodeStart.top()] + 1;
+			}
+
+			MoveTheNodesAfterCurrent(currNodeSize, -currNodeSize);
+
+			currNodeStart.pop();
+			int parentNodeNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
+			leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], parentNodeNum - 1);
+			int parentNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+			leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], parentNodeSize - currNodeSize);
+
+			UpdateParentsSize(currNodeSize, -currNodeSize);
+		}
+		ReInitialize();
+		return true;
+	}
+	return false;
+}
+
 bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite)
 {
 	if (CurrentNodeFound())
 	{
-		int currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
-		int writeSize = dataToWrite.size() + 8; //add num pos and node size pos
+		int currNodeSize;
+		int writeSize;
+		if (currLayer <= layer)
+		{
+			currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+			writeSize = dataToWrite.size() + 8; //add num pos and node size pos
+		}
+		else
+		{
+			currNodeSize = (uint8_t)data[GetCurrentNodeSizePos(currNodeStart.top())];
+		}
+
 		if (currNodeStart.top() > 1)
 		{
 			char nameSize = data[currNodeStart.top()];
@@ -184,17 +230,8 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 		{
 			return false;
 		}
-		int nextNodeNewPos = 0;
-		int remainningLength = 0;
-		int nextNodeStart = currNodeStart.top() + currNodeSize;
-		
-		if (nextNodeStart < length && diff != 0)
-		{
-			nextNodeNewPos = nextNodeStart + diff;
-			remainningLength = length - nextNodeStart;
-			memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
-		}
-		AddLength(diff);
+
+		MoveTheNodesAfterCurrent(currNodeSize, diff);
 
 		leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], dataToWrite.size());
 		leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], writeSize);
@@ -208,60 +245,94 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 			cursor += nameSize;
 		}
 
-		if (diff != 0)
-		{
-			while (true)
-			{
-				int currNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
-				int numDiff = 0;
-				if (currNum == 0)
-				{
-					if (currNodeStart.size() > 1)
-					{
-						currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
-						nextNodeStart = currNodeStart.top() + currNodeSize;
-						int extraDiff = -currNodeSize;
-						if (nextNodeStart < length)
-						{
-							nextNodeNewPos = nextNodeStart + extraDiff;
-							remainningLength = length - nextNodeStart;
-							memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
-						}
-						AddLength(extraDiff);
-						diff += extraDiff;
-						numDiff = -1;
-					}
-					else
-					{
-						leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], 0);
-						leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], 8);
-					}
-				}			
+		UpdateParentsSize(currNodeSize, diff);
 
-				currNodeStart.pop();
-				if (!currNodeStart.empty())
-				{
-					if (numDiff != 0)
-					{
-						currNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
-						leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], currNum + numDiff);
-					}
-					currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
-					leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], currNodeSize + diff);
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
 		ReInitialize();
 		return true;
 	}
 	return false;
 }
 
+void StringArrayTable::MoveTheNodesAfterCurrent(int currNodeSize, int moveSize)
+{
+	int nextNodeNewPos = 0;
+	int remainningLength = 0;
+	int nextNodeStart = currNodeStart.top() + currNodeSize;
+
+	if (nextNodeStart < length && moveSize != 0)
+	{
+		nextNodeNewPos = nextNodeStart + moveSize;
+		remainningLength = length - nextNodeStart;
+		memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
+	}
+	AddLength(moveSize);
+}
+
+void StringArrayTable::UpdateParentsSize(int currNodeSize, int moveSize)
+{
+	int nextNodeNewPos = 0;
+	int remainningLength = 0;
+	int nextNodeStart = 0;
+	if (moveSize != 0)
+	{
+		while (true)
+		{
+			int currNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
+			int numDiff = 0;
+			if (currNum == 0)
+			{
+				if (currNodeStart.size() > 1)
+				{
+					currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+					nextNodeStart = currNodeStart.top() + currNodeSize;
+					int extraDiff = -currNodeSize;
+					if (nextNodeStart < length)
+					{
+						nextNodeNewPos = nextNodeStart + extraDiff;
+						remainningLength = length - nextNodeStart;
+						memmove(&data[nextNodeNewPos], &data[nextNodeStart], remainningLength);
+					}
+					AddLength(extraDiff);
+					moveSize += extraDiff;
+					numDiff = -1;
+				}
+				else
+				{
+					leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], 0);
+					leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], 8);
+				}
+			}
+
+			currNodeStart.pop();
+			if (!currNodeStart.empty())
+			{
+				if (numDiff != 0)
+				{
+					currNum = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
+					leveldb::EncodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())], currNum + numDiff);
+				}
+				currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+				leveldb::EncodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())], currNodeSize + moveSize);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+
+bool StringArrayTable::FindNodeAtKeys(const vector<string>& keys)
+{
+	return GetArrayAtKeys(keys);
+}
+
 bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>& dataArray)
+{
+	return GetArrayAtKeys(keys, &dataArray);
+}
+
+bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>* pArray)
 {
 	ReInitialize();
 	int nameSize;
@@ -271,28 +342,72 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 	bool found = false;
 	cursor++; //skip layer
 	currNodeStart.push(cursor);
-
 	do
 	{
-		num = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
-		cursor += 4;
-		currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
-		cursor += 4;
-		if (currLayer == layer)
+		if (currLayer <= layer)
 		{
-			for (int j = 0; j < num; j++)
-			{
-				nameSize = data[cursor++];
-				string s(&data[cursor], nameSize);
-				dataArray.push_back(s);
-				cursor += nameSize;
-			}
-			return true;
+			num = leveldb::DecodeFixed32(&data[GetCurrentNodeNumPos(currNodeStart.top())]);
+			cursor += 4;
+			currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
+			cursor += 4;
 		}
 		else
 		{
+			num = 1;
+			cursor = currNodeStart.top();
+			currNodeSize = (uint8_t)data[currNodeStart.top()];
+		}
+		if (keys.size() < currLayer)
+		{
+			if (currLayer < layer)
+			{
+				if (pArray != nullptr)
+				{
+					for (int j = 0; j < num; j++)
+					{
+						int currNodeStart = cursor;
+						nameSize = data[cursor++];
+						string s(&data[cursor], nameSize);
+						(*pArray).push_back(s);
+						cursor += nameSize;
+						currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart)]);
+						cursor = currNodeStart + currNodeSize;
+					}
+				}
+				return true;
+			}
+			else if (currLayer == layer)
+			{
+				if (pArray != nullptr)
+				{
+					for (int j = 0; j < num; j++)
+					{
+						nameSize = data[cursor++];
+						string s(&data[cursor], nameSize);
+						(*pArray).push_back(s);
+						cursor += nameSize;
+					}
+				}
+				return true;
+			}
+			else if (currLayer > layer)
+			{
+				if (pArray != nullptr)
+				{
+					nameSize = currNodeSize;
+					cursor++;
+					string s(&data[cursor], nameSize);
+					(*pArray).push_back(s);
+					cursor += nameSize;
+				}
+				return true;
+			}
+		}
+		else
+		{
+			found = false;
 			for (int i = 0; i < num; i++)
-			{	
+			{
 				int currStart = cursor;
 				uint8_t nameSize = data[cursor++];
 				string s(&data[cursor], nameSize);
@@ -306,8 +421,11 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 				}
 				else
 				{
-					currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currStart)]);
-					cursor = currStart + currNodeSize;
+					if (currLayer < layer)
+					{
+						currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currStart)]);
+						cursor = currStart + currNodeSize;
+					}
 				}
 			}
 			if (!found)
@@ -316,7 +434,7 @@ bool StringArrayTable::GetArrayAtKeys(const vector<string>& keys, vector<string>
 				return false;
 			}
 		}
-	} 	while (cursor < length);
+	} while (cursor < length);
 	return false;
 }
 

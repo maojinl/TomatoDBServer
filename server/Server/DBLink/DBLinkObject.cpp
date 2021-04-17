@@ -2,7 +2,8 @@
 
 #include "DBLinkObject.h"
 #include "Log.h"
-#include <StringArrayTable.h>
+#include "StringArrayTable.h"
+#include "util/trietree.h"
 
 namespace tomatodb
 {
@@ -23,6 +24,8 @@ namespace tomatodb
 	VOID DBLinkObject::CleanUp()
 	{
 		__ENTER_FUNCTION
+		SAFE_DELETE(pDb);
+		SAFE_DELETE(pDbR);
 		__LEAVE_FUNCTION
 	}
 
@@ -45,6 +48,15 @@ namespace tomatodb
 			Log::SaveLog(SERVER_LOGFILE, "ERROR: Create link database. Message: %s", s.ToString().c_str());
 			return TRUE;
 		}
+
+		db_name = linkedTableName + "_" + tableName;
+		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
+		s = DB::Open(openOptions, db_path_name, &pDbR);
+		if (!s.ok()) {
+			leveldb::DestroyDB(db_path_name, openOptions);
+			Log::SaveLog(SERVER_LOGFILE, "ERROR: Create link reverse database. Message: %s", s.ToString().c_str());
+			return TRUE;
+		}
 		return TRUE;
 		__LEAVE_FUNCTION
 			return FALSE;
@@ -53,12 +65,19 @@ namespace tomatodb
 	BOOL DBLinkObject::DeleteLink(const DatabaseOptions& dbOptions)
 	{
 		__ENTER_FUNCTION
-		string db_name = tableName + "_" + linkedTableName;
 		SAFE_DELETE(pDb);
+		string db_name = tableName + "_" + linkedTableName;
 		string db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
 		Status s = leveldb::DestroyDB(db_path_name, openOptions);
 		if (!s.ok()) {
-			//m_pAdmin->CreateDatabase(pDbObj->database_name);
+			Log::SaveLog(SERVER_LOGFILE, "ERROR:  link database. Message: %s", s.ToString().c_str());
+			return FALSE;
+		}
+		SAFE_DELETE(pDbR);
+		db_name = linkedTableName + "_" + tableName;
+		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
+		s = leveldb::DestroyDB(db_path_name, openOptions);
+		if (!s.ok()) {
 			Log::SaveLog(SERVER_LOGFILE, "ERROR:  link database. Message: %s", s.ToString().c_str());
 			return FALSE;
 		}
@@ -72,21 +91,19 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		string* exLinks;
 		Status s = pDb->Get(readOptions, id1, exLinks);
-		if (!s.ok()) {
-			//m_pAdmin->CreateDatabase(pDbObj->database_name);
-			Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeysIntoLinks. Message: %s", s.ToString().c_str());
-			return FALSE;
-		}
+
 		if (s.IsNotFound())
 		{
 			StringArrayTable sat;
 			sat.InitWithArrays(&id2_list);
 			s = pDb->Put(writeOptions, id1, sat.dump());
 			if (!s.ok()) {
-				//m_pAdmin->CreateDatabase(pDbObj->database_name);
 				Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeysIntoLinks. Message: %s", s.ToString().c_str());
 				return FALSE;
 			}
+		} else if (!s.ok()) {
+			Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeysIntoLinks. Message: %s", s.ToString().c_str());
+			return FALSE;
 		}
 		else
 		{
@@ -99,6 +116,56 @@ namespace tomatodb
 
 	BOOL DBLinkObject::UpdateKeyAndLinks(const string& id1, const vector<string>& id2_list, const vector<string>& exLinks)
 	{
+		TrieTree exLinksTree;
+		map<TrieTree*, int> treeNodeMap;
+		for (int i = 0; i < exLinks.size(); i++)
+		{
+			TrieTree* t = exLinksTree.AddWord(Slice(exLinks[i]));
+			treeNodeMap.insert(std::pair<TrieTree*, char>(t, i));
+		}
+		vector<int> removing;
+		vector<int> adding;
+		for (int i = 0; i < id2_list.size(); i++)
+		{
+			TrieTree* t = exLinksTree.FindWord(Slice(id2_list[i]));
+			if (t == nullptr)
+			{
+				adding.push_back(i);
+			}
+			else
+			{
+				std::map<TrieTree*, int>::iterator ite = treeNodeMap.find(t);
+				ite->second = -1;
+			}
+		}
 
+		for (std::map<TrieTree*, int>::iterator ite = treeNodeMap.begin(); ite != treeNodeMap.end(); ite++)
+		{
+			if (ite->second >= 0)
+			{
+				removing.push_back(ite->second);
+			}
+		}
+
+		for (int i = 0; i < removing.size(); i++)
+		{
+			string val;
+			Status s = pDbR->Get(readOptions, exLinks[removing[i]], &val);
+
+			if (s.IsNotFound())
+			{
+				Log::SaveLog(SERVER_LOGFILE, "Warning: UpdateKeyAndLinks remove keys not found. Message: %s", s.ToString().c_str());
+			}
+			else if (!s.ok())
+			{
+				Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeyAndLinks remove keys. Message: %s", s.ToString().c_str());
+				return FALSE;
+			}
+			else
+			{
+				StringArrayTable sat;
+				sat.InitWithData(val.length(), val.c_str());
+			}
+		}
 	}
 }

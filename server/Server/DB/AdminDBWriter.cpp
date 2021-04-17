@@ -246,25 +246,13 @@ namespace tomatodb
 	{
 		StringArrayTable sat;
 		sat.InitWithData(dblinkList.size(), &dblinkList[0]);
-		vector<string> vs{ dbname };
-		vector<string> vs2;
+		vector<string> vs{ dbname, rhs_dbname };
 
-		if (sat.GetArrayAtKeys(vs, vs2))
+		if (sat.FindNodeAtKeys(vs))
 		{
-			for (int i = 0; i < vs2.size(); i++)
-			{
-				if (rhs_dbname == vs2[i])
-				{
-					if (i < vs2.size())
-					{
-						vs2[i] = vs2[vs2.size() - 1];
-						vs2.pop_back();
-						sat.WriteArrayAtCurrentNode(vs2);
-						dblinkList = sat.dump();
-						return true;
-					}
-				}
-			}
+			sat.DeleteArrayAtCurrentNode();
+			dblinkList = sat.dump();
+			return true;
 		}
 		return false;
 	}

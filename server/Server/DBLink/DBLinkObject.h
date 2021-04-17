@@ -19,6 +19,7 @@ namespace tomatodb
 		string tableName;
 		string linkedTableName;
 		DB* pDb;
+		DB* pDbR;
 		ReadOptions readOptions;
 		WriteOptions writeOptions;
 		Options openOptions;
