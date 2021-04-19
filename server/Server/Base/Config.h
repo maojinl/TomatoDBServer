@@ -20,6 +20,7 @@ struct _CONFIG_INFO
 	ID_t			m_ServerID;
 	CHAR			m_DataPath[_MAX_PATH]; //data base files folder
 	CHAR			m_AdminDBPath[_MAX_PATH]; //admin data base files folder
+	CHAR			m_LinksDBPath[_MAX_PATH]; //admin data base files folder
 	_CONFIG_INFO( )
 	{
 		m_ServerID = INVALID_ID ;

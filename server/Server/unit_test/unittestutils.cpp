@@ -9,10 +9,15 @@ void UpdateUnitTestPath(Config& config)
 	std::strncpy(config.m_ConfigInfo.m_AdminDBPath, admindb, sz);
 	config.m_ConfigInfo.m_AdminDBPath[sz] = '\0';
 
+	char* linksdb = "./unittestdata/links";
+	sz = std::strlen(linksdb);
+	std::strncpy(config.m_ConfigInfo.m_LinksDBPath, admindb, sz);
+	config.m_ConfigInfo.m_LinksDBPath[sz] = '\0';
+
 	char* userdb = "./unittestdata/data";
 	sz = std::strlen(userdb);
 	std::strncpy(config.m_ConfigInfo.m_DataPath, userdb, sz);
-	config.m_ConfigInfo.m_AdminDBPath[sz] = '\0';
+	config.m_ConfigInfo.m_DataPath[sz] = '\0';
 	leveldb::Env* env = leveldb::Env::Default();
 	if (!env->FileExists(admindb))
 	{

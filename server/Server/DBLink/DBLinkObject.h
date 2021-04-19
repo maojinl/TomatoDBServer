@@ -37,6 +37,7 @@ namespace tomatodb
 		BOOL RemoveReverseLinks(const string& id1, const vector<int>& removing, const vector<string>& inLinks);
 		BOOL AddReverseLinks(const string& id1, const vector<int>& adding, const vector<string>& exLinks);
 		BOOL DeleteKeysFromLinks(const string& id1);
+
 	};
 
 }

@@ -66,6 +66,7 @@ __ENTER_FUNCTION
 	m_ConfigInfo.m_ServerID = (ID_t)(ini.ReadInt( "System", "ServerId" ));
 	ini.ReadText("Global", "DataPath", m_ConfigInfo.m_DataPath, _MAX_PATH);
 	ini.ReadText("Global", "AdminDBPath", m_ConfigInfo.m_AdminDBPath, _MAX_PATH);
+	ini.ReadText("Global", "LinksDBPath", m_ConfigInfo.m_LinksDBPath, _MAX_PATH);
 	Log::SaveLog(CONFIG_LOGFILE, "Load ConfigInfo.ini ...Only OK!") ;
 __LEAVE_FUNCTION
 }

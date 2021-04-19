@@ -110,6 +110,11 @@ namespace tomatodb
 			if (sat.GetArrayAtKeys(keys, exLinks))
 			{
 				vector<int> removing;
+				removing.reserve(exLinks.size());
+				for (int i = 0; i < exLinks.size(); i++)
+				{
+					removing.push_back(i);
+				}
 				return RemoveReverseLinks(id1, removing, exLinks);
 			}
 		}
@@ -132,7 +137,15 @@ namespace tomatodb
 				Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeysIntoLinks. Message: %s", s.ToString().c_str());
 				return FALSE;
 			}
-		} else if (!s.ok()) {
+			vector<int> adding;
+			adding.reserve(id2_list.size());
+			for (int i = 0; i < id2_list.size(); i++)
+			{
+				adding.push_back(i);
+			}
+			AddReverseLinks(id1, adding, id2_list);
+		} 
+		else if (!s.ok()) {
 			Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeysIntoLinks. Message: %s", s.ToString().c_str());
 			return FALSE;
 		}
@@ -193,38 +206,34 @@ namespace tomatodb
 	BOOL DBLinkObject::RemoveReverseLinks(const string& id1, const vector<int>& removing, const vector<string>& exLinks)
 	{
 		vector<string> keys{ id1 };
-		if (removing.size() == 0)
-		{
-		}
-		{
-			for (int i = 0; i < removing.size(); i++)
-			{
-				string val;
-				Status s = pDbR->Get(readOptions, exLinks[removing[i]], &val);
 
-				if (s.IsNotFound())
+		for (int i = 0; i < removing.size(); i++)
+		{
+			string val;
+			Status s = pDbR->Get(readOptions, exLinks[removing[i]], &val);
+
+			if (s.IsNotFound())
+			{
+				Log::SaveLog(SERVER_LOGFILE, "Warning: UpdateKeyAndLinks remove keys not found. Message: %s", s.ToString().c_str());
+			}
+			else if (!s.ok())
+			{
+				Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeyAndLinks remove keys. Message: %s", s.ToString().c_str());
+				return FALSE;
+			}
+			else
+			{
+				StringArrayTable sat;
+				sat.InitWithData(val.length(), val.c_str());
+				if (sat.FindNodeAtKeys(keys))
 				{
-					Log::SaveLog(SERVER_LOGFILE, "Warning: UpdateKeyAndLinks remove keys not found. Message: %s", s.ToString().c_str());
-				}
-				else if (!s.ok())
-				{
-					Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeyAndLinks remove keys. Message: %s", s.ToString().c_str());
-					return FALSE;
-				}
-				else
-				{
-					StringArrayTable sat;
-					sat.InitWithData(val.length(), val.c_str());
-					if (sat.FindNodeAtKeys(keys))
+					sat.DeleteArrayAtCurrentNode();
+					val = sat.dump();
+					s = pDbR->Put(writeOptions, Slice(exLinks[removing[i]]), Slice(val));
+					if (!s.ok())
 					{
-						sat.DeleteArrayAtCurrentNode();
-						val = sat.dump();
-						s = pDbR->Put(writeOptions, Slice(exLinks[removing[i]]), Slice(val));
-						if (!s.ok())
-						{
-							Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeyAndLinks remove keys. Message: %s", s.ToString().c_str());
-							return FALSE;
-						}
+						Log::SaveLog(SERVER_LOGFILE, "ERROR: UpdateKeyAndLinks remove keys. Message: %s", s.ToString().c_str());
+						return FALSE;
 					}
 				}
 			}

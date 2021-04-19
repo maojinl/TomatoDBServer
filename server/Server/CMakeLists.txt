@@ -230,6 +230,7 @@ set(unittest
     "unit_test/unittestutils.cpp"
     "unit_test/DatabaseManagerTest.cpp"
     "unit_test/DBLinkTest.cpp"
+    "unit_test/StringArrayTableTest.cpp"
 )
 source_group("unittest" FILES ${unittest})
 
