@@ -11,6 +11,7 @@
 #include "DatabaseOptions.h"
 #include "DBThreadObjectsPool.h"
 #include "ReadWriteLock.h"
+#include "DBLinkObject.h"
 
 namespace tomatodb
 {
@@ -18,12 +19,13 @@ namespace tomatodb
 	{
 	private:
 		AdminDB* m_pAdmin;
+		unordered_map<string, DBLinkObject*> m_pLinkMap[MAX_DB_LINK_SIZE];
 	public:
 		DBLinkManager(const Config& config);
 		~DBLinkManager();
 
 		VOID CleanUp();
-		BOOL Init();
+		BOOL Init(const DatabaseOptions& dbOptions);
 
 	};
 

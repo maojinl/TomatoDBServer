@@ -40,7 +40,8 @@
 #define    MAX_SERVER_IP      16
 
 //tomatodb settings
-#define MAX_DATABASE_SIZE 128
+#define MAX_DATABASE_SIZE 32
+#define MAX_DB_LINK_SIZE 8
 #define MAX_DATABASE_NAME 63
 #define MAX_DATABASE_KEY 127
 #define MAX_DATABASE_VALUE 1048575

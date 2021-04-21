@@ -18,6 +18,7 @@ namespace tomatodb
 		virtual bool AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname) = 0;
 		virtual bool RemoveDBFromList(string& dblist, const string& database_name) = 0;
 		virtual bool RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname) = 0;
+		virtual void ReadDBLinkList(const string& data, vector<string>& link_list) = 0;
 	};
 
 	class JsonAdminDBWriter : public IAdminDBWriter
@@ -34,6 +35,7 @@ namespace tomatodb
 		virtual bool AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname);
 		virtual bool RemoveDBFromList(string& dblist, const string& database_name);
 		virtual bool RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname);
+		virtual void ReadDBLinkList(const string& data, vector<string>& link_list);
 	};
 
 
@@ -48,6 +50,7 @@ namespace tomatodb
 		virtual bool AddLinkIntoList(string& dblinkList, const string& dbname, const string& rhs_dbname);
 		virtual bool RemoveDBFromList(string& dblist, const string& database_name);
 		virtual bool RemoveLinkFromList(string& dblinkList, const string& dbname, const string& rhs_dbname);
+		virtual void ReadDBLinkList(const string& data, vector<string>& link_list);
 	};
 } 
 #endif

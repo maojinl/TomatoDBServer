@@ -25,21 +25,21 @@ namespace tomatodb
 		__LEAVE_FUNCTION
 	}
 
-	BOOL DBLinkManager::Init()
+	BOOL DBLinkManager::Init(const DatabaseOptions& dbOptions)
 	{
 		__ENTER_FUNCTION
 		m_pAdmin = AdminDB::GetInstance();
 		vector<string> linksList;
 		if (!m_pAdmin->GetLinksList(linksList))
 		{
-			Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->GetDatabasesList Error!");
+			Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->GetLinksList Error!");
 			return FALSE;
 		}
 
 		for (int i = 0; i < linksList.size(); i++)
 		{
-			std::string dbPathName = EnvFileAPI::GetPathName(dbOptions.userDBPath, dbList[i]);
-			m_pDbList[i] = new DatabaseObject(dbList[i], dbPathName);
+			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linksList[i]);
+			m_pLinkMap->insert(std::pair(linksList[i], new DBLinkObject()));
 			Status s = m_pDbList[i]->OpenDB(dbOptions);
 			m_DbIndexer[dbList[i]] = i;
 			m_DbCount++;

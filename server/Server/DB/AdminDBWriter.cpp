@@ -91,6 +91,16 @@ namespace tomatodb
 		return j_array.dump();
 	}
 
+	void JsonAdminDBWriter::ReadDBLinkList(const string& data, vector<string>& link_list)
+	{
+		nlohmann::json j = nlohmann::json::parse(data);
+		for (nlohmann::json::iterator ite = j.begin(); ite != j.end(); ite++)
+		{
+			nlohmann::json dblinks = ite.value();
+			link_list.push_back(dblinks.at(DATABASE_KEY_IN_LINK));
+		}
+	}
+
 	void JsonAdminDBWriter::ReadLinkList(const string& data, const string& dbname, vector<string>& link_list)
 	{
 		nlohmann::json j = nlohmann::json::parse(data);
@@ -191,6 +201,17 @@ namespace tomatodb
 		StringArrayTable sat;
 		sat.InitEmptyStruct(2);
 		return sat.dump();
+	}
+
+	void ArrayTableAdminDBWriter::ReadDBLinkList(const string& data, vector<string>& link_list)
+	{
+		StringArrayTable sat;
+		sat.InitWithData(data.size(), &data[0]);
+		vector<string> vs;
+		if (sat.GetArrayAtKeys(vs, link_list))
+		{
+		}
+		return;
 	}
 
 	void ArrayTableAdminDBWriter::ReadLinkList(const string& data, const string& dbname, vector<string>& link_list)

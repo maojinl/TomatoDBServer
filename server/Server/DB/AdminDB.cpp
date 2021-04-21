@@ -140,7 +140,18 @@ namespace tomatodb
 		return FALSE;
 	}
 
-	BOOL AdminDB::GetLinksList(const string& dbname, vector<string>& link_list)
+	BOOL AdminDB::GetLinksList(vector<string>& link_list)
+	{
+		__ENTER_FUNCTION
+		std::string links_string;
+		m_pDb->Get(ReadOptions(), DATABASE_LINK_KEY, &links_string);
+		m_pWriter->ReadDBLinkList(links_string, link_list);
+		return TRUE;
+		__LEAVE_FUNCTION
+		return FALSE;
+	}
+
+	BOOL AdminDB::GetDBLinksList(const string& dbname, vector<string>& link_list)
 	{
 		__ENTER_FUNCTION
 		std::string links_string;

@@ -205,7 +205,7 @@ bool StringArrayTable::WriteArrayAtCurrentNode(const vector<string>& dataToWrite
 	if (CurrentNodeFound())
 	{
 		int currNodeSize;
-		int writeSize;
+		int writeSize = 0;
 		if (currLayer <= layer)
 		{
 			currNodeSize = leveldb::DecodeFixed32(&data[GetCurrentNodeSizePos(currNodeStart.top())]);
