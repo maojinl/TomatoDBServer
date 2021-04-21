@@ -20,6 +20,7 @@ namespace tomatodb
 		Options openOptions;
 		Options createOptions;
 		string adminDBPathName;
+		string linksDBPath;
 		string userDBPath;
 		int ThreadsCount;
 		//admin db name
@@ -36,6 +37,8 @@ namespace tomatodb
 			ThreadsCount(config.m_WorkerInfo.m_WorkerCount) {
 			adminDBPathName = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_AdminDBPath, 
 				DatabaseOptions::ADMIN_DATABASE_NAME);
+			linksDBPath = EnvFileAPI::GetPathName(config.m_ConfigInfo.m_LinksDBPath,
+				DatabaseOptions::LINK_DATABASE_FOLDER);
 			openOptions.create_if_missing = false;
 			createOptions.create_if_missing = true;
 			createOptions.error_if_exists = true;

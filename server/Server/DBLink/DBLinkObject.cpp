@@ -41,7 +41,7 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		string db_name = tableName + "_" + linkedTableName;
-		string db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
+		string db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.linksDBPath);
 		Status s = DB::Open(openOptions, db_path_name, &pDb);
 		if (!s.ok()) {
 			leveldb::DestroyDB(db_path_name, openOptions);
@@ -50,7 +50,7 @@ namespace tomatodb
 		}
 
 		db_name = linkedTableName + "_" + tableName;
-		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
+		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.linksDBPath);
 		s = DB::Open(openOptions, db_path_name, &pDbR);
 		if (!s.ok()) {
 			leveldb::DestroyDB(db_path_name, openOptions);
@@ -67,7 +67,7 @@ namespace tomatodb
 		__ENTER_FUNCTION
 		SAFE_DELETE(pDb);
 		string db_name = tableName + "_" + linkedTableName;
-		string db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
+		string db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.linksDBPath);
 		Status s = leveldb::DestroyDB(db_path_name, openOptions);
 		if (!s.ok()) {
 			Log::SaveLog(SERVER_LOGFILE, "ERROR:  link database. Message: %s", s.ToString().c_str());
@@ -75,7 +75,7 @@ namespace tomatodb
 		}
 		SAFE_DELETE(pDbR);
 		db_name = linkedTableName + "_" + tableName;
-		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.LINK_DATABASE_FOLDER);
+		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.linksDBPath);
 		s = leveldb::DestroyDB(db_path_name, openOptions);
 		if (!s.ok()) {
 			Log::SaveLog(SERVER_LOGFILE, "ERROR:  link database. Message: %s", s.ToString().c_str());

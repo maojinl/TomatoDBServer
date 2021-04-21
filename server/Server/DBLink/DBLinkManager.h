@@ -16,6 +16,8 @@ namespace tomatodb
 {
 	class DBLinkManager
 	{
+	private:
+		AdminDB* m_pAdmin;
 	public:
 		DBLinkManager(const Config& config);
 		~DBLinkManager();
