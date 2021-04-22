@@ -47,6 +47,20 @@ namespace tomatodb
 		//return DB::Open(dbOptions.openOptions, database_path_name, &pDb);
 	}
 
+	Status DatabaseObject::OpenLinks(const DatabaseOptions& dbOptions, const vector<string>& linkedTableNames)
+	{
+		for (int i = 0; i < linkedTableNames.size(); i++)
+		{
+			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linksList[i]);
+			m_pLinkMap->insert(std::pair(linksList[i], new DBLinkObject(dbOptions, this->database_name, linkDBPathName)));
+			Status s = m_pDbList[i]->OpenDB(dbOptions);
+			m_DbIndexer[dbList[i]] = i;
+			m_DbCount++;
+		}
+		//return DB::Open(dbOptions.openOptions, database_path_name, &pDb);
+	}
+
+
 	void DatabaseObject::CloseDB()
 	{
 		SAFE_DELETE(pDb);

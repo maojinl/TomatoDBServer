@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "Type.h"
+#include "GameDefine.h"
 #include "leveldb/db.h"
 #include "GameUtil.h"
 #include "AdminDB.h"
@@ -13,6 +14,7 @@
 #include "ReadWriteLock.h"
 #include "DBLinkObject.h"
 
+
 namespace tomatodb
 {
 	class DBLinkManager
@@ -20,6 +22,7 @@ namespace tomatodb
 	private:
 		AdminDB* m_pAdmin;
 		unordered_map<string, DBLinkObject*> m_pLinkMap[MAX_DB_LINK_SIZE];
+		unordered_map<string, DBLinkObject*> m_pLinkedMap[MAX_DB_LINK_SIZE];
 	public:
 		DBLinkManager(const Config& config);
 		~DBLinkManager();

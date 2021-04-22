@@ -6,6 +6,7 @@
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
 #include "GameUtil.h"
+#include "DBLink/DBLinkObject.h"
 
 
 using namespace leveldb;
@@ -27,6 +28,7 @@ namespace tomatodb
 		int refs;
 		MyLock dblock;
 		DatabaseStatus status;
+		unordered_map<string, DBLinkObject*> m_pLinkMap[MAX_DB_LINK_SIZE];
 	public:
 		DatabaseObject(string dbname, string dbpathname) :
 			database_name(dbname),
@@ -52,6 +54,8 @@ namespace tomatodb
 		Status CreateDB(const DatabaseOptions& dbOptions);
 
 		Status OpenDB(const DatabaseOptions& dbOptions);
+
+		Status OpenLinks(const vector<string>& linkedTableName);
 
 		void CloseDB();
 
