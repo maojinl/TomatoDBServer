@@ -21,8 +21,7 @@ namespace tomatodb
 	{
 	private:
 		AdminDB* m_pAdmin;
-		unordered_map<string, DBLinkObject*> m_pLinkMap[MAX_DB_LINK_SIZE];
-		unordered_map<string, DBLinkObject*> m_pLinkedMap[MAX_DB_LINK_SIZE];
+		unordered_map<string, DBLinkObject*> DbLinksMap;
 	public:
 		DBLinkManager(const Config& config);
 		~DBLinkManager();

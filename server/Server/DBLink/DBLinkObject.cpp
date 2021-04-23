@@ -7,7 +7,7 @@
 
 namespace tomatodb
 {
-	DBLinkObject::DBLinkObject(const Config& config, string tableName1, string tableName2):
+	DBLinkObject::DBLinkObject(string tableName1, string tableName2):
 		tableName(tableName1), linkedTableName(tableName2), pDb(nullptr), 
 		readOptions(), writeOptions(), openOptions(), createOptions()
 	{
@@ -39,10 +39,20 @@ namespace tomatodb
 
 	BOOL DBLinkObject::CreateLink(const DatabaseOptions& dbOptions)
 	{
+		return CreateOrOpenLink(dbOptions, createOptions);
+	}
+
+	BOOL DBLinkObject::OpenLink(const DatabaseOptions& dbOptions)
+	{
+		return CreateOrOpenLink(dbOptions, openOptions);
+	}
+
+	BOOL DBLinkObject::CreateOrOpenLink(const DatabaseOptions& dbOptions, Options options)
+	{
 		__ENTER_FUNCTION
 		string db_name = tableName + "_" + linkedTableName;
 		string db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.linksDBPath);
-		Status s = DB::Open(openOptions, db_path_name, &pDb);
+		Status s = DB::Open(options, db_path_name, &pDb);
 		if (!s.ok()) {
 			leveldb::DestroyDB(db_path_name, openOptions);
 			Log::SaveLog(SERVER_LOGFILE, "ERROR: Create link database. Message: %s", s.ToString().c_str());
@@ -51,7 +61,7 @@ namespace tomatodb
 
 		db_name = linkedTableName + "_" + tableName;
 		db_path_name = EnvFileAPI::GetPathName(db_name, dbOptions.linksDBPath);
-		s = DB::Open(openOptions, db_path_name, &pDbR);
+		s = DB::Open(options, db_path_name, &pDbR);
 		if (!s.ok()) {
 			leveldb::DestroyDB(db_path_name, openOptions);
 			Log::SaveLog(SERVER_LOGFILE, "ERROR: Create link reverse database. Message: %s", s.ToString().c_str());
@@ -119,7 +129,7 @@ namespace tomatodb
 			}
 		}
 		__LEAVE_FUNCTION
-			return FALSE;
+		return FALSE;
 	}
 
 	BOOL DBLinkObject::UpdateKeysIntoLinks(const string& id1, const vector<string>& id2_list)

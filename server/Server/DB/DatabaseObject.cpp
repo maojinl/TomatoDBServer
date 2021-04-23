@@ -9,8 +9,9 @@
 
 namespace tomatodb 
 {
-	BOOL DatabaseObject::ReadyToDestroy()
+	BOOL DatabaseObject::NotInUse()
 	{
+		AutoLock_T l(dblock);
 		return refs == 0;
 	};
 
@@ -38,26 +39,29 @@ namespace tomatodb
 	Status DatabaseObject::CreateDB(const DatabaseOptions& dbOptions)
 	{
 		return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
-		//return DB::Open(dbOptions.createOptions, database_path_name, &pDb);
 	}
 
 	Status DatabaseObject::OpenDB(const DatabaseOptions& dbOptions)
 	{
 		return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
-		//return DB::Open(dbOptions.openOptions, database_path_name, &pDb);
 	}
 
-	Status DatabaseObject::OpenLinks(const DatabaseOptions& dbOptions, const vector<string>& linkedTableNames)
+	BOOL DatabaseObject::OpenLinks(const DatabaseOptions& dbOptions, const vector<string>& linkedTableNames)
 	{
 		for (int i = 0; i < linkedTableNames.size(); i++)
 		{
-			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linksList[i]);
-			m_pLinkMap->insert(std::pair(linksList[i], new DBLinkObject(dbOptions, this->database_name, linkDBPathName)));
-			Status s = m_pDbList[i]->OpenDB(dbOptions);
-			m_DbIndexer[dbList[i]] = i;
-			m_DbCount++;
+			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linkedTableNames[i]);
+			DBLinkObject* pDBLink = new DBLinkObject(this->database_name, linkDBPathName);
+			if (pDBLink->OpenLink(dbOptions))
+			{
+				m_pLinkMap->insert(std::pair<string, DBLinkObject*>(linkedTableNames[i], pDBLink));
+			}
+			else
+			{
+				return false;
+			}
 		}
-		//return DB::Open(dbOptions.openOptions, database_path_name, &pDb);
+		return TRUE;
 	}
 
 

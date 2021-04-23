@@ -41,7 +41,7 @@ namespace tomatodb
 		~DatabaseObject() {
 			CloseDB();
 		};
-		BOOL ReadyToDestroy();
+		BOOL NotInUse();
 
 		void Ref();
 
@@ -55,7 +55,7 @@ namespace tomatodb
 
 		Status OpenDB(const DatabaseOptions& dbOptions);
 
-		Status OpenLinks(const vector<string>& linkedTableName);
+		BOOL OpenLinks(const DatabaseOptions& dbOptions, const vector<string>& linkedTableNames);
 
 		void CloseDB();
 

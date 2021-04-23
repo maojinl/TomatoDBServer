@@ -222,7 +222,7 @@ namespace tomatodb
 		auto ite = m_pDbRecycleList.begin();
 		while (ite != m_pDbRecycleList.end()) {
 			DatabaseObject* pDbObj = (*ite);
-			if (pDbObj->ReadyToDestroy()) {
+			if (pDbObj->NotInUse()) {
 				if (DeleteDatabaseCore(pDbObj)) {
 					ite = m_pDbRecycleList.erase(ite);
 					delete pDbObj;

@@ -39,7 +39,7 @@ namespace tomatodb
 		for (int i = 0; i < linksList.size(); i++)
 		{
 			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linksList[i]);
-			m_pLinkMap->insert(std::pair(linksList[i], new DBLinkObject()));
+			DbLinksMap->insert(std::pair(linksList[i], new DBLinkObject()));
 			Status s = m_pDbList[i]->OpenDB(dbOptions);
 			m_DbIndexer[dbList[i]] = i;
 			m_DbCount++;

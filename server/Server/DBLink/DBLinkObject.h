@@ -25,18 +25,21 @@ namespace tomatodb
 		Options openOptions;
 		Options createOptions;
 		BOOL UpdateKeyAndLinks(const string& id1, const vector<string>& id2_list, const vector<string>& exLinks);
+		BOOL CreateOrOpenLink(const DatabaseOptions& dbOptions, Options options);
 	public:
-		DBLinkObject(const Config& config, string tableName1, string tableName2);
+		DBLinkObject(string tableName1, string tableName2);
 		~DBLinkObject();
 
 		VOID CleanUp();
 		BOOL Init(const DatabaseOptions& options);
 		BOOL CreateLink(const DatabaseOptions& options);
+		BOOL OpenLink(const DatabaseOptions& options);
 		BOOL DeleteLink(const DatabaseOptions& dbOptions);
 		BOOL UpdateKeysIntoLinks(const string& id1, const vector<string>& id2_list);
 		BOOL RemoveReverseLinks(const string& id1, const vector<int>& removing, const vector<string>& inLinks);
 		BOOL AddReverseLinks(const string& id1, const vector<int>& adding, const vector<string>& exLinks);
 		BOOL DeleteKeysFromLinks(const string& id1);
+		
 
 	};
 
