@@ -336,7 +336,7 @@ TEST_F(StringArrayTableTest, AddLinks) {
 	pAdmin->AddLink(testdb1, testdb2);
 	pAdmin->AddLink(testdb1, "testdb3");
 	vector<string> links_list;
-	pAdmin->GetLinksList(testdb1, links_list);
+	pAdmin->GetDBLinksList(testdb1, links_list);
 	ASSERT_EQ(2, links_list.size());
 	SAFE_DELETE(pDBManager);
 	DestroyDB(EnvFileAPI::GetPathName(g_Config.m_ConfigInfo.m_AdminDBPath, DatabaseOptions::ADMIN_DATABASE_NAME)

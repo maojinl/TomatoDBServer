@@ -8,8 +8,8 @@
 namespace tomatodb
 {
 	DBLinkObject::DBLinkObject(string tableName1, string tableName2):
-		tableName(tableName1), linkedTableName(tableName2), pDb(nullptr), 
-		readOptions(), writeOptions(), openOptions(), createOptions()
+		tableName(tableName1), linkedTableName(tableName2), pDb(nullptr), pDbR(nullptr),
+		readOptions(), writeOptions(), openOptions(), createOptions(), status(DatabaseObjectStatus::StatusInit)
 	{
 		openOptions.create_if_missing = false;
 		createOptions.create_if_missing = true;

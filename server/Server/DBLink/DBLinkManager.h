@@ -19,16 +19,20 @@ namespace tomatodb
 {
 	class DBLinkManager
 	{
+		typedef unordered_map<string, DBLinkObject*> DBLinkObjectsTable;
 	private:
 		AdminDB* m_pAdmin;
-		unordered_map<string, DBLinkObject*> DbLinksMap;
+		unordered_map<string, DBLinkObjectsTable*> dbLinksTable;
+		DatabaseOptions dbOptions;
 	public:
-		DBLinkManager(const Config& config);
+		DBLinkManager(const DatabaseOptions& options);
 		~DBLinkManager();
 
 		VOID CleanUp();
-		BOOL Init(const DatabaseOptions& dbOptions);
-
+		BOOL Init();
+		BOOL GetLinksList(const string& dbname, vector<string>& value);
+		BOOL CreateLink(const string& dbname, const string& rhsdbname);
+		BOOL DeleteLink(const string& dbname, const string& rhsdbname);
 	};
 
 }

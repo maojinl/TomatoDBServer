@@ -1,16 +1,7 @@
-//
-//文件名称：	Type.h
-//功能描述：	类型定义，区分不同操作系统间系统调用的设置，所有当前工程
-//				内的代码都必须第一个引用此文件
-//版本说明：	Windows操作系统需要定义宏：__WINDOWS__
-//				Linux操作系统需要定义宏：__LINUX__
-//
-//
-
 #ifndef __TYPE_H__
 #define __TYPE_H__
 
-//当前位置可以定义操作系统使用情况，或者也可以在工程文件内预定义
+
 //#ifndef __WINDOWS__
 //	#define __WINDOWS__
 //#endif
@@ -22,14 +13,6 @@
 
 #include <vector>
 #include "BaseType.h"
-
-
-
-
-///////////////////////////////////////////////////////////////////////
-//基本数据类型定义
-///////////////////////////////////////////////////////////////////////
-
 
 typedef SHORT	ID_t;
 typedef USHORT	SMUID_t;
@@ -70,16 +53,7 @@ typedef struct _Int64
 	ULONG				b;
 }Int64;
 
-
-
-
-
-typedef UINT			GUID_t;	//32位唯一编号。
-//如果用于表示用户唯一ID号，用户部分为9位
-//前三位为世界号,世界号0～200为正式数据，
-//					   201～MAX_WORLD-1为测试数据
-//世界号不能超过或等于 MAX_WORLD
-//通过 GETWORLD 宏可以从GUID_t中取得世界号
+typedef UINT			GUID_t;
 
 #define INVALID_GUID			((GUID_t)(-1))
 #define INVALID_INDEX			(-1)
@@ -94,7 +68,7 @@ typedef	ULONG  DWORD;
 
 #if defined(__WINDOWS__)
 typedef DWORD		TID ;
-//用来定义玩家各个子模型是否可见 ###
+
 typedef unsigned __int64 MODEL_PART;
 #elif defined(__LINUX__)
 typedef pthread_t	TID ;
@@ -182,9 +156,6 @@ enum	TYPE_INDEX
 
 #define SELF_CONS(x)	x(){memset(this,0,sizeof(x));}
 #define DEFAULT_CONS(theClass,parentClass)	theClass(){memset(this,0,sizeof(theClass)); parentClass();}
-///////////////////////////////////////////////////////////////////////
-//基本头文件引用
-///////////////////////////////////////////////////////////////////////
 
 #include "Assertx.h"
 #include "PlayerStatus.h"

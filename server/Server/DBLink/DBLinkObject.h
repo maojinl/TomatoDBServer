@@ -40,7 +40,7 @@ namespace tomatodb
 		BOOL AddReverseLinks(const string& id1, const vector<int>& adding, const vector<string>& exLinks);
 		BOOL DeleteKeysFromLinks(const string& id1);
 		
-
+		DatabaseObjectStatus status;
 	};
 
 }

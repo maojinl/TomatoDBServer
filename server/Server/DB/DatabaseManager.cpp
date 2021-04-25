@@ -138,7 +138,7 @@ namespace tomatodb
 			if (m_pDbList[ite->second]->IsNormal())
 			{
 				m_pDbRecycleList.push_back(m_pDbList[ite->second]);
-				m_pDbList[ite->second]->status = DatabaseStatusDeletePending;
+				m_pDbList[ite->second]->status = DatabaseObjectStatus::StatusDeletePending;
 			}
 			return TRUE;
 		}

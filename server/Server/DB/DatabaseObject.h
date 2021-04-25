@@ -27,8 +27,7 @@ namespace tomatodb
 		DB* pDb;
 		int refs;
 		MyLock dblock;
-		DatabaseStatus status;
-		unordered_map<string, DBLinkObject*> m_pLinkMap[MAX_DB_LINK_SIZE];
+		DatabaseObjectStatus status;
 	public:
 		DatabaseObject(string dbname, string dbpathname) :
 			database_name(dbname),
@@ -36,7 +35,7 @@ namespace tomatodb
 			pDb(nullptr),
 			refs(0),
 			dblock(),
-			status(DatabaseStatusNormal) {
+			status(DatabaseObjectStatus::StatusInit) {
 		};
 		~DatabaseObject() {
 			CloseDB();
@@ -54,8 +53,6 @@ namespace tomatodb
 		Status CreateDB(const DatabaseOptions& dbOptions);
 
 		Status OpenDB(const DatabaseOptions& dbOptions);
-
-		BOOL OpenLinks(const DatabaseOptions& dbOptions, const vector<string>& linkedTableNames);
 
 		void CloseDB();
 

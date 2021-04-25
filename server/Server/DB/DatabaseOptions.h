@@ -10,6 +10,13 @@
 using namespace leveldb;
 namespace tomatodb
 {
+	enum DatabaseObjectStatus {
+		StatusInit = 0,
+		StatusNormal,
+		StatusDeletePending,
+		StatusDeleted
+	};
+
 	class DatabaseOptions
 	{
 	private:
@@ -43,6 +50,13 @@ namespace tomatodb
 			createOptions.create_if_missing = true;
 			createOptions.error_if_exists = true;
 		};
+
+		DatabaseOptions(const DatabaseOptions& options) {
+			(*this) = options;
+		};
+
+		void operator = (const DatabaseOptions& options);
+
 		~DatabaseOptions() {
 		};
 

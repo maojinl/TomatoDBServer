@@ -33,37 +33,28 @@ namespace tomatodb
 
 	BOOL DatabaseObject::IsDeletePending()
 	{
-		return status == DatabaseStatusDeletePending;
+		return status == DatabaseObjectStatus::StatusDeletePending;
 	}
 
 	Status DatabaseObject::CreateDB(const DatabaseOptions& dbOptions)
 	{
-		return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
+		Status s = DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.createOptions, database_path_name, &pDb);
+		if (s.ok())
+		{
+			status = DatabaseObjectStatus::StatusNormal;
+		}
+		return s;
 	}
 
 	Status DatabaseObject::OpenDB(const DatabaseOptions& dbOptions)
 	{
-		return DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
-	}
-
-	BOOL DatabaseObject::OpenLinks(const DatabaseOptions& dbOptions, const vector<string>& linkedTableNames)
-	{
-		for (int i = 0; i < linkedTableNames.size(); i++)
+		Status s = DB::OpenTmt(dbOptions.ThreadsCount, dbOptions.openOptions, database_path_name, &pDb);
+		if (s.ok())
 		{
-			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linkedTableNames[i]);
-			DBLinkObject* pDBLink = new DBLinkObject(this->database_name, linkDBPathName);
-			if (pDBLink->OpenLink(dbOptions))
-			{
-				m_pLinkMap->insert(std::pair<string, DBLinkObject*>(linkedTableNames[i], pDBLink));
-			}
-			else
-			{
-				return false;
-			}
+			status = DatabaseObjectStatus::StatusNormal;
 		}
-		return TRUE;
+		return s;
 	}
-
 
 	void DatabaseObject::CloseDB()
 	{
@@ -73,7 +64,12 @@ namespace tomatodb
 	Status DatabaseObject::DestroyDB(const Options& options)
 	{
 		CloseDB();
-		return leveldb::DestroyDB(database_path_name, options);
+		Status s = leveldb::DestroyDB(database_path_name, options);
+		if (s.ok())
+		{
+			status = DatabaseObjectStatus::StatusDeleted;
+		}
+		return s;
 	}
 
 	BOOL DatabaseObject::InsertIntoDB(const WriteOptions& wOpts, const string& key, const string& val, WriteBatch& wBatch, int tID)

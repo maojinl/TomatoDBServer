@@ -5,65 +5,158 @@
 
 namespace tomatodb
 {
-	DBLinkManager::DBLinkManager(const Config& config) 
+	DBLinkManager::DBLinkManager(const DatabaseOptions& options):
+		dbOptions(options)
 	{
 		__ENTER_FUNCTION
 
-		__LEAVE_FUNCTION
+			__LEAVE_FUNCTION
 	}
 
 	DBLinkManager::~DBLinkManager()
 	{
 		__ENTER_FUNCTION
 
-		__LEAVE_FUNCTION
+			__LEAVE_FUNCTION
 	}
 
 	VOID DBLinkManager::CleanUp()
 	{
 		__ENTER_FUNCTION
-		__LEAVE_FUNCTION
+			__LEAVE_FUNCTION
 	}
 
-	BOOL DBLinkManager::Init(const DatabaseOptions& dbOptions)
+	BOOL DBLinkManager::Init()
 	{
 		__ENTER_FUNCTION
 		m_pAdmin = AdminDB::GetInstance();
-		vector<string> linksList;
-		if (!m_pAdmin->GetLinksList(linksList))
+		vector<string> rhsTableList;
+		if (!m_pAdmin->GetLinksList(rhsTableList))
 		{
 			Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->GetLinksList Error!");
 			return FALSE;
 		}
 
-		for (int i = 0; i < linksList.size(); i++)
+		vector<string> linksForDB;
+		for (int i = 0; i < rhsTableList.size(); i++)
 		{
-			std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linksList[i]);
-			DbLinksMap->insert(std::pair(linksList[i], new DBLinkObject()));
-			Status s = m_pDbList[i]->OpenDB(dbOptions);
-			m_DbIndexer[dbList[i]] = i;
-			m_DbCount++;
+			if (!m_pAdmin->GetDBLinksList(rhsTableList[i], linksForDB))
+			{
+				Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->GetDBLinksList Error!");
+				return FALSE;
+			}
+			unordered_map<string, DBLinkObject*>* pDBLinksMap = new unordered_map<string, DBLinkObject*>();
+			for (int j = 0; j < linksForDB.size(); j++)
+			{
+				std::string linkDBPathName = EnvFileAPI::GetPathName(dbOptions.linksDBPath, linksForDB[i]);
+				DBLinkObject* pDBLink = new DBLinkObject(rhsTableList[i], linkDBPathName);
+				if (pDBLink->OpenLink(dbOptions))
+				{
+					pDBLinksMap->insert(std::pair<string, DBLinkObject*>(rhsTableList[i], pDBLink));
+				}
+				else
+				{
+					Log::SaveLog(SERVER_ERRORFILE, "pDBLink->OpenLink Error!");
+					return false;
+				}
+			}
+			dbLinksTable.insert(std::pair<string, DBLinkObjectsTable*>(rhsTableList[i], pDBLinksMap));
 		}
 		return TRUE;
 		__LEAVE_FUNCTION
 			return FALSE;
 	}
 
-	BOOL DBLinkManager::GetLinksList(vector<string>& database_list)
+	BOOL DBLinkManager::GetLinksList(const string& dbname, vector<string>& values)
 	{
 		__ENTER_FUNCTION
-		database_list.clear();
-		m_DbListLock.ReadLock();
-		for (int i = 0; i < m_DbCount; i++)
+			unordered_map<string, DBLinkObjectsTable*>::const_iterator ite = dbLinksTable.find(dbname);
+		if (ite != dbLinksTable.end())
 		{
-			if (m_pDbList[i]->IsNormal())
+			DBLinkObjectsTable* p = ite->second;
+			for (DBLinkObjectsTable::const_iterator iteLinkObj = p->begin(); iteLinkObj != p->end(); iteLinkObj++)
 			{
-				database_list.push_back(m_pDbList[i]->database_name);
+				values.push_back(iteLinkObj->first);
 			}
 		}
-		m_DbListLock.ReadUnlock();
 		return TRUE;
 		__LEAVE_FUNCTION
 			return FALSE;
+	}
+
+	BOOL DBLinkManager::CreateLink(const string& dbname, const string& rhsdbname)
+	{
+		__ENTER_FUNCTION
+		unordered_map<string, DBLinkObjectsTable*>::const_iterator ite = dbLinksTable.find(dbname);
+		DBLinkObjectsTable* dblinks;
+		if (ite == dbLinksTable.end())
+		{
+			dblinks = new DBLinkObjectsTable();
+			dbLinksTable.insert(std::pair<string, DBLinkObjectsTable*>(dbname, dblinks));
+		}
+		else
+		{
+			dblinks = ite->second;
+		}
+
+		DBLinkObjectsTable::const_iterator iteLinkObj = dblinks->find(rhsdbname);
+		if (iteLinkObj == dblinks->end())
+		{
+			if (m_pAdmin->AddLink(dbname, rhsdbname))
+			{
+				DBLinkObject* linkObj = new DBLinkObject(dbname, rhsdbname);
+				if (!linkObj->CreateLink(dbOptions))
+				{
+					m_pAdmin->RemoveLink(dbname, rhsdbname);
+				}
+				dblinks->insert(std::pair<string, DBLinkObject*>(rhsdbname, linkObj));
+				return TRUE;
+			}
+			else
+			{
+				Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->AddLink Error!");
+			}
+		}
+
+		__LEAVE_FUNCTION
+		return FALSE;
+	}
+
+	BOOL DBLinkManager::DeleteLink(const string& dbname, const string& rhsdbname)
+	{
+		__ENTER_FUNCTION
+		unordered_map<string, DBLinkObjectsTable*>::const_iterator ite = dbLinksTable.find(dbname);
+		DBLinkObjectsTable* dblinks;
+		if (ite == dbLinksTable.end())
+		{
+			return FALSE;
+		}
+		else
+		{
+			dblinks = ite->second;
+		}
+
+		DBLinkObjectsTable::const_iterator iteLinkObj = dblinks->find(rhsdbname);
+		if (iteLinkObj != dblinks->end())
+		{
+			iteLinkObj->second->status = DatabaseObjectStatus::StatusDeletePending;
+			/*if (m_pAdmin->RemoveLink(dbname, rhsdbname))
+			{
+				DBLinkObject* linkObj = new DBLinkObject(dbname, rhsdbname);
+				if (!linkObj->CreateLink(dbOptions))
+				{
+					m_pAdmin->AddLink(dbname, rhsdbname);
+				}
+				dblinks->insert(std::pair<string, DBLinkObject*>(rhsdbname, linkObj));
+				return TRUE;
+			}
+			else
+			{
+				Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->AddLink Error!");
+			}*/
+		}
+
+		__LEAVE_FUNCTION
+		return FALSE;
 	}
 }
