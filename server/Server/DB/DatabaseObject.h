@@ -13,10 +13,6 @@ using namespace leveldb;
 
 namespace tomatodb
 {
-	enum DatabaseStatus	{
-		DatabaseStatusNormal = 0,
-		DatabaseStatusDeletePending
-	};
 
 	class DatabaseObject
 	{

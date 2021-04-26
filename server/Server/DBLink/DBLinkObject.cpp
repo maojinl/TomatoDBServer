@@ -37,6 +37,33 @@ namespace tomatodb
 		return FALSE;
 	}
 
+	BOOL DBLinkObject::NotInUse()
+	{
+		AutoLock_T l(linklock);
+		return refs == 0;
+	};
+
+	void DBLinkObject::Ref() {
+		AutoLock_T l(linklock);
+		++refs;
+	};
+
+	void DBLinkObject::Unref() {
+		assert(refs >= 1);
+		AutoLock_T l(linklock);
+		--refs;
+	};
+
+	BOOL DBLinkObject::IsNormal()
+	{
+		return status == DatabaseObjectStatus::StatusNormal;
+	}
+
+	BOOL DBLinkObject::IsDeletePending()
+	{
+		return status == DatabaseObjectStatus::StatusDeletePending;
+	}
+
 	BOOL DBLinkObject::CreateLink(const DatabaseOptions& dbOptions)
 	{
 		return CreateOrOpenLink(dbOptions, createOptions);

@@ -1,4 +1,4 @@
-#ifndef __DBLINKMANAGER_H__
+﻿#ifndef __DBLINKMANAGER_H__
 #define __DBLINKMANAGER_H__
 
 #include <unordered_map>
@@ -24,6 +24,11 @@ namespace tomatodb
 		AdminDB* m_pAdmin;
 		unordered_map<string, DBLinkObjectsTable*> dbLinksTable;
 		DatabaseOptions dbOptions;
+		vector<DBLinkObject*> linkRecycleList;
+		MyLock m_Lock;
+		DBLinkObject* RefLinkHandler(const string& dbname, const string& rhsdbname);
+		VOID UnrefLinkHandler(DBLinkObject* pDbObj);
+		VOID UpdateRecycleLinkList();
 	public:
 		DBLinkManager(const DatabaseOptions& options);
 		~DBLinkManager();
@@ -33,6 +38,10 @@ namespace tomatodb
 		BOOL GetLinksList(const string& dbname, vector<string>& value);
 		BOOL CreateLink(const string& dbname, const string& rhsdbname);
 		BOOL DeleteLink(const string& dbname, const string& rhsdbname);
+		BOOL UpdateKeysIntoLinks(const string& dbname, const string& rhsdbname, const string& id1, const vector<string>& id2_list);
+		BOOL DeleteKeysFromLinks(const string& dbname, const string& rhsdbname, const string& id1);
+		BOOL HeartBeat();
+		BOOL DeletLinkCore(DBLinkObject* pLinkObj);
 	};
 
 }

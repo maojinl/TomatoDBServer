@@ -28,7 +28,7 @@ namespace tomatodb
 
 	BOOL DatabaseObject::IsNormal()
 	{
-		return status == DatabaseStatusNormal;
+		return status == DatabaseObjectStatus::StatusNormal;
 	}
 
 	BOOL DatabaseObject::IsDeletePending()
