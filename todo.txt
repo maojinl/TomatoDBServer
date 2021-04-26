@@ -1,3 +1,8 @@
 1. DB engine. tomatodb class to be created.
 2. Server DB module tweak. Add return result status.
 3. Multi packets support for big values.
+
+
+next step tasks
+1 fix options in dblinkobject
+2 fix locks in manager
