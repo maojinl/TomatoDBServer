@@ -43,10 +43,17 @@ namespace tomatodb
 		BOOL IsDeletePending();
 		BOOL CreateLink(const DatabaseOptions& options);
 		BOOL OpenLink(const DatabaseOptions& options);
-		BOOL DeleteLink(const DatabaseOptions& dbOptions);
+		Status DeleteLink(const DatabaseOptions& dbOptions);
 		BOOL UpdateKeysIntoLinks(const string& id1, const vector<string>& id2_list);
 		BOOL DeleteKeysFromLinks(const string& id1);
-		
+		string GetTableName()
+		{
+			return tableName;
+		}
+		string GetLinkedTableName()
+		{
+			return linkedTableName;
+		}
 		DatabaseObjectStatus status;
 	};
 

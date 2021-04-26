@@ -11,6 +11,7 @@
 #include "DatabaseOptions.h"
 #include "DBThreadObjectsPool.h"
 #include "ReadWriteLock.h"
+#include "DBLink/DBLinkManager.h"
 
 namespace tomatodb
 {
@@ -43,6 +44,7 @@ namespace tomatodb
 		BOOL DeleteDatabaseCore(DatabaseObject* pDbObj);
 		DatabaseObject* RefDatabaseHandler(string database_name);
 		VOID UnrefDatabaseHandler(DatabaseObject* pDbObj);
+		DBLinkManager linkManager;
 	};
 
 	extern DatabaseManager* g_pDatabaseManager;

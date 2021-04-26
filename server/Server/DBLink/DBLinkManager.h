@@ -43,6 +43,5 @@ namespace tomatodb
 		BOOL HeartBeat();
 		BOOL DeletLinkCore(DBLinkObject* pLinkObj);
 	};
-
 }
 #endif

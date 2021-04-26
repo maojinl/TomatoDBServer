@@ -211,6 +211,7 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 		UpdateRecycleDBList();
+		linkManager.HeartBeat();
 		return TRUE;
 		__LEAVE_FUNCTION
 		return FALSE;

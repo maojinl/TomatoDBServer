@@ -99,7 +99,7 @@ namespace tomatodb
 			return FALSE;
 	}
 
-	BOOL DBLinkObject::DeleteLink(const DatabaseOptions& dbOptions)
+	Status DBLinkObject::DeleteLink(const DatabaseOptions& dbOptions)
 	{
 		__ENTER_FUNCTION
 		SAFE_DELETE(pDb);
@@ -108,7 +108,7 @@ namespace tomatodb
 		Status s = leveldb::DestroyDB(db_path_name, openOptions);
 		if (!s.ok()) {
 			Log::SaveLog(SERVER_LOGFILE, "ERROR:  link database. Message: %s", s.ToString().c_str());
-			return FALSE;
+			return s;
 		}
 		SAFE_DELETE(pDbR);
 		db_name = linkedTableName + "_" + tableName;
@@ -116,11 +116,11 @@ namespace tomatodb
 		s = leveldb::DestroyDB(db_path_name, openOptions);
 		if (!s.ok()) {
 			Log::SaveLog(SERVER_LOGFILE, "ERROR:  link database. Message: %s", s.ToString().c_str());
-			return FALSE;
+			return s;
 		}
-		return TRUE;
+		return s;
 		__LEAVE_FUNCTION
-		return FALSE;
+		return Status::Corruption("ERROR:  DeleteLink exception.");
 	}
 
 	BOOL DBLinkObject::DeleteKeysFromLinks(const string& id1)

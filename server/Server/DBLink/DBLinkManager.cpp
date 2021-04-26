@@ -10,7 +10,7 @@ namespace tomatodb
 	{
 		__ENTER_FUNCTION
 
-			__LEAVE_FUNCTION
+		__LEAVE_FUNCTION
 	}
 
 	DBLinkManager::~DBLinkManager()
@@ -167,21 +167,6 @@ namespace tomatodb
 			}
 		}
 
-			/*if (m_pAdmin->RemoveLink(dbname, rhsdbname))
-			{
-				DBLinkObject* linkObj = new DBLinkObject(dbname, rhsdbname);
-				if (!linkObj->CreateLink(dbOptions))
-				{
-					m_pAdmin->AddLink(dbname, rhsdbname);
-				}
-				dblinks->insert(std::pair<string, DBLinkObject*>(rhsdbname, linkObj));
-				return TRUE;
-			}
-			else
-			{
-				Log::SaveLog(SERVER_ERRORFILE, "m_pAdmin->AddLink Error!");
-			}*/
-
 		__LEAVE_FUNCTION
 		return FALSE;
 	}
@@ -221,7 +206,7 @@ namespace tomatodb
 		while (ite != linkRecycleList.end()) {
 			DBLinkObject* pLinkObj = (*ite);
 			if (pLinkObj->NotInUse()) {
-				if (DeleteLinkCore(pLinkObj)) {
+				if (DeletLinkCore(pLinkObj)) {
 					ite = linkRecycleList.erase(ite);
 					delete pLinkObj;
 					continue;
@@ -233,25 +218,30 @@ namespace tomatodb
 
 	BOOL DBLinkManager::DeletLinkCore(DBLinkObject* pLinkObj)
 	{
-		if (m_pAdmin->DeleteDatabase(pLinkObj->database_name))
+		if (m_pAdmin->RemoveLink(pLinkObj->GetTableName(), pLinkObj->GetLinkedTableName()))
 		{
-			Status s = pDbObj->DestroyDB(dbOptions.openOptions);
+			Status s = pLinkObj->DeleteLink(dbOptions);
 			if (!s.ok()) {
-				m_pAdmin->CreateDatabase(pDbObj->database_name);
+				m_pAdmin->AddLink(pLinkObj->GetTableName(), pLinkObj->GetLinkedTableName());
 				Log::SaveLog(SERVER_LOGFILE, "ERROR: DeleteDatabaseCore. Message: %s", s.ToString().c_str());
 				return FALSE;
 			}
 
-			auto ite = m_DbIndexer.find(pDbObj->database_name);
-			if (ite != m_DbIndexer.end() && m_pDbList[ite->second]->IsDeletePending())
+			unordered_map<string, DBLinkObjectsTable*>::const_iterator ite = dbLinksTable.find(pLinkObj->GetTableName());
+			DBLinkObjectsTable* dblinks;
+			if (ite != dbLinksTable.end())
 			{
-				m_DbListLock.WriteLock();
-				m_DbCount--;
-				m_pDbList[ite->second] = m_pDbList[m_DbCount];
-				m_DbIndexer[m_pDbList[m_DbCount]->database_name] = ite->second;
-				m_pDbList[m_DbCount] = nullptr;
-				m_DbIndexer.erase(ite);
-				m_DbListLock.WriteUnlock();
+				dblinks = ite->second;
+
+				DBLinkObjectsTable::const_iterator iteLink = dblinks->find(pLinkObj->GetLinkedTableName());
+				if (iteLink != dblinks->end())
+				{
+					iteLink = dblinks->erase(iteLink);
+				}
+				if (iteLink == dblinks->end())
+				{
+					dbLinksTable.erase(ite);
+				}
 			}
 			return TRUE;
 		}
